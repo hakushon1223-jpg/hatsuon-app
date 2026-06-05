@@ -19,7 +19,7 @@
   .btn { display: inline-flex; align-items: center; gap: 6px; border: none; border-radius: 999px; padding: 14px 28px; font-size: 18px; font-weight: 700; font-family: inherit; cursor: pointer; transition: transform 0.1s, opacity 0.1s; }
   .btn:active { transform: scale(0.95); opacity: 0.8; }
   .btn-play { background: #4FC3F7; color: #fff; }
-  .btn-rec  { background: #EF5350; color: #fff; }
+  .btn-rec { background: #EF5350; color: #fff; }
   .btn-rec.recording { background: #B71C1C; animation: recpulse 0.5s ease-in-out infinite alternate; }
   .btn-stop { background: #555; color: #fff; display: none; }
   @keyframes recpulse { from { opacity: 1; } to { opacity: 0.5; } }
@@ -35,23 +35,19 @@
   .speed-row label { font-size: 13px; color: #aaa; }
   .speed-val { font-size: 13px; font-weight: 700; color: #555; min-width: 90px; text-align: left; }
   input[type=range] { width: 110px; accent-color: #FFB347; }
-
   .mark-overlay { position: fixed; top: 0; left: 0; right: 0; bottom: 0; display: flex; align-items: center; justify-content: center; pointer-events: none; z-index: 999; opacity: 0; }
   .mark-overlay.show { animation: markFade 1.3s ease-out forwards; }
   @keyframes markFade { 0%{opacity:0;} 15%{opacity:1;} 70%{opacity:1;} 100%{opacity:0;} }
   .maru-circle { width: 280px; height: 280px; border-radius: 50%; border: 22px solid #E53935; background: transparent; }
   .sankaku-wrap { width: 280px; height: 280px; display: flex; align-items: center; justify-content: center; }
   .sankaku-wrap svg { width: 260px; height: 260px; }
-  .mark-overlay.show .maru-circle,
-  .mark-overlay.show .sankaku-wrap { animation: markScale 0.5s ease-out forwards; }
+  .mark-overlay.show .maru-circle, .mark-overlay.show .sankaku-wrap { animation: markScale 0.5s ease-out forwards; }
   @keyframes markScale { 0%{transform:scale(0.3);} 50%{transform:scale(1.1);} 70%{transform:scale(1.0);} 100%{transform:scale(1.0);} }
 </style>
 </head>
 <body>
 
-<div class="mark-overlay" id="markOverlay">
-  <div id="markShape"></div>
-</div>
+<div class="mark-overlay" id="markOverlay"><div id="markShape"></div></div>
 
 <h1>はつおんれんしゅう 🎤</h1>
 <p class="subtitle">きいて・いって・かくにんしよう</p>
@@ -65,13 +61,11 @@
 <div class="card">
   <span class="emoji" id="emoji">🏃</span>
   <div class="word" id="word">はしる</div>
-
   <div class="btn-row">
     <button class="btn btn-play" onclick="playWord()">🔊 おとをきく</button>
     <button class="btn btn-rec" id="recBtn" onclick="startRec()">🎙️ はなす</button>
     <button class="btn btn-stop" id="stopBtn" onclick="stopRecAndJudge()">■ とめる</button>
   </div>
-
   <div class="result-box" id="resultBox">👆 まず「おとをきく」をおそう</div>
   <button class="next-btn" id="nextBtn" onclick="nextWord()" disabled>つぎへ ▶</button>
 </div>
@@ -91,33 +85,33 @@
 
 <script>
 const words = [
-  { text:'はしる',       emoji:'🏃',  cat:'dousa'  },
-  { text:'とぶ',         emoji:'🦅',  cat:'dousa'  },
-  { text:'たべる',       emoji:'🍙',  cat:'dousa'  },
-  { text:'のむ',         emoji:'🧃',  cat:'dousa'  },
-  { text:'ねる',         emoji:'😴',  cat:'dousa'  },
-  { text:'あそぶ',       emoji:'⚽',  cat:'dousa'  },
-  { text:'かく',         emoji:'✏️', cat:'dousa'  },
-  { text:'よむ',         emoji:'📖',  cat:'dousa'  },
-  { text:'おはよう',     emoji:'🌅',  cat:'nichijo' },
-  { text:'ありがとう',   emoji:'🙏',  cat:'nichijo' },
-  { text:'ごめんなさい', emoji:'😢',  cat:'nichijo' },
-  { text:'いただきます', emoji:'🍽️',cat:'nichijo' },
-  { text:'おやすみ',     emoji:'🌙',  cat:'nichijo' },
-  { text:'いってきます', emoji:'👋',  cat:'nichijo' },
-  { text:'ただいま',     emoji:'🏠',  cat:'nichijo' },
-  { text:'きもちいい',   emoji:'😊',  cat:'nichijo' },
+  { text:'はしる', emoji:'🏃', cat:'dousa' },
+  { text:'とぶ', emoji:'🦅', cat:'dousa' },
+  { text:'たべる', emoji:'🍙', cat:'dousa' },
+  { text:'のむ', emoji:'🧃', cat:'dousa' },
+  { text:'ねる', emoji:'😴', cat:'dousa' },
+  { text:'あそぶ', emoji:'⚽', cat:'dousa' },
+  { text:'かく', emoji:'✏️', cat:'dousa' },
+  { text:'よむ', emoji:'📖', cat:'dousa' },
+  { text:'おはよう', emoji:'🌅', cat:'nichijo' },
+  { text:'ありがとう', emoji:'🙏', cat:'nichijo' },
+  { text:'ごめんなさい', emoji:'😢', cat:'nichijo' },
+  { text:'いただきます', emoji:'🍽️', cat:'nichijo' },
+  { text:'おやすみ', emoji:'🌙', cat:'nichijo' },
+  { text:'いってきます', emoji:'👋', cat:'nichijo' },
+  { text:'ただいま', emoji:'🏠', cat:'nichijo' },
+  { text:'きもちいい', emoji:'😊', cat:'nichijo' },
 ];
 
-const speedMap   = {1:0.45, 2:0.55, 3:0.70, 4:0.85, 5:1.00};
-const speedNames = {1:'とてもおそい', 2:'ゆっくり', 3:'ふつう', 4:'すこしはやい', 5:'はやい'};
+const speedMap = {1:0.45,2:0.55,3:0.70,4:0.85,5:1.00};
+const speedNames = {1:'とてもおそい',2:'ゆっくり',3:'ふつう',4:'すこしはやい',5:'はやい'};
 
 let filtered = [...words];
 let idx = 0;
 let speed = 0.55;
 let recognition = null;
 let heardText = '';
-let judged = false;
+let stopRequested = false;
 
 function playSuccessSound() {
   try {
@@ -151,7 +145,7 @@ function playMissSound() {
 
 function showMark(type) {
   const overlay = document.getElementById('markOverlay');
-  const shape   = document.getElementById('markShape');
+  const shape = document.getElementById('markShape');
   shape.innerHTML = type === 'o'
     ? '<div class="maru-circle"></div>'
     : '<div class="sankaku-wrap"><svg viewBox="0 0 260 260"><polygon points="130,20 250,240 10,240" fill="none" stroke="#FFB300" stroke-width="28" stroke-linejoin="round"/></svg></div>';
@@ -176,17 +170,26 @@ function setCategory(cat, el) {
 
 function loadCard() {
   const w = filtered[idx];
-  document.getElementById('emoji').textContent   = w.emoji;
-  document.getElementById('word').textContent    = w.text;
+  document.getElementById('emoji').textContent = w.emoji;
+  document.getElementById('word').textContent = w.text;
   document.getElementById('counter').textContent = (idx+1) + ' / ' + filtered.length;
   document.getElementById('resultBox').textContent = '👆 まず「おとをきく」をおそう';
   document.getElementById('nextBtn').disabled = true;
+  showRecBtn();
+  heardText = '';
+  stopRequested = false;
+  if (recognition) { try { recognition.abort(); } catch(e){} recognition = null; }
+}
+
+function showRecBtn() {
   document.getElementById('recBtn').style.display = 'inline-flex';
   document.getElementById('recBtn').classList.remove('recording');
   document.getElementById('stopBtn').style.display = 'none';
-  heardText = '';
-  judged = false;
-  if (recognition) { try { recognition.abort(); } catch(e){} recognition = null; }
+}
+
+function showStopBtn() {
+  document.getElementById('recBtn').style.display = 'none';
+  document.getElementById('stopBtn').style.display = 'inline-flex';
 }
 
 function playWord() {
@@ -194,9 +197,7 @@ function playWord() {
   const u = new SpeechSynthesisUtterance(filtered[idx].text);
   u.lang = 'ja-JP'; u.rate = speed; u.pitch = 1.1;
   document.getElementById('resultBox').textContent = '🔊 きいてね…';
-  u.onend = () => {
-    document.getElementById('resultBox').textContent = '🎤 「はなす」をおして いってみよう！';
-  };
+  u.onend = () => { document.getElementById('resultBox').textContent = '🎤 「はなす」をおして いってみよう！'; };
   window.speechSynthesis.speak(u);
 }
 
@@ -206,63 +207,62 @@ function startRec() {
     document.getElementById('resultBox').textContent = 'このブラウザはマイクにたいおうしていません。Safariをつかってね。';
     return;
   }
-
   heardText = '';
-  judged = false;
+  stopRequested = false;
   recognition = new SR();
   recognition.lang = 'ja-JP';
   recognition.interimResults = false;
   recognition.maxAlternatives = 5;
-  // continuousはfalseにしてiPhone対応
-  recognition.continuous = false;
+  recognition.continuous = true; // iPhoneのSafariではtrueが必要
 
   recognition.onstart = () => {
-    document.getElementById('recBtn').style.display = 'none';
-    document.getElementById('stopBtn').style.display = 'inline-flex';
+    showStopBtn();
     document.getElementById('resultBox').textContent = '🎙️ はなしてね… おわったら「とめる」をおそう';
   };
 
   recognition.onresult = (e) => {
-    // 結果を保存（まだ判定しない）
-    for (let i = 0; i < e.results.length; i++) {
+    for (let i = e.resultIndex; i < e.results.length; i++) {
       const t = e.results[i][0].transcript.replace(/\s/g,'');
       if (t) heardText = t;
     }
+    // とめるが押されていたら結果が来たタイミングで判定
+    if (stopRequested) {
+      doJudge();
+      try { recognition.abort(); } catch(e){}
+      recognition = null;
+    }
   };
 
-  recognition.onerror = (e) => {
-    if (e.error !== 'aborted') {
+  recognition.onerror = (ev) => {
+    if (ev.error !== 'aborted') {
       document.getElementById('resultBox').textContent = 'きこえませんでした。もういちどためしてね。';
     }
-    resetRecBtn();
+    showRecBtn();
   };
 
   recognition.onend = () => {
-    resetRecBtn();
-    if (!judged) doJudge();
+    showRecBtn();
+    if (stopRequested && heardText) doJudge();
   };
 
   recognition.start();
 }
 
 function stopRecAndJudge() {
-  judged = false;
-  if (recognition) {
-    try { recognition.stop(); } catch(e){}
-    // onend → doJudge の流れで判定される
-  } else {
+  stopRequested = true;
+  showRecBtn();
+  // onresult か onend のタイミングで doJudge が呼ばれる
+  // heardTextがすでにあれば今すぐ判定
+  if (heardText) {
     doJudge();
+    if (recognition) { try { recognition.abort(); } catch(e){} recognition = null; }
+  } else {
+    document.getElementById('resultBox').textContent = '⏳ はんていちゅう…';
+    if (recognition) { try { recognition.stop(); } catch(e){} }
   }
 }
 
-function resetRecBtn() {
-  document.getElementById('recBtn').style.display = 'inline-flex';
-  document.getElementById('recBtn').classList.remove('recording');
-  document.getElementById('stopBtn').style.display = 'none';
-}
-
 function doJudge() {
-  judged = true;
   if (!heardText) {
     document.getElementById('resultBox').textContent = 'きこえませんでした。もういちどためしてね。';
     return;
@@ -279,20 +279,13 @@ function doJudge() {
     showMark('d');
     playMissSound();
   }
+  heardText = '';
+  stopRequested = false;
 }
 
-function nextWord() {
-  idx = (idx + 1) % filtered.length;
-  loadCard();
-}
-function skipNext() {
-  idx = (idx + 1) % filtered.length;
-  loadCard();
-}
-function prevWord() {
-  idx = (idx - 1 + filtered.length) % filtered.length;
-  loadCard();
-}
+function nextWord() { idx = (idx+1) % filtered.length; loadCard(); }
+function skipNext() { idx = (idx+1) % filtered.length; loadCard(); }
+function prevWord() { idx = (idx-1+filtered.length) % filtered.length; loadCard(); }
 </script>
 </body>
 </html>
