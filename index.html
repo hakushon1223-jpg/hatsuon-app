@@ -30,23 +30,14 @@
   .word { font-size: 36px; font-weight: 700; color: #333; margin-bottom: 1.25rem; letter-spacing: 0.08em; }
 
   .btn-row { display: flex; gap: 10px; justify-content: center; margin-bottom: 1rem; flex-wrap: wrap; }
-  .btn { display: inline-flex; align-items: center; gap: 6px; border: none; border-radius: 999px; padding: 12px 22px; font-size: 16px; font-weight: 700; font-family: inherit; cursor: pointer; transition: transform 0.1s, opacity 0.1s; }
+  .btn { display: inline-flex; align-items: center; gap: 6px; border: none; border-radius: 999px; padding: 14px 28px; font-size: 18px; font-weight: 700; font-family: inherit; cursor: pointer; transition: transform 0.1s, opacity 0.1s; }
   .btn:active { transform: scale(0.95); opacity: 0.8; }
   .btn-play { background: #4FC3F7; color: #fff; }
   .btn-rec  { background: #EF5350; color: #fff; }
   .btn-rec.recording { background: #B71C1C; animation: recpulse 0.5s ease-in-out infinite alternate; }
   @keyframes recpulse { from { opacity: 1; } to { opacity: 0.5; } }
 
-  .result-box { min-height: 44px; background: #F5F5F5; border-radius: 12px; padding: 10px 14px; font-size: 14px; color: #555; margin-bottom: 1rem; display: flex; align-items: center; justify-content: center; text-align: center; line-height: 1.5; }
-
-  .divider { border: none; border-top: 1.5px dashed #eee; margin: 0.75rem 0; }
-  .judge-label { font-size: 13px; color: #aaa; margin-bottom: 0.6rem; }
-  .judge-row { display: flex; gap: 16px; justify-content: center; margin-bottom: 1rem; }
-  .judge-btn { width: 68px; height: 68px; border-radius: 50%; border: 2.5px solid #eee; background: #fff; font-size: 30px; cursor: pointer; transition: transform 0.1s, background 0.15s, border-color 0.15s; display: flex; align-items: center; justify-content: center; font-family: inherit; }
-  .judge-btn:active { transform: scale(0.9); }
-  .judge-btn.sel-x { background: #FFEBEE; border-color: #EF5350; }
-  .judge-btn.sel-d { background: #FFF8E1; border-color: #FFB300; }
-  .judge-btn.sel-o { background: #E8F5E9; border-color: #43A047; }
+  .result-box { min-height: 52px; background: #F5F5F5; border-radius: 12px; padding: 12px 14px; font-size: 15px; color: #555; margin-bottom: 1rem; display: flex; align-items: center; justify-content: center; text-align: center; line-height: 1.6; }
 
   .next-btn { display: block; width: 100%; padding: 14px; border-radius: 999px; border: none; background: #66BB6A; color: #fff; font-size: 18px; font-weight: 700; font-family: inherit; cursor: pointer; transition: opacity 0.15s, transform 0.1s; }
   .next-btn:disabled { background: #ccc; cursor: not-allowed; }
@@ -62,8 +53,8 @@
   .speed-val { font-size: 13px; font-weight: 700; color: #555; min-width: 90px; text-align: left; }
   input[type=range] { width: 110px; accent-color: #FFB347; }
 
-  /* 大きい赤〇のオーバーレイ */
-  .maru-overlay {
+  /* 〇オーバーレイ */
+  .mark-overlay {
     position: fixed;
     top: 0; left: 0; right: 0; bottom: 0;
     display: flex;
@@ -73,39 +64,64 @@
     z-index: 999;
     opacity: 0;
   }
-  .maru-overlay.show {
-    animation: maruAnim 1.2s ease-out forwards;
+  .mark-overlay.show {
+    animation: markFade 1.3s ease-out forwards;
   }
+  @keyframes markFade {
+    0%   { opacity: 0; }
+    15%  { opacity: 1; }
+    70%  { opacity: 1; }
+    100% { opacity: 0; }
+  }
+
+  /* 赤〇 */
   .maru-circle {
-    width: 280px;
-    height: 280px;
+    width: 280px; height: 280px;
     border-radius: 50%;
     border: 22px solid #E53935;
     background: transparent;
     transform: scale(0.3);
   }
-  @keyframes maruAnim {
-    0%   { opacity: 0; }
-    10%  { opacity: 1; }
-    30%  { opacity: 1; }
-    100% { opacity: 0; }
+  .show .maru-circle {
+    animation: markScale 0.5s ease-out forwards;
   }
-  @keyframes maruScale {
+
+  /* 黄△ */
+  .sankaku-shape {
+    width: 0; height: 0;
+    border-left: 140px solid transparent;
+    border-right: 140px solid transparent;
+    border-bottom: 242px solid #FFB300;
+    transform: scale(0.3);
+    position: relative;
+  }
+  .sankaku-shape::after {
+    content: '';
+    position: absolute;
+    top: 40px;
+    left: -100px;
+    width: 0; height: 0;
+    border-left: 100px solid transparent;
+    border-right: 100px solid transparent;
+    border-bottom: 173px solid #FFF9F0;
+  }
+  .show .sankaku-shape {
+    animation: markScale 0.5s ease-out forwards;
+  }
+
+  @keyframes markScale {
     0%   { transform: scale(0.3); }
-    40%  { transform: scale(1.1); }
-    60%  { transform: scale(1.0); }
+    50%  { transform: scale(1.1); }
+    70%  { transform: scale(1.0); }
     100% { transform: scale(1.0); }
-  }
-  .maru-overlay.show .maru-circle {
-    animation: maruScale 0.5s ease-out forwards;
   }
 </style>
 </head>
 <body>
 
-<!-- 大きい赤〇オーバーレイ -->
-<div class="maru-overlay" id="maruOverlay">
-  <div class="maru-circle"></div>
+<!-- 判定オーバーレイ -->
+<div class="mark-overlay" id="markOverlay">
+  <div id="markShape"></div>
 </div>
 
 <h1>はつおんれんしゅう 🎤</h1>
@@ -127,15 +143,6 @@
   </div>
 
   <div class="result-box" id="resultBox">👆 まず「おとをきく」をおそう</div>
-
-  <hr class="divider">
-
-  <p class="judge-label">せんせいがはんていする</p>
-  <div class="judge-row">
-    <button class="judge-btn" id="jx" onclick="judge('x')"  title="ばつ">✖</button>
-    <button class="judge-btn" id="jd" onclick="judge('d')"  title="さんかく">△</button>
-    <button class="judge-btn" id="jo" onclick="judge('o')"  title="まる">〇</button>
-  </div>
 
   <button class="next-btn" id="nextBtn" onclick="nextWord()" disabled>つぎへ ▶</button>
 </div>
@@ -181,36 +188,60 @@ let idx = 0;
 let speed = 0.55;
 let isRecording = false;
 let recognition = null;
-let currentJudge = null;
+let heardText = '';
 
-// 効果音（Web Audio API）
+// 〇の効果音（明るい上昇音）
 function playSuccessSound() {
   try {
     const ctx = new (window.AudioContext || window.webkitAudioContext)();
-    const notes = [523, 659, 784, 1047]; // ド・ミ・ソ・高ド
-    notes.forEach((freq, i) => {
+    [523, 659, 784, 1047].forEach((freq, i) => {
       const osc = ctx.createOscillator();
       const gain = ctx.createGain();
-      osc.connect(gain);
-      gain.connect(ctx.destination);
-      osc.frequency.value = freq;
-      osc.type = 'sine';
+      osc.connect(gain); gain.connect(ctx.destination);
+      osc.frequency.value = freq; osc.type = 'sine';
       const t = ctx.currentTime + i * 0.12;
       gain.gain.setValueAtTime(0.4, t);
       gain.gain.exponentialRampToValueAtTime(0.001, t + 0.3);
-      osc.start(t);
-      osc.stop(t + 0.3);
+      osc.start(t); osc.stop(t + 0.3);
     });
   } catch(e) {}
 }
 
-// 大きい赤〇を表示
-function showMaru() {
-  const overlay = document.getElementById('maruOverlay');
+// △の効果音（低めの残念音）
+function playMissSound() {
+  try {
+    const ctx = new (window.AudioContext || window.webkitAudioContext)();
+    [330, 294].forEach((freq, i) => {
+      const osc = ctx.createOscillator();
+      const gain = ctx.createGain();
+      osc.connect(gain); gain.connect(ctx.destination);
+      osc.frequency.value = freq; osc.type = 'sine';
+      const t = ctx.currentTime + i * 0.2;
+      gain.gain.setValueAtTime(0.35, t);
+      gain.gain.exponentialRampToValueAtTime(0.001, t + 0.4);
+      osc.start(t); osc.stop(t + 0.4);
+    });
+  } catch(e) {}
+}
+
+// マークを表示
+function showMark(type) {
+  const overlay = document.getElementById('markOverlay');
+  const shape   = document.getElementById('markShape');
+  shape.innerHTML = '';
+  if (type === 'o') {
+    const el = document.createElement('div');
+    el.className = 'maru-circle';
+    shape.appendChild(el);
+  } else {
+    const el = document.createElement('div');
+    el.className = 'sankaku-shape';
+    shape.appendChild(el);
+  }
   overlay.classList.remove('show');
-  void overlay.offsetWidth; // リセット
+  void overlay.offsetWidth;
   overlay.classList.add('show');
-  setTimeout(() => overlay.classList.remove('show'), 1300);
+  setTimeout(() => overlay.classList.remove('show'), 1400);
 }
 
 function updateSpeed(v) {
@@ -235,8 +266,7 @@ function loadCard() {
   document.getElementById('nextBtn').disabled = true;
   document.getElementById('recBtn').classList.remove('recording');
   document.getElementById('recLabel').textContent = 'はなす';
-  ['jx','jd','jo'].forEach(id => document.getElementById(id).className = 'judge-btn');
-  currentJudge = null;
+  heardText = '';
   isRecording = false;
   if (recognition) { try { recognition.stop(); } catch(e){} recognition = null; }
 }
@@ -253,7 +283,12 @@ function playWord() {
 }
 
 function toggleRec() {
-  isRecording ? stopRec() : startRec();
+  if (isRecording) {
+    // 止めるボタンを押した → 判定する
+    stopRecAndJudge();
+  } else {
+    startRec();
+  }
 }
 
 function startRec() {
@@ -262,10 +297,12 @@ function startRec() {
     document.getElementById('resultBox').textContent = 'このブラウザはマイクにたいおうしていません。Safariをつかってね。';
     return;
   }
+  heardText = '';
   recognition = new SR();
   recognition.lang = 'ja-JP';
   recognition.interimResults = false;
   recognition.maxAlternatives = 3;
+  recognition.continuous = true; // 止めるまで録音し続ける
 
   recognition.onstart = () => {
     isRecording = true;
@@ -275,21 +312,9 @@ function startRec() {
   };
 
   recognition.onresult = (e) => {
-    const target = filtered[idx].text;
-    let matched = false;
-    let heard = '';
-    for (let i = 0; i < e.results[0].length; i++) {
-      const t = e.results[0][i].transcript.replace(/\s/g,'');
-      if (i === 0) heard = t;
-      if (t === target) { matched = true; break; }
-    }
-    if (matched) {
-      document.getElementById('resultBox').textContent = '✨ じどうはんてい：「' + heard + '」→ よくできました！';
-      setJudge('o');
-      showMaru();
-      playSuccessSound();
-    } else {
-      document.getElementById('resultBox').textContent = '🤔 じどうはんてい：「' + heard + '」とよめました。せんせいがかくにんしてね。';
+    // 最新の認識結果を保存しておく
+    for (let i = e.resultIndex; i < e.results.length; i++) {
+      heardText = e.results[i][0].transcript.replace(/\s/g,'');
     }
   };
 
@@ -298,8 +323,27 @@ function startRec() {
     stopRec();
   };
 
-  recognition.onend = () => stopRec();
+  recognition.onend = () => {
+    if (isRecording) {
+      // 自動で止まった場合も判定する
+      doJudge();
+    }
+  };
+
   recognition.start();
+}
+
+function stopRecAndJudge() {
+  isRecording = false;
+  document.getElementById('recBtn').classList.remove('recording');
+  document.getElementById('recLabel').textContent = 'はなす';
+  if (recognition) {
+    try { recognition.stop(); } catch(e){}
+    // onend で doJudge が呼ばれる
+  } else {
+    doJudge();
+  }
+  recognition = null;
 }
 
 function stopRec() {
@@ -309,22 +353,26 @@ function stopRec() {
   if (recognition) { try { recognition.stop(); } catch(e){} recognition = null; }
 }
 
-function judge(type) { setJudge(type); }
-
-function setJudge(type) {
-  currentJudge = type;
-  document.getElementById('jx').className = 'judge-btn' + (type==='x' ? ' sel-x' : '');
-  document.getElementById('jd').className = 'judge-btn' + (type==='d' ? ' sel-d' : '');
-  document.getElementById('jo').className = 'judge-btn' + (type==='o' ? ' sel-o' : '');
-  document.getElementById('nextBtn').disabled = (type !== 'o');
-  if (type === 'o') {
-    showMaru();
+function doJudge() {
+  const target = filtered[idx].text;
+  if (!heardText) {
+    document.getElementById('resultBox').textContent = 'きこえませんでした。もういちどためしてね。';
+    return;
+  }
+  if (heardText === target) {
+    document.getElementById('resultBox').textContent = '✨ 「' + heardText + '」→ よくできました！';
+    document.getElementById('nextBtn').disabled = false;
+    showMark('o');
     playSuccessSound();
+  } else {
+    document.getElementById('resultBox').textContent = '🤔 「' + heardText + '」とよめました。もういちどためしてみよう！';
+    document.getElementById('nextBtn').disabled = true;
+    showMark('d');
+    playMissSound();
   }
 }
 
 function nextWord() {
-  if (currentJudge !== 'o') return;
   idx = (idx + 1) % filtered.length;
   loadCard();
 }
