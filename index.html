@@ -5,42 +5,99 @@
 <meta name="viewport" content="width=device-width, initial-scale=1.0">
 <title>はつおんれんしゅう</title>
 <style>
-  * { box-sizing: border-box; margin: 0; padding: 0; }
-  body { font-family: 'Hiragino Maru Gothic ProN', 'BIZ UDPGothic', sans-serif; background: #FFF9F0; min-height: 100vh; display: flex; flex-direction: column; align-items: center; padding: 1.5rem 1rem 3rem; }
-  h1 { font-size: 26px; font-weight: 700; color: #333; text-align: center; margin-bottom: 0.25rem; }
-  .subtitle { font-size: 15px; color: #888; text-align: center; margin-bottom: 1.25rem; }
-  .tabs { display: flex; gap: 8px; justify-content: center; margin-bottom: 1.25rem; flex-wrap: wrap; }
-  .tab { padding: 7px 18px; border-radius: 999px; font-size: 15px; cursor: pointer; border: 2px solid #ddd; background: #fff; color: #888; font-family: inherit; transition: all 0.15s; }
-  .tab.active { background: #FFB347; color: #fff; border-color: #FFB347; font-weight: 700; }
-  .card { background: #fff; border-radius: 24px; box-shadow: 0 4px 20px rgba(0,0,0,0.08); padding: 2rem 1.5rem 1.5rem; text-align: center; width: 100%; max-width: 400px; }
-  .emoji { font-size: 100px; line-height: 1; margin-bottom: 0.75rem; display: block; }
-  .word { font-size: 36px; font-weight: 700; color: #333; margin-bottom: 1.25rem; letter-spacing: 0.08em; }
-  .btn-row { display: flex; gap: 10px; justify-content: center; margin-bottom: 1rem; flex-wrap: wrap; }
-  .btn { display: inline-flex; align-items: center; gap: 6px; border: none; border-radius: 999px; padding: 14px 28px; font-size: 18px; font-weight: 700; font-family: inherit; cursor: pointer; transition: transform 0.1s, opacity 0.1s; }
-  .btn:active { transform: scale(0.95); opacity: 0.8; }
-  .btn-play { background: #4FC3F7; color: #fff; }
-  .btn-rec { background: #EF5350; color: #fff; }
-  .btn-stop { background: #555; color: #fff; display: none; }
-  .result-box { min-height: 52px; background: #F5F5F5; border-radius: 12px; padding: 12px 14px; font-size: 15px; color: #555; margin-bottom: 1rem; display: flex; align-items: center; justify-content: center; text-align: center; line-height: 1.6; }
-  .next-btn { display: block; width: 100%; padding: 14px; border-radius: 999px; border: none; background: #66BB6A; color: #fff; font-size: 18px; font-weight: 700; font-family: inherit; cursor: pointer; transition: opacity 0.15s, transform 0.1s; }
-  .next-btn:disabled { background: #ccc; cursor: not-allowed; }
-  .next-btn:not(:disabled):active { transform: scale(0.97); }
-  .nav { display: flex; align-items: center; justify-content: center; gap: 20px; margin-top: 1.25rem; width: 100%; max-width: 400px; }
-  .nav-btn { width: 52px; height: 52px; border-radius: 50%; border: 2px solid #ddd; background: #fff; font-size: 22px; cursor: pointer; display: flex; align-items: center; justify-content: center; transition: background 0.1s; }
-  .nav-btn:active { background: #f0f0f0; }
-  .counter { font-size: 16px; color: #aaa; min-width: 64px; text-align: center; }
-  .speed-row { display: flex; align-items: center; gap: 10px; margin-top: 1rem; justify-content: center; }
-  .speed-row label { font-size: 13px; color: #aaa; }
-  .speed-val { font-size: 13px; font-weight: 700; color: #555; min-width: 90px; text-align: left; }
-  input[type=range] { width: 110px; accent-color: #FFB347; }
-  .mark-overlay { position: fixed; top: 0; left: 0; right: 0; bottom: 0; display: flex; align-items: center; justify-content: center; pointer-events: none; z-index: 999; opacity: 0; }
-  .mark-overlay.show { animation: markFade 1.3s ease-out forwards; }
-  @keyframes markFade { 0%{opacity:0;} 15%{opacity:1;} 70%{opacity:1;} 100%{opacity:0;} }
-  .maru-circle { width: 280px; height: 280px; border-radius: 50%; border: 22px solid #E53935; background: transparent; }
-  .sankaku-wrap { width: 280px; height: 280px; display: flex; align-items: center; justify-content: center; }
-  .sankaku-wrap svg { width: 260px; height: 260px; }
-  .mark-overlay.show .maru-circle, .mark-overlay.show .sankaku-wrap { animation: markScale 0.5s ease-out forwards; }
-  @keyframes markScale { 0%{transform:scale(0.3);} 50%{transform:scale(1.1);} 70%{transform:scale(1.0);} 100%{transform:scale(1.0);} }
+* { box-sizing: border-box; margin: 0; padding: 0; }
+body { font-family: 'Hiragino Maru Gothic ProN', 'BIZ UDPGothic', sans-serif; background: #FFF9F0; min-height: 100vh; display: flex; flex-direction: column; align-items: center; padding: 1.5rem 1rem 3rem; }
+
+/* ===== 共通 ===== */
+h1 { font-size: 26px; font-weight: 700; color: #333; text-align: center; margin-bottom: 0.25rem; }
+.subtitle { font-size: 15px; color: #888; text-align: center; margin-bottom: 1.5rem; }
+.screen { width: 100%; max-width: 420px; display: none; }
+.screen.active { display: flex; flex-direction: column; align-items: center; }
+.btn { display: inline-flex; align-items: center; justify-content: center; gap: 8px; border: none; border-radius: 999px; font-family: inherit; cursor: pointer; transition: transform 0.1s, opacity 0.1s; font-weight: 700; }
+.btn:active { transform: scale(0.95); opacity: 0.8; }
+
+/* ===== トップ画面 ===== */
+.top-btn-row { display: flex; flex-direction: column; gap: 16px; width: 100%; margin-top: 1rem; }
+.top-btn { width: 100%; padding: 22px; font-size: 22px; border-radius: 20px; }
+.btn-student { background: #4FC3F7; color: #fff; }
+.btn-teacher { background: #9575CD; color: #fff; }
+
+/* ===== 生徒画面 ===== */
+.tabs { display: flex; gap: 8px; justify-content: center; margin-bottom: 1.25rem; flex-wrap: wrap; width: 100%; }
+.tab { padding: 7px 18px; border-radius: 999px; font-size: 15px; cursor: pointer; border: 2px solid #ddd; background: #fff; color: #888; font-family: inherit; transition: all 0.15s; font-weight: 700; }
+.tab.active { background: #FFB347; color: #fff; border-color: #FFB347; }
+.card { background: #fff; border-radius: 24px; box-shadow: 0 4px 20px rgba(0,0,0,0.08); padding: 2rem 1.5rem 1.5rem; text-align: center; width: 100%; }
+.emoji { font-size: 100px; line-height: 1; margin-bottom: 0.75rem; display: block; }
+.word { font-size: 36px; font-weight: 700; color: #333; margin-bottom: 1.25rem; letter-spacing: 0.08em; }
+.btn-row { display: flex; gap: 10px; justify-content: center; margin-bottom: 1rem; flex-wrap: wrap; }
+.btn-play { background: #4FC3F7; color: #fff; padding: 14px 22px; font-size: 17px; }
+.btn-rec { background: #EF5350; color: #fff; padding: 14px 22px; font-size: 17px; }
+.btn-stop { background: #555; color: #fff; padding: 14px 22px; font-size: 17px; display: none; }
+.result-box { min-height: 52px; background: #F5F5F5; border-radius: 12px; padding: 12px 14px; font-size: 15px; color: #555; margin-bottom: 1rem; display: flex; align-items: center; justify-content: center; text-align: center; line-height: 1.6; width: 100%; }
+.next-btn { display: block; width: 100%; padding: 14px; border-radius: 999px; border: none; background: #66BB6A; color: #fff; font-size: 18px; font-weight: 700; font-family: inherit; cursor: pointer; transition: opacity 0.15s, transform 0.1s; }
+.next-btn:disabled { background: #ccc; cursor: not-allowed; }
+.nav { display: flex; align-items: center; justify-content: center; gap: 20px; margin-top: 1.25rem; width: 100%; }
+.nav-btn { width: 52px; height: 52px; border-radius: 50%; border: 2px solid #ddd; background: #fff; font-size: 22px; cursor: pointer; display: flex; align-items: center; justify-content: center; }
+.nav-btn:active { background: #f0f0f0; }
+.counter { font-size: 16px; color: #aaa; min-width: 64px; text-align: center; }
+.speed-row { display: flex; align-items: center; gap: 10px; margin-top: 1rem; justify-content: center; }
+.speed-row label { font-size: 13px; color: #aaa; }
+.speed-val { font-size: 13px; font-weight: 700; color: #555; min-width: 90px; }
+input[type=range] { width: 110px; accent-color: #FFB347; }
+.back-btn { margin-top: 1.5rem; padding: 10px 24px; font-size: 14px; background: #eee; color: #666; border-radius: 999px; border: none; cursor: pointer; font-family: inherit; }
+
+/* ===== 先生画面 ===== */
+.teacher-nav { display: flex; gap: 8px; justify-content: center; margin-bottom: 1.25rem; flex-wrap: wrap; width: 100%; }
+.tnav-btn { padding: 8px 18px; border-radius: 999px; font-size: 14px; cursor: pointer; border: 2px solid #ddd; background: #fff; color: #888; font-family: inherit; font-weight: 700; }
+.tnav-btn.active { background: #9575CD; color: #fff; border-color: #9575CD; }
+.teacher-section { display: none; width: 100%; }
+.teacher-section.active { display: block; }
+
+/* 記録 */
+.record-table { width: 100%; border-collapse: collapse; margin-top: 0.5rem; font-size: 14px; }
+.record-table th { background: #EDE7F6; color: #5E35B1; padding: 8px; text-align: center; }
+.record-table td { padding: 8px; text-align: center; border-bottom: 1px solid #eee; }
+.badge-o { color: #43A047; font-weight: 700; font-size: 18px; }
+.badge-d { color: #FFB300; font-weight: 700; font-size: 18px; }
+.badge-none { color: #ccc; }
+
+/* 言葉の編集 */
+.word-list { width: 100%; margin-top: 0.5rem; }
+.word-item { display: flex; align-items: center; gap: 8px; padding: 8px 0; border-bottom: 1px solid #eee; }
+.word-item input { flex: 1; padding: 6px 10px; border-radius: 8px; border: 1.5px solid #ddd; font-size: 15px; font-family: inherit; }
+.word-item select { padding: 6px; border-radius: 8px; border: 1.5px solid #ddd; font-size: 14px; font-family: inherit; }
+.del-btn { background: #FFEBEE; color: #E53935; border: none; border-radius: 50%; width: 32px; height: 32px; font-size: 18px; cursor: pointer; flex-shrink: 0; }
+.add-word-row { display: flex; gap: 8px; margin-top: 1rem; flex-wrap: wrap; }
+.add-word-row input { flex: 1; min-width: 80px; padding: 8px 12px; border-radius: 8px; border: 1.5px solid #ddd; font-size: 15px; font-family: inherit; }
+.add-word-row select { padding: 8px; border-radius: 8px; border: 1.5px solid #ddd; font-size: 14px; font-family: inherit; }
+.save-btn { width: 100%; padding: 12px; margin-top: 1rem; border-radius: 999px; border: none; background: #9575CD; color: #fff; font-size: 16px; font-weight: 700; font-family: inherit; cursor: pointer; }
+
+/* 生徒設定 */
+.student-list { width: 100%; margin-top: 0.5rem; }
+.student-item { background: #fff; border-radius: 16px; box-shadow: 0 2px 8px rgba(0,0,0,0.06); padding: 1rem; margin-bottom: 1rem; }
+.student-name { font-size: 16px; font-weight: 700; color: #333; margin-bottom: 0.75rem; }
+.student-name input { border: 1.5px solid #ddd; border-radius: 8px; padding: 4px 10px; font-size: 15px; font-family: inherit; width: 140px; }
+.mode-row { display: flex; gap: 8px; flex-wrap: wrap; }
+.mode-btn { padding: 6px 14px; border-radius: 999px; font-size: 13px; cursor: pointer; border: 2px solid #ddd; background: #fff; color: #888; font-family: inherit; font-weight: 700; }
+.mode-btn.active { background: #FFB347; color: #fff; border-color: #FFB347; }
+.add-student-btn { width: 100%; padding: 12px; border-radius: 999px; border: 2px dashed #9575CD; background: #F3E5F5; color: #9575CD; font-size: 15px; font-weight: 700; font-family: inherit; cursor: pointer; margin-top: 0.5rem; }
+
+/* マーク */
+.mark-overlay { position: fixed; top: 0; left: 0; right: 0; bottom: 0; display: flex; align-items: center; justify-content: center; pointer-events: none; z-index: 999; opacity: 0; }
+.mark-overlay.show { animation: markFade 1.3s ease-out forwards; }
+@keyframes markFade { 0%{opacity:0;} 15%{opacity:1;} 70%{opacity:1;} 100%{opacity:0;} }
+.maru-circle { width: 280px; height: 280px; border-radius: 50%; border: 22px solid #E53935; background: transparent; }
+.sankaku-wrap { width: 280px; height: 280px; display: flex; align-items: center; justify-content: center; }
+.sankaku-wrap svg { width: 260px; height: 260px; }
+.mark-overlay.show .maru-circle, .mark-overlay.show .sankaku-wrap { animation: markScale 0.5s ease-out forwards; }
+@keyframes markScale { 0%{transform:scale(0.3);} 50%{transform:scale(1.1);} 70%{transform:scale(1.0);} 100%{transform:scale(1.0);} }
+
+/* パスワード */
+.pw-box { background: #fff; border-radius: 20px; box-shadow: 0 4px 20px rgba(0,0,0,0.08); padding: 2rem; width: 100%; text-align: center; }
+.pw-box p { font-size: 15px; color: #888; margin-bottom: 1rem; }
+.pw-box input { width: 100%; padding: 12px; border-radius: 12px; border: 2px solid #ddd; font-size: 18px; text-align: center; font-family: inherit; margin-bottom: 1rem; letter-spacing: 0.2em; }
+.pw-btn { width: 100%; padding: 12px; border-radius: 999px; border: none; background: #9575CD; color: #fff; font-size: 16px; font-weight: 700; font-family: inherit; cursor: pointer; }
+.pw-error { color: #E53935; font-size: 13px; margin-top: 0.5rem; display: none; }
 </style>
 </head>
 <body>
@@ -48,147 +105,221 @@
 <div class="mark-overlay" id="markOverlay"><div id="markShape"></div></div>
 
 <h1>はつおんれんしゅう 🎤</h1>
-<p class="subtitle">きいて・いって・かくにんしよう</p>
+<p class="subtitle" id="mainSubtitle">どちらですか？</p>
 
-<div class="tabs">
-  <button class="tab active" onclick="setCategory('all',this)">ぜんぶ</button>
-  <button class="tab" onclick="setCategory('dousa',this)">うごき</button>
-  <button class="tab" onclick="setCategory('nichijo',this)">にちじょう</button>
-</div>
-
-<div class="card">
-  <span class="emoji" id="emoji">🏃</span>
-  <div class="word" id="word">はしる</div>
-  <div class="btn-row">
-    <button class="btn btn-play" onclick="playWord()">🔊 おとをきく</button>
-    <button class="btn btn-rec" id="recBtn" onclick="startRec()">🎙️ はなす</button>
-    <button class="btn btn-stop" id="stopBtn" onclick="stopRecAndJudge()">■ とめる</button>
+<!-- トップ画面 -->
+<div class="screen active" id="screenTop">
+  <div class="top-btn-row">
+    <button class="btn top-btn btn-student" onclick="goStudent()">🧒 せいとようにすすむ</button>
+    <button class="btn top-btn btn-teacher" onclick="goTeacherPw()">👩‍🏫 せんせいようにすすむ</button>
   </div>
-  <div class="result-box" id="resultBox">👆 まず「おとをきく」をおそう</div>
-  <button class="next-btn" id="nextBtn" onclick="nextWord()" disabled>つぎへ ▶</button>
 </div>
 
-<div class="nav">
-  <button class="nav-btn" onclick="prevWord()">◀</button>
-  <span class="counter" id="counter">1 / 16</span>
-  <button class="nav-btn" onclick="skipNext()">▶</button>
+<!-- 先生パスワード画面 -->
+<div class="screen" id="screenPw">
+  <div class="pw-box">
+    <p>パスワードをにゅうりょくしてください</p>
+    <input type="password" id="pwInput" placeholder="••••" maxlength="8" onkeydown="if(event.key==='Enter')checkPw()">
+    <button class="pw-btn" onclick="checkPw()">はいる</button>
+    <p class="pw-error" id="pwError">パスワードがちがいます</p>
+  </div>
+  <button class="back-btn" onclick="goTop()">← もどる</button>
 </div>
 
-<div class="speed-row">
-  <label>おそい</label>
-  <input type="range" min="1" max="5" value="2" id="speedRange" oninput="updateSpeed(this.value)">
-  <label>はやい</label>
-  <span class="speed-val" id="speedVal">ゆっくり</span>
+<!-- 生徒画面 -->
+<div class="screen" id="screenStudent">
+  <div class="tabs" id="studentTabs"></div>
+  <div class="card">
+    <span class="emoji" id="emoji">🏃</span>
+    <div class="word" id="word">はしる</div>
+    <div class="btn-row">
+      <button class="btn btn-play" onclick="playWord()">🔊 おとをきく</button>
+      <button class="btn btn-rec" id="recBtn" onclick="startRec()">🎙️ はなす</button>
+      <button class="btn btn-stop" id="stopBtn" onclick="stopRecAndJudge()">■ とめる</button>
+    </div>
+    <div class="result-box" id="resultBox">👆 まず「おとをきく」をおそう</div>
+    <button class="next-btn" id="nextBtn" onclick="nextWord()" disabled>つぎへ ▶</button>
+  </div>
+  <div class="nav">
+    <button class="nav-btn" onclick="prevWord()">◀</button>
+    <span class="counter" id="counter">1 / 1</span>
+    <button class="nav-btn" onclick="skipNext()">▶</button>
+  </div>
+  <div class="speed-row">
+    <label>おそい</label>
+    <input type="range" min="1" max="5" value="2" id="speedRange" oninput="updateSpeed(this.value)">
+    <label>はやい</label>
+    <span class="speed-val" id="speedVal">ゆっくり</span>
+  </div>
+  <button class="back-btn" onclick="goTop()">← もどる</button>
+</div>
+
+<!-- 先生画面 -->
+<div class="screen" id="screenTeacher">
+  <div class="teacher-nav">
+    <button class="tnav-btn active" onclick="showTeacherTab('records',this)">📊 きろく</button>
+    <button class="tnav-btn" onclick="showTeacherTab('words',this)">📝 ことばへんしゅう</button>
+    <button class="tnav-btn" onclick="showTeacherTab('students',this)">👤 せいとせってい</button>
+  </div>
+
+  <!-- 記録タブ -->
+  <div class="teacher-section active" id="tab-records">
+    <table class="record-table">
+      <thead><tr><th>せいと</th><th>ことば</th><th>はんてい</th><th>にちじ</th></tr></thead>
+      <tbody id="recordBody"></tbody>
+    </table>
+    <button class="save-btn" style="background:#FFEBEE;color:#E53935;margin-top:1rem;" onclick="clearRecords()">🗑️ きろくをリセット</button>
+  </div>
+
+  <!-- 言葉編集タブ -->
+  <div class="teacher-section" id="tab-words">
+    <div class="word-list" id="wordList"></div>
+    <div class="add-word-row">
+      <input type="text" id="newWordText" placeholder="ことば（ひらがな）">
+      <input type="text" id="newWordEmoji" placeholder="えもじ" style="width:60px;max-width:60px;">
+      <select id="newWordCat">
+        <option value="dousa">うごき</option>
+        <option value="nichijo">にちじょう</option>
+      </select>
+    </div>
+    <button class="save-btn" onclick="addWord()">＋ ことばをついか</button>
+    <button class="save-btn" style="margin-top:0.5rem;" onclick="saveWords()">💾 ほぞんする</button>
+  </div>
+
+  <!-- 生徒設定タブ -->
+  <div class="teacher-section" id="tab-students">
+    <div class="student-list" id="studentList"></div>
+    <button class="add-student-btn" onclick="addStudent()">＋ せいとをついか</button>
+    <button class="save-btn" style="margin-top:1rem;" onclick="saveStudents()">💾 ほぞんする</button>
+  </div>
+
+  <button class="back-btn" onclick="goTop()">← もどる</button>
 </div>
 
 <script>
-// 各単語に読み仮名（よみ）を追加
-const words = [
-  { text:'はしる', yomi:'はしる', emoji:'🏃', cat:'dousa' },
-  { text:'とぶ', yomi:'とぶ', emoji:'🦅', cat:'dousa' },
-  { text:'たべる', yomi:'たべる', emoji:'🍙', cat:'dousa' },
-  { text:'のむ', yomi:'のむ', emoji:'🧃', cat:'dousa' },
-  { text:'ねる', yomi:'ねる', emoji:'😴', cat:'dousa' },
-  { text:'あそぶ', yomi:'あそぶ', emoji:'⚽', cat:'dousa' },
-  { text:'かく', yomi:'かく', emoji:'✏️', cat:'dousa' },
-  { text:'よむ', yomi:'よむ', emoji:'📖', cat:'dousa' },
-  { text:'おはよう', yomi:'おはよう', emoji:'🌅', cat:'nichijo' },
-  { text:'ありがとう', yomi:'ありがとう', emoji:'🙏', cat:'nichijo' },
-  { text:'ごめんなさい', yomi:'ごめんなさい', emoji:'😢', cat:'nichijo' },
-  { text:'いただきます', yomi:'いただきます', emoji:'🍽️', cat:'nichijo' },
-  { text:'おやすみ', yomi:'おやすみ', emoji:'🌙', cat:'nichijo' },
-  { text:'いってきます', yomi:'いってきます', emoji:'👋', cat:'nichijo' },
-  { text:'ただいま', yomi:'ただいま', emoji:'🏠', cat:'nichijo' },
-  { text:'きもちいい', yomi:'きもちいい', emoji:'😊', cat:'nichijo' },
-];
+// ===== データ =====
+const TEACHER_PW = '1234';
 
-// 漢字→よみがな対応表（音声認識が漢字を返すケースに対応）
 const kanjiMap = {
-  '走る':'はしる', '飛ぶ':'とぶ', '食べる':'たべる', '飲む':'のむ',
-  '寝る':'ねる', '遊ぶ':'あそぶ', '書く':'かく', '読む':'よむ',
-  'お早う':'おはよう', 'お早うございます':'おはようございます',
-  'ありがとう':'ありがとう', 'ごめんなさい':'ごめんなさい',
-  'いただきます':'いただきます', 'お休み':'おやすみ',
-  '行ってきます':'いってきます', 'ただいま':'ただいま',
-  '気持ちいい':'きもちいい', '気持ち良い':'きもちいい',
+  '走る':'はしる','飛ぶ':'とぶ','食べる':'たべる','飲む':'のむ',
+  '寝る':'ねる','遊ぶ':'あそぶ','書く':'かく','読む':'よむ',
+  'お早う':'おはよう','ありがとう':'ありがとう','ごめんなさい':'ごめんなさい',
+  'いただきます':'いただきます','お休み':'おやすみ',
+  '行ってきます':'いってきます','ただいま':'ただいま',
+  '気持ちいい':'きもちいい','気持ち良い':'きもちいい',
 };
 
-const speedMap = {1:0.45,2:0.55,3:0.70,4:0.85,5:1.00};
-const speedNames = {1:'とてもおそい',2:'ゆっくり',3:'ふつう',4:'すこしはやい',5:'はやい'};
+const defaultWords = [
+  { text:'はしる', emoji:'🏃', cat:'dousa' },
+  { text:'とぶ', emoji:'🦅', cat:'dousa' },
+  { text:'たべる', emoji:'🍙', cat:'dousa' },
+  { text:'のむ', emoji:'🧃', cat:'dousa' },
+  { text:'ねる', emoji:'😴', cat:'dousa' },
+  { text:'あそぶ', emoji:'⚽', cat:'dousa' },
+  { text:'かく', emoji:'✏️', cat:'dousa' },
+  { text:'よむ', emoji:'📖', cat:'dousa' },
+  { text:'おはよう', emoji:'🌅', cat:'nichijo' },
+  { text:'ありがとう', emoji:'🙏', cat:'nichijo' },
+  { text:'ごめんなさい', emoji:'😢', cat:'nichijo' },
+  { text:'いただきます', emoji:'🍽️', cat:'nichijo' },
+  { text:'おやすみ', emoji:'🌙', cat:'nichijo' },
+  { text:'いってきます', emoji:'👋', cat:'nichijo' },
+  { text:'ただいま', emoji:'🏠', cat:'nichijo' },
+  { text:'きもちいい', emoji:'😊', cat:'nichijo' },
+];
 
-let filtered = [...words];
+const defaultStudents = [
+  { name:'せいと１', mode:'all' },
+  { name:'せいと２', mode:'all' },
+  { name:'せいと３', mode:'all' },
+];
+
+// ローカルストレージから読み込み
+function loadData() {
+  try {
+    words = JSON.parse(localStorage.getItem('words')) || [...defaultWords];
+    students = JSON.parse(localStorage.getItem('students')) || [...defaultStudents];
+    records = JSON.parse(localStorage.getItem('records')) || [];
+  } catch(e) {
+    words = [...defaultWords]; students = [...defaultStudents]; records = [];
+  }
+}
+
+let words, students, records;
+loadData();
+
+let filtered = [];
 let idx = 0;
 let speed = 0.55;
 let recognition = null;
 let heardText = '';
 let stopRequested = false;
+let currentStudent = students[0];
 
-// 漢字をひらがなに変換（対応表 + カタカナ→ひらがな）
-function toHiragana(str) {
-  // まず対応表で変換
-  if (kanjiMap[str]) return kanjiMap[str];
-  // カタカナ→ひらがな
-  return str.replace(/[\u30A1-\u30F6]/g, c =>
-    String.fromCharCode(c.charCodeAt(0) - 0x60)
-  ).replace(/\s/g,'');
+const speedMap = {1:0.45,2:0.55,3:0.70,4:0.85,5:1.00};
+const speedNames = {1:'とてもおそい',2:'ゆっくり',3:'ふつう',4:'すこしはやい',5:'はやい'};
+
+// ===== 画面遷移 =====
+function showScreen(id) {
+  document.querySelectorAll('.screen').forEach(s => s.classList.remove('active'));
+  document.getElementById(id).classList.add('active');
 }
 
-function playSuccessSound() {
-  try {
-    const ctx = new (window.AudioContext || window.webkitAudioContext)();
-    [523,659,784,1047].forEach((freq,i) => {
-      const osc = ctx.createOscillator(), gain = ctx.createGain();
-      osc.connect(gain); gain.connect(ctx.destination);
-      osc.frequency.value = freq; osc.type = 'sine';
-      const t = ctx.currentTime + i * 0.12;
-      gain.gain.setValueAtTime(0.4, t);
-      gain.gain.exponentialRampToValueAtTime(0.001, t+0.3);
-      osc.start(t); osc.stop(t+0.3);
-    });
-  } catch(e){}
+function goTop() { showScreen('screenTop'); document.getElementById('mainSubtitle').textContent = 'どちらですか？'; }
+
+function goTeacherPw() {
+  document.getElementById('pwInput').value = '';
+  document.getElementById('pwError').style.display = 'none';
+  showScreen('screenPw');
 }
 
-function playMissSound() {
-  try {
-    const ctx = new (window.AudioContext || window.webkitAudioContext)();
-    [330,294].forEach((freq,i) => {
-      const osc = ctx.createOscillator(), gain = ctx.createGain();
-      osc.connect(gain); gain.connect(ctx.destination);
-      osc.frequency.value = freq; osc.type = 'sine';
-      const t = ctx.currentTime + i * 0.22;
-      gain.gain.setValueAtTime(0.35, t);
-      gain.gain.exponentialRampToValueAtTime(0.001, t+0.4);
-      osc.start(t); osc.stop(t+0.4);
-    });
-  } catch(e){}
+function checkPw() {
+  if (document.getElementById('pwInput').value === TEACHER_PW) {
+    showScreen('screenTeacher');
+    renderTeacher();
+  } else {
+    document.getElementById('pwError').style.display = 'block';
+  }
 }
 
-function showMark(type) {
-  const overlay = document.getElementById('markOverlay');
-  const shape = document.getElementById('markShape');
-  shape.innerHTML = type === 'o'
-    ? '<div class="maru-circle"></div>'
-    : '<div class="sankaku-wrap"><svg viewBox="0 0 260 260"><polygon points="130,20 250,240 10,240" fill="none" stroke="#FFB300" stroke-width="28" stroke-linejoin="round"/></svg></div>';
-  overlay.classList.remove('show');
-  void overlay.offsetWidth;
-  overlay.classList.add('show');
-  setTimeout(() => overlay.classList.remove('show'), 1400);
-}
-
-function updateSpeed(v) {
-  speed = speedMap[v];
-  document.getElementById('speedVal').textContent = speedNames[v];
-}
-
-function setCategory(cat, el) {
-  filtered = cat === 'all' ? [...words] : words.filter(w => w.cat === cat);
-  idx = 0;
-  document.querySelectorAll('.tab').forEach(t => t.classList.remove('active'));
-  el.classList.add('active');
+function goStudent() {
+  // 生徒選択（生徒が複数いる場合）
+  currentStudent = students[0];
+  buildStudentTabs();
+  buildFilteredWords();
   loadCard();
+  showScreen('screenStudent');
+  document.getElementById('mainSubtitle').textContent = 'がんばろう！';
 }
 
+// ===== 生徒タブ =====
+function buildStudentTabs() {
+  const tabs = document.getElementById('studentTabs');
+  tabs.innerHTML = '';
+  students.forEach((s, i) => {
+    const btn = document.createElement('button');
+    btn.className = 'tab' + (i === 0 ? ' active' : '');
+    btn.textContent = s.name;
+    btn.onclick = () => {
+      document.querySelectorAll('#studentTabs .tab').forEach(t => t.classList.remove('active'));
+      btn.classList.add('active');
+      currentStudent = s;
+      buildFilteredWords();
+      loadCard();
+    };
+    tabs.appendChild(btn);
+  });
+}
+
+function buildFilteredWords() {
+  const mode = currentStudent.mode;
+  filtered = mode === 'all' ? [...words] : words.filter(w => w.cat === mode);
+  idx = 0;
+}
+
+// ===== 生徒側の操作 =====
 function loadCard() {
+  if (!filtered.length) return;
   const w = filtered[idx];
   document.getElementById('emoji').textContent = w.emoji;
   document.getElementById('word').textContent = w.text;
@@ -196,8 +327,7 @@ function loadCard() {
   document.getElementById('resultBox').textContent = '👆 まず「おとをきく」をおそう';
   document.getElementById('nextBtn').disabled = true;
   showRecBtn();
-  heardText = '';
-  stopRequested = false;
+  heardText = ''; stopRequested = false;
   if (recognition) { try { recognition.abort(); } catch(e){} recognition = null; }
 }
 
@@ -205,11 +335,12 @@ function showRecBtn() {
   document.getElementById('recBtn').style.display = 'inline-flex';
   document.getElementById('stopBtn').style.display = 'none';
 }
-
 function showStopBtn() {
   document.getElementById('recBtn').style.display = 'none';
   document.getElementById('stopBtn').style.display = 'inline-flex';
 }
+
+function updateSpeed(v) { speed = speedMap[v]; document.getElementById('speedVal').textContent = speedNames[v]; }
 
 function playWord() {
   window.speechSynthesis.cancel();
@@ -220,88 +351,202 @@ function playWord() {
   window.speechSynthesis.speak(u);
 }
 
+function toHiragana(str) {
+  if (kanjiMap[str]) return kanjiMap[str];
+  return str.replace(/[\u30A1-\u30F6]/g, c => String.fromCharCode(c.charCodeAt(0) - 0x60)).replace(/\s/g,'');
+}
+
 function startRec() {
   const SR = window.SpeechRecognition || window.webkitSpeechRecognition;
-  if (!SR) {
-    document.getElementById('resultBox').textContent = 'このブラウザはマイクにたいおうしていません。Safariをつかってね。';
-    return;
-  }
-  heardText = '';
-  stopRequested = false;
+  if (!SR) { document.getElementById('resultBox').textContent = 'このブラウザはマイクにたいおうしていません。'; return; }
+  heardText = ''; stopRequested = false;
   recognition = new SR();
-  recognition.lang = 'ja-JP';
-  recognition.interimResults = false;
-  recognition.maxAlternatives = 5;
-  recognition.continuous = true;
-
-  recognition.onstart = () => {
-    showStopBtn();
-    document.getElementById('resultBox').textContent = '🎙️ はなしてね… おわったら「とめる」をおそう';
-  };
-
+  recognition.lang = 'ja-JP'; recognition.interimResults = false;
+  recognition.maxAlternatives = 5; recognition.continuous = true;
+  recognition.onstart = () => { showStopBtn(); document.getElementById('resultBox').textContent = '🎙️ はなしてね… おわったら「とめる」をおそう'; };
   recognition.onresult = (e) => {
     for (let i = e.resultIndex; i < e.results.length; i++) {
       const raw = e.results[i][0].transcript.replace(/\s/g,'');
       if (raw) heardText = toHiragana(raw);
     }
-    if (stopRequested) {
-      doJudge();
-      try { recognition.abort(); } catch(e){}
-      recognition = null;
-    }
+    if (stopRequested) { doJudge(); try { recognition.abort(); } catch(e){} recognition = null; }
   };
-
   recognition.onerror = (ev) => {
-    if (ev.error !== 'aborted') {
-      document.getElementById('resultBox').textContent = 'きこえませんでした。もういちどためしてね。';
-    }
+    if (ev.error !== 'aborted') document.getElementById('resultBox').textContent = 'きこえませんでした。もういちどためしてね。';
     showRecBtn();
   };
-
-  recognition.onend = () => {
-    showRecBtn();
-    if (stopRequested && heardText) doJudge();
-  };
-
+  recognition.onend = () => { showRecBtn(); if (stopRequested && heardText) doJudge(); };
   recognition.start();
 }
 
 function stopRecAndJudge() {
-  stopRequested = true;
-  showRecBtn();
-  if (heardText) {
-    doJudge();
-    if (recognition) { try { recognition.abort(); } catch(e){} recognition = null; }
-  } else {
-    document.getElementById('resultBox').textContent = '⏳ はんていちゅう…';
-    if (recognition) { try { recognition.stop(); } catch(e){} }
-  }
+  stopRequested = true; showRecBtn();
+  if (heardText) { doJudge(); if (recognition) { try { recognition.abort(); } catch(e){} recognition = null; } }
+  else { document.getElementById('resultBox').textContent = '⏳ はんていちゅう…'; if (recognition) { try { recognition.stop(); } catch(e){} } }
 }
 
 function doJudge() {
-  if (!heardText) {
-    document.getElementById('resultBox').textContent = 'きこえませんでした。もういちどためしてね。';
-    return;
-  }
-  const target = filtered[idx].yomi;
-  if (heardText === target) {
+  if (!heardText) { document.getElementById('resultBox').textContent = 'きこえませんでした。もういちどためしてね。'; return; }
+  const target = filtered[idx].text;
+  const ok = heardText === target;
+  // 記録を保存
+  records.push({ student: currentStudent.name, word: target, result: ok ? 'o' : 'd', time: new Date().toLocaleString('ja-JP') });
+  try { localStorage.setItem('records', JSON.stringify(records)); } catch(e){}
+  if (ok) {
     document.getElementById('resultBox').textContent = '✨ よくできました！';
     document.getElementById('nextBtn').disabled = false;
-    showMark('o');
-    playSuccessSound();
+    showMark('o'); playSuccessSound();
   } else {
     document.getElementById('resultBox').textContent = '🤔 もういちどためしてみよう！';
-    document.getElementById('nextBtn').disabled = true;
-    showMark('d');
-    playMissSound();
+    showMark('d'); playMissSound();
   }
-  heardText = '';
-  stopRequested = false;
+  heardText = ''; stopRequested = false;
 }
 
 function nextWord() { idx = (idx+1) % filtered.length; loadCard(); }
 function skipNext() { idx = (idx+1) % filtered.length; loadCard(); }
 function prevWord() { idx = (idx-1+filtered.length) % filtered.length; loadCard(); }
+
+// ===== エフェクト =====
+function playSuccessSound() {
+  try {
+    const ctx = new (window.AudioContext || window.webkitAudioContext)();
+    [523,659,784,1047].forEach((freq,i) => {
+      const osc = ctx.createOscillator(), gain = ctx.createGain();
+      osc.connect(gain); gain.connect(ctx.destination);
+      osc.frequency.value = freq; osc.type = 'sine';
+      const t = ctx.currentTime + i * 0.12;
+      gain.gain.setValueAtTime(0.4, t); gain.gain.exponentialRampToValueAtTime(0.001, t+0.3);
+      osc.start(t); osc.stop(t+0.3);
+    });
+  } catch(e){}
+}
+function playMissSound() {
+  try {
+    const ctx = new (window.AudioContext || window.webkitAudioContext)();
+    [330,294].forEach((freq,i) => {
+      const osc = ctx.createOscillator(), gain = ctx.createGain();
+      osc.connect(gain); gain.connect(ctx.destination);
+      osc.frequency.value = freq; osc.type = 'sine';
+      const t = ctx.currentTime + i * 0.22;
+      gain.gain.setValueAtTime(0.35, t); gain.gain.exponentialRampToValueAtTime(0.001, t+0.4);
+      osc.start(t); osc.stop(t+0.4);
+    });
+  } catch(e){}
+}
+function showMark(type) {
+  const overlay = document.getElementById('markOverlay');
+  const shape = document.getElementById('markShape');
+  shape.innerHTML = type === 'o'
+    ? '<div class="maru-circle"></div>'
+    : '<div class="sankaku-wrap"><svg viewBox="0 0 260 260"><polygon points="130,20 250,240 10,240" fill="none" stroke="#FFB300" stroke-width="28" stroke-linejoin="round"/></svg></div>';
+  overlay.classList.remove('show'); void overlay.offsetWidth; overlay.classList.add('show');
+  setTimeout(() => overlay.classList.remove('show'), 1400);
+}
+
+// ===== 先生画面 =====
+function showTeacherTab(name, el) {
+  document.querySelectorAll('.teacher-section').forEach(s => s.classList.remove('active'));
+  document.querySelectorAll('.tnav-btn').forEach(b => b.classList.remove('active'));
+  document.getElementById('tab-' + name).classList.add('active');
+  el.classList.add('active');
+}
+
+function renderTeacher() {
+  renderRecords();
+  renderWordList();
+  renderStudentList();
+}
+
+// 記録
+function renderRecords() {
+  const tbody = document.getElementById('recordBody');
+  if (!records.length) { tbody.innerHTML = '<tr><td colspan="4" style="color:#aaa;padding:1rem;">まだきろくがありません</td></tr>'; return; }
+  tbody.innerHTML = [...records].reverse().slice(0,50).map(r =>
+    `<tr><td>${r.student}</td><td>${r.word}</td><td class="${r.result==='o'?'badge-o':'badge-d'}">${r.result==='o'?'〇':'△'}</td><td style="font-size:12px;color:#aaa;">${r.time}</td></tr>`
+  ).join('');
+}
+
+function clearRecords() {
+  if (confirm('きろくをすべてけしますか？')) {
+    records = [];
+    try { localStorage.setItem('records', JSON.stringify(records)); } catch(e){}
+    renderRecords();
+  }
+}
+
+// 言葉編集
+function renderWordList() {
+  const list = document.getElementById('wordList');
+  list.innerHTML = words.map((w, i) =>
+    `<div class="word-item">
+      <input type="text" value="${w.emoji}" oninput="words[${i}].emoji=this.value" style="max-width:52px;text-align:center;">
+      <input type="text" value="${w.text}" oninput="words[${i}].text=this.value">
+      <select onchange="words[${i}].cat=this.value">
+        <option value="dousa" ${w.cat==='dousa'?'selected':''}>うごき</option>
+        <option value="nichijo" ${w.cat==='nichijo'?'selected':''}>にちじょう</option>
+      </select>
+      <button class="del-btn" onclick="deleteWord(${i})">×</button>
+    </div>`
+  ).join('');
+}
+
+function addWord() {
+  const text = document.getElementById('newWordText').value.trim();
+  const emoji = document.getElementById('newWordEmoji').value.trim() || '📝';
+  const cat = document.getElementById('newWordCat').value;
+  if (!text) { alert('ことばをにゅうりょくしてください'); return; }
+  words.push({ text, emoji, cat });
+  document.getElementById('newWordText').value = '';
+  document.getElementById('newWordEmoji').value = '';
+  renderWordList();
+}
+
+function deleteWord(i) {
+  if (confirm('「' + words[i].text + '」をけしますか？')) {
+    words.splice(i, 1);
+    renderWordList();
+  }
+}
+
+function saveWords() {
+  try { localStorage.setItem('words', JSON.stringify(words)); alert('ほぞんしました！'); } catch(e) { alert('ほぞんできませんでした'); }
+}
+
+// 生徒設定
+function renderStudentList() {
+  const list = document.getElementById('studentList');
+  list.innerHTML = students.map((s, i) =>
+    `<div class="student-item">
+      <div class="student-name">
+        <input type="text" value="${s.name}" oninput="students[${i}].name=this.value">
+      </div>
+      <div class="mode-row">
+        ${['all','dousa','nichijo'].map(m =>
+          `<button class="mode-btn ${s.mode===m?'active':''}" onclick="setStudentMode(${i},'${m}',this)">
+            ${m==='all'?'ぜんぶ':m==='dousa'?'うごき':'にちじょう'}
+          </button>`
+        ).join('')}
+      </div>
+    </div>`
+  ).join('');
+}
+
+function setStudentMode(i, mode, el) {
+  students[i].mode = mode;
+  const item = el.closest('.student-item');
+  item.querySelectorAll('.mode-btn').forEach(b => b.classList.remove('active'));
+  el.classList.add('active');
+}
+
+function addStudent() {
+  students.push({ name: 'せいと' + (students.length + 1), mode: 'all' });
+  renderStudentList();
+}
+
+function saveStudents() {
+  try { localStorage.setItem('students', JSON.stringify(students)); alert('ほぞんしました！'); } catch(e) { alert('ほぞんできませんでした'); }
+}
 </script>
 </body>
 </html>
