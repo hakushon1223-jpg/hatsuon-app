@@ -331,6 +331,54 @@ input[type=range]{width:100px;accent-color:var(--orange);}
   font-size:20px; font-weight:700; color:#fff;
 }
 .bonus-header-sub { font-size:12px; color:rgba(255,255,255,.9); }
+
+/* ===== 難易度選択（縦並び・1.5倍） ===== */
+.level-vert {
+  display:flex; flex-direction:column; gap:16px;
+  width:100%; margin-bottom:1.25rem;
+  align-items:center;
+}
+.level-card-btn {
+  width:100%; padding:22px 20px;
+  border-radius:24px; cursor:pointer;
+  display:flex; align-items:center; gap:12px;
+  border:3px solid transparent;
+  transition:transform .12s, box-shadow .12s, border-color .12s;
+  user-select:none;
+  justify-content:space-between;
+  overflow:hidden;
+  box-sizing:border-box;
+}
+.level-card-btn:active { transform:scale(.97); }
+.level-card-btn.active { border-color:#fff; box-shadow:0 0 0 3px rgba(255,255,255,.5), 0 8px 24px rgba(0,0,0,.18); transform:scale(1.03); }
+.lv1-card { background:linear-gradient(135deg,#E8F5E9,#C8E6C9); }
+.lv2-card { background:linear-gradient(135deg,#FFF9C4,#FFE082); }
+.lv3-card { background:linear-gradient(135deg,#FFEBEE,#FFCDD2); }
+.lv1-card.active { background:linear-gradient(135deg,#4CAF50,#2E7D32); }
+.lv2-card.active { background:linear-gradient(135deg,#FF8C42,#E65100); }
+.lv3-card.active { background:linear-gradient(135deg,#EF5350,#B71C1C); }
+.lv-stars { font-size:30px; flex-shrink:0; }
+.lv-name {
+  font-family:'Kaisei Decol',serif;
+  font-size:30px; font-weight:700;
+  color:#333;
+  white-space:nowrap;
+  flex-shrink:0;
+}
+.level-card-btn.active .lv-name { color:#fff; }
+.lv-desc {
+  font-size:14px; color:#888;
+  background:rgba(0,0,0,.06);
+  border-radius:999px; padding:5px 12px;
+  white-space:nowrap;
+  flex-shrink:0;
+  max-width:180px;
+  overflow:hidden;
+  text-overflow:ellipsis;
+}
+.level-card-btn.active .lv-desc {
+  background:rgba(255,255,255,.25); color:#fff;
+}
 </style>
 </head>
 <body>
@@ -361,13 +409,7 @@ input[type=range]{width:100px;accent-color:var(--orange);}
 <div class="screen" id="screenCategory">
   <p class="section-title">どのカテゴリをれんしゅうする？</p>
   <div class="category-grid" id="categoryGrid"></div>
-  <div style="width:100%;margin-top:12px;">
-    <button class="btn cat-btn" style="width:100%;background:linear-gradient(135deg,#F06292,#9C27B0);border-radius:20px;box-shadow:0 4px 20px rgba(0,0,0,.10);padding:18px;" onclick="goHiragana()">
-      <span class="cat-emoji">🔤</span>
-      <span class="cat-name">ひらがなれんしゅう</span>
-      <span class="cat-level">あいうえお〜わをん・だくてん</span>
-    </button>
-  </div>
+  <button class="teacher-small-btn" style="margin-top:1rem;width:100%;padding:14px;font-size:16px;" onclick="goMyPageDirect()">📖 マイページをみる</button>
   <button class="back-btn" onclick="showScreen('screenPlayerSelect')">← もどる</button>
 </div>
 
@@ -380,15 +422,25 @@ input[type=range]{width:100px;accent-color:var(--orange);}
 
 <!-- 難易度選択 -->
 <div class="screen" id="screenLevel">
-  <p class="section-title" id="levelTitle">むずかしさをえらんでね</p>
-  <div class="level-badges">
-    <div class="level-badge lv1 active" id="lv1" onclick="selectLevel(1)">⭐ かんたん</div>
-    <div class="level-badge lv2" id="lv2" onclick="selectLevel(2)">⭐⭐ ふつう</div>
-    <div class="level-badge lv3" id="lv3" onclick="selectLevel(3)">⭐⭐⭐ むずかしい</div>
+  <p class="section-title" id="levelTitle" style="font-size:28px;margin-bottom:1.75rem;">むずかしさをえらんでね</p>
+  <div class="level-vert">
+    <div class="level-card-btn lv1-card active" id="lv1" onclick="selectLevel(1)">
+      <span class="lv-stars">⭐</span>
+      <span class="lv-name">かんたん</span>
+      <span class="lv-desc" id="lv1desc">みじかいことば</span>
+    </div>
+    <div class="level-card-btn lv2-card" id="lv2" onclick="selectLevel(2)">
+      <span class="lv-stars">⭐⭐</span>
+      <span class="lv-name">ふつう</span>
+      <span class="lv-desc" id="lv2desc">すこしながいことば</span>
+    </div>
+    <div class="level-card-btn lv3-card" id="lv3" onclick="selectLevel(3)">
+      <span class="lv-stars">⭐⭐⭐</span>
+      <span class="lv-name">むずかしい</span>
+      <span class="lv-desc" id="lv3desc">ながいことば</span>
+    </div>
   </div>
-  <div class="category-grid" style="grid-template-columns:1fr;gap:10px;">
-    <button class="btn cat-btn" id="levelStartBtn" style="font-size:18px;padding:18px;" onclick="startPractice()">▶ このむずかしさではじめる</button>
-  </div>
+  <button class="btn cat-btn" id="levelStartBtn" style="width:100%;font-size:26px;padding:24px;margin-top:.75rem;background:linear-gradient(135deg,#FF8C42,#EF5350);" onclick="startPractice()">▶ はじめる</button>
   <button class="back-btn" onclick="showScreen('screenCategory')">← もどる</button>
 </div>
 
@@ -472,7 +524,7 @@ input[type=range]{width:100px;accent-color:var(--orange);}
       <div class="stat-box"><div class="stat-num" id="vsTotal" style="color:#fff;">0</div><div class="stat-label" style="color:rgba(255,255,255,.8);">ごもん</div></div>
     </div>
     <button class="retry-btn" style="background:#fff;color:var(--orange);margin-bottom:.75rem;" onclick="retryPractice()">🔄 もういちどたたかう</button>
-    <button class="home-btn" style="background:rgba(255,255,255,.2);color:#fff;" onclick="goTop()">🏠 タイトルにもどる</button>
+    <button class="home-btn" style="background:rgba(255,255,255,.2);color:#fff;" onclick="stopTimer();goCategory()">📚 カテゴリにもどる</button>
   </div>
 </div>
 
@@ -506,7 +558,7 @@ input[type=range]{width:100px;accent-color:var(--orange);}
       <div class="stat-box"><div class="stat-num" id="sRate">0%</div><div class="stat-label">せいかいりつ</div></div>
     </div>
     <button class="retry-btn" onclick="retryPractice()">🔄 もういちどやる</button>
-    <button class="home-btn" onclick="goTop()">🏠 さいしょにもどる</button>
+    <button class="home-btn" onclick="stopTimer();goCategory()">📚 カテゴリにもどる</button>
   </div>
 </div>
 
@@ -1136,28 +1188,11 @@ function goCategory() {
   const wordCats = CATEGORIES.filter(c => !c.id.startsWith('hira_'));
   const hiraCats = CATEGORIES.filter(c => c.id.startsWith('hira_'));
 
-  // 語彙セクションタイトル
+  // ひらがなセクションタイトル（先に表示）
   const title1 = document.createElement('div');
   title1.style.cssText = 'grid-column:1/-1;font-size:13px;font-weight:700;color:#888;margin-bottom:-4px;';
-  title1.textContent = '📚 ことばのれんしゅう';
+  title1.textContent = '🔤 ひらがなのれんしゅう（行ごと）';
   grid.appendChild(title1);
-
-  wordCats.forEach(cat => {
-    const btn = document.createElement('button');
-    btn.className = 'btn cat-btn ' + cat.color;
-    btn.innerHTML = '<span class="cat-emoji">' + cat.emoji + '</span><span class="cat-name">' + cat.name + '</span><span class="cat-level">' + cat.label + '</span>';
-    btn.onclick = () => { currentCat = cat.id; goLevel(cat); };
-    grid.appendChild(btn);
-  });
-
-  // ひらがなセクションタイトル
-  const divider = document.createElement('div');
-  divider.style.cssText = 'grid-column:1/-1;border-top:1.5px dashed #ddd;margin:6px 0;';
-  grid.appendChild(divider);
-  const title2 = document.createElement('div');
-  title2.style.cssText = 'grid-column:1/-1;font-size:13px;font-weight:700;color:#888;margin-bottom:-4px;';
-  title2.textContent = '🔤 ひらがなのれんしゅう（行ごと）';
-  grid.appendChild(title2);
 
   // ひらがなは3列グリッドで表示
   const hiraGrid = document.createElement('div');
@@ -1171,6 +1206,25 @@ function goCategory() {
   });
   grid.appendChild(hiraGrid);
 
+  // 区切り線
+  const divider = document.createElement('div');
+  divider.style.cssText = 'grid-column:1/-1;border-top:1.5px dashed #ddd;margin:6px 0;';
+  grid.appendChild(divider);
+
+  // ことばセクションタイトル（後に表示）
+  const title2 = document.createElement('div');
+  title2.style.cssText = 'grid-column:1/-1;font-size:13px;font-weight:700;color:#888;margin-bottom:-4px;';
+  title2.textContent = '📚 ことばのれんしゅう';
+  grid.appendChild(title2);
+
+  wordCats.forEach(cat => {
+    const btn = document.createElement('button');
+    btn.className = 'btn cat-btn ' + cat.color;
+    btn.innerHTML = '<span class="cat-emoji">' + cat.emoji + '</span><span class="cat-name">' + cat.name + '</span><span class="cat-level">' + cat.label + '</span>';
+    btn.onclick = () => { currentCat = cat.id; goLevel(cat); };
+    grid.appendChild(btn);
+  });
+
   showScreen('screenCategory');
 }
 
@@ -1179,14 +1233,14 @@ function goLevel(cat) {
   if(isHira) {
     document.getElementById('levelTitle').textContent = cat.name + 'のれんしゅう';
     // ひらがな用の難易度説明に変更
-    document.getElementById('lv1').innerHTML = '⭐ かんたん<br><span style="font-size:10px;opacity:.8;">1もじ・じゅんばん</span>';
-    document.getElementById('lv2').innerHTML = '⭐⭐ ふつう<br><span style="font-size:10px;opacity:.8;">1もじ・ランダム</span>';
-    document.getElementById('lv3').innerHTML = '⭐⭐⭐ むずかしい<br><span style="font-size:10px;opacity:.8;">たんご・タイムアタック</span>';
+    document.getElementById('lv1desc').textContent = '1もじ・じゅんばん';
+    document.getElementById('lv2desc').textContent = '1もじ・ランダム';
+    document.getElementById('lv3desc').textContent = 'たんご・タイムアタック';
   } else {
     document.getElementById('levelTitle').textContent = cat.name + 'の むずかしさをえらんでね';
-    document.getElementById('lv1').innerHTML = '⭐ かんたん';
-    document.getElementById('lv2').innerHTML = '⭐⭐ ふつう';
-    document.getElementById('lv3').innerHTML = '⭐⭐⭐ むずかしい';
+    document.getElementById('lv1desc').textContent = 'みじかいことば';
+    document.getElementById('lv2desc').textContent = 'すこしながいことば';
+    document.getElementById('lv3desc').textContent = 'ながいことば';
   }
   const startBtn = document.getElementById('levelStartBtn');
   startBtn.className = `btn cat-btn ${cat.color}`;
@@ -1757,6 +1811,15 @@ function showLevelUp(idx) {
 }
 
 // ===================== マイページ =====================
+function goMyPageDirect() {
+  // カテゴリ画面から来た場合、currentStudentがセットされている
+  const player = currentStudent ? currentStudent.name : (students && students[0] ? students[0].name : '__global__');
+  myPagePlayer = player;
+  try { stats = loadPlayerStats(player); } catch(e) { stats = initStats(); }
+  renderMyPage();
+  showScreen('screenMyPage');
+}
+
 function goMyPageSelect() {
   // studentsが空でもデフォルトを用意
   const playerList = students && students.length > 0
