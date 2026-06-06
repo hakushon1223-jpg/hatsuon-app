@@ -209,19 +209,16 @@ input[type=range]{width:100px;accent-color:var(--orange);}
   width:100%; text-align:center; margin-bottom:.75rem;
   position:relative;
 }
-.enemy-char {
-  font-size:80px; line-height:1; display:block;
-  transition:transform .15s;
+.enemy-svg-wrap {
+  width:120px; height:120px; margin:0 auto .5rem;
+  display:flex; align-items:center; justify-content:center;
   animation:enemyFloat 3s ease-in-out infinite;
 }
-@keyframes enemyFloat{0%,100%{transform:translateY(0);}50%{transform:translateY(-6px);}}
-.enemy-char.damaged {
-  animation:enemyDamage .4s ease-out;
-}
+.enemy-svg-wrap.damaged { animation:enemyDamage .4s ease-out; }
+.enemy-svg-wrap.defeated { animation:enemyDefeat .8s ease-out forwards; }
+@keyframes enemyFloat{0%,100%{transform:translateY(0);}50%{transform:translateY(-8px);}}
 @keyframes enemyDamage{0%{transform:translateX(0) scale(1);}20%{transform:translateX(-10px) scale(.95);}40%{transform:translateX(10px) scale(.95);}60%{transform:translateX(-6px);}80%{transform:translateX(6px);}100%{transform:translateX(0) scale(1);}}
-.enemy-char.defeated {
-  animation:enemyDefeat .8s ease-out forwards;
-}
+
 @keyframes enemyDefeat{0%{transform:scale(1);opacity:1;}30%{transform:scale(1.3) rotate(-15deg);}100%{transform:scale(0) rotate(30deg);opacity:0;}}
 
 .enemy-name {
@@ -270,6 +267,70 @@ input[type=range]{width:100px;accent-color:var(--orange);}
   animation:popIn .5s cubic-bezier(.36,1.5,.5,1) forwards;
 }
 .victory-sub { font-size:15px; opacity:.9; margin-bottom:1.5rem; }
+
+/* ===== タイムアタック ===== */
+.timer-wrap {
+  width:100%; text-align:center; margin-bottom:.5rem; display:none;
+}
+.timer-circle {
+  width:72px; height:72px; border-radius:50%;
+  background:conic-gradient(#EF5350 0%, #eee 0%);
+  display:flex; align-items:center; justify-content:center;
+  margin:0 auto; position:relative;
+  box-shadow:0 3px 12px rgba(239,83,80,.25);
+  transition:background .1s;
+}
+.timer-circle::before {
+  content:''; position:absolute;
+  width:56px; height:56px; border-radius:50%; background:#fff;
+}
+.timer-num {
+  font-family:'Kaisei Decol',serif;
+  font-size:22px; font-weight:700; color:#EF5350;
+  position:relative; z-index:1;
+}
+.timer-label {
+  font-size:11px; color:var(--gray); margin-top:.25rem;
+}
+.timer-wrap.urgent .timer-circle {
+  animation:timerPulse .4s ease-in-out infinite alternate;
+}
+@keyframes timerPulse {
+  from { transform:scale(1); }
+  to   { transform:scale(1.08); }
+}
+
+/* ===== ゲームオーバー ===== */
+.gameover-card {
+  background:linear-gradient(135deg,#263238,#37474F);
+  border-radius:var(--radius);
+  box-shadow:var(--shadow);
+  padding:2.5rem 2rem; text-align:center; width:100%; color:#fff;
+}
+.gameover-emoji {
+  font-size:80px; margin-bottom:.75rem; display:block;
+  animation:shakeEmoji .6s ease-in-out;
+}
+@keyframes shakeEmoji{0%,100%{transform:rotate(0);}25%{transform:rotate(-15deg);}75%{transform:rotate(15deg);}}
+.gameover-title {
+  font-family:'Kaisei Decol',serif;
+  font-size:28px; font-weight:700; color:#EF5350; margin-bottom:.4rem;
+}
+.gameover-sub { font-size:14px; opacity:.8; margin-bottom:.5rem; }
+
+/* ===== ボーナスタイム ===== */
+.bonus-header {
+  background:linear-gradient(135deg,#FFD600,#FF8C42);
+  border-radius:16px; padding:.75rem 1rem;
+  text-align:center; width:100%; margin-bottom:.75rem;
+  animation:bonusPulse 1s ease-in-out infinite alternate;
+}
+@keyframes bonusPulse{from{box-shadow:0 0 0 rgba(255,214,0,.4);}to{box-shadow:0 0 20px rgba(255,214,0,.8);}}
+.bonus-header-title {
+  font-family:'Kaisei Decol',serif;
+  font-size:20px; font-weight:700; color:#fff;
+}
+.bonus-header-sub { font-size:12px; color:rgba(255,255,255,.9); }
 </style>
 </head>
 <body>
@@ -348,14 +409,29 @@ input[type=range]{width:100px;accent-color:var(--orange);}
   <!-- 敵キャラエリア -->
   <div class="enemy-area" id="enemyArea">
     <div class="enemy-name" id="enemyName">？？？</div>
-    <span class="enemy-char" id="enemyChar">👾</span>
+    <div class="enemy-svg-wrap" id="enemySvgWrap">
+      <!-- SVG敵キャラがJSで入る -->
+    </div>
     <div class="hp-wrap">
       <div class="hp-bar" id="hpBar" style="width:100%"></div>
     </div>
     <div class="hp-label" id="hpLabel">HP 5 / 5</div>
   </div>
 
-  <div class="progress-wrap"><div class="progress-bar" id="progressBar" style="width:0%"></div></div>
+  <!-- ボーナスタイムヘッダー（通常は非表示） -->
+  <div class="bonus-header" id="bonusHeader" style="display:none;">
+    <div class="bonus-header-title">⭐ ボーナスタイム！</div>
+    <div class="bonus-header-sub" id="bonusSubText">まちがえたことばにちょうせん！</div>
+  </div>
+
+  <!-- タイムアタックタイマー -->
+  <div class="timer-wrap" id="timerWrap">
+    <div class="timer-circle" id="timerCircle">
+      <span class="timer-num" id="timerNum">30</span>
+    </div>
+    <div class="timer-label">のこりじかん</div>
+  </div>
+
   <div class="card">
     <div class="hint-text" id="hintText"></div>
     <span class="word-illust" id="emoji">🏃</span>
@@ -369,12 +445,12 @@ input[type=range]{width:100px;accent-color:var(--orange);}
       <button class="btn btn-hint" onclick="showHint()">💡 ヒント</button>
     </div>
     <div class="result-box" id="resultBox">👆 まず「きく」をおそう</div>
-    <button class="btn end-btn" onclick="goTop()">🏁 おわる</button>
+    <button class="btn end-btn" onclick="stopTimer();goCategory()">🏁 おわる</button>
   </div>
   <div class="nav">
-    <button class="nav-btn" onclick="prevWord()">◀</button>
+    <button class="nav-btn" id="prevBtn" onclick="prevWord()">◀</button>
     <span class="counter" id="counter">1 / 5</span>
-    <button class="nav-btn" onclick="skipNext()">▶</button>
+    <button class="nav-btn" id="nextBtn" onclick="skipNext()">▶</button>
   </div>
   <div class="speed-row">
     <label>おそい</label>
@@ -396,7 +472,23 @@ input[type=range]{width:100px;accent-color:var(--orange);}
       <div class="stat-box"><div class="stat-num" id="vsTotal" style="color:#fff;">0</div><div class="stat-label" style="color:rgba(255,255,255,.8);">ごもん</div></div>
     </div>
     <button class="retry-btn" style="background:#fff;color:var(--orange);margin-bottom:.75rem;" onclick="retryPractice()">🔄 もういちどたたかう</button>
-    <button class="home-btn" style="background:rgba(255,255,255,.2);color:#fff;" onclick="goTop()">🏠 さいしょにもどる</button>
+    <button class="home-btn" style="background:rgba(255,255,255,.2);color:#fff;" onclick="goTop()">🏠 タイトルにもどる</button>
+  </div>
+</div>
+
+
+<!-- ゲームオーバー画面 -->
+<div class="screen" id="screenGameOver">
+  <div class="gameover-card">
+    <span class="gameover-emoji" id="gameoverEnemy">👾</span>
+    <div class="gameover-title">💀 ゲームオーバー</div>
+    <div class="gameover-sub" id="gameoverSub">ボーナスタイムでまちがえたよ…</div>
+    <div class="stats-grid" style="margin:1.25rem 0;">
+      <div class="stat-box"><div class="stat-num" id="goCorrect">0</div><div class="stat-label">せいかい</div></div>
+      <div class="stat-box"><div class="stat-num" id="goTotal">0</div><div class="stat-label">ごもん</div></div>
+    </div>
+    <button class="retry-btn" style="margin-bottom:.75rem;" onclick="retryPractice()">🔄 もういちどちょうせん</button>
+    <button class="home-btn" onclick="stopTimer();goCategory()">📚 カテゴリにもどる</button>
   </div>
 </div>
 
@@ -974,6 +1066,20 @@ const speedMap   = {1:.45,2:.55,3:.70,4:.85,5:1.00};
 const speedNames = {1:'とてもおそい',2:'ゆっくり',3:'ふつう',4:'すこしはやい',5:'はやい'};
 
 let words, students, records;
+// ===== グローバル変数（全関数より前に宣言）=====
+let filtered=[], sessionWords=[], idx=0, speed=.55;
+let recognition=null, heardText='', stopRequested=false;
+let currentStudent=null, currentCat='dousa', currentLevel=1;
+let sessionCorrect=0, sessionTotal=0, streak=0, maxStreak=0;
+let hintShown=false;
+let isHiraganaMode=false, currentHiraganaRow=null;
+let isTimeAttack=false, timerSeconds=30, timerInterval=null;
+const TIME_ATTACK_SEC=30;
+let missCount=0, missedWords=[], isBonusTime=false;
+let bonusWords=[], bonusIdx=0;
+let currentEnemy=null, enemyCurrentHp=5, enemyMaxHp=5;
+let myPagePlayer=null;
+
 function loadData() {
   try {
     words    = JSON.parse(localStorage.getItem('words_v2'))    || [...ALL_WORDS];
@@ -982,15 +1088,11 @@ function loadData() {
   } catch(e) { words=[...ALL_WORDS]; students=[{name:'せいと１',mode:'all'},{name:'せいと２',mode:'all'}]; records=[]; }
 }
 // ===== 初期化（DOM読み込み後に実行）=====
-let filtered=[], sessionWords=[], idx=0, speed=.55;
-let recognition=null, heardText='', stopRequested=false;
-let currentStudent=null, currentCat='dousa', currentLevel=1;
-let sessionCorrect=0, sessionTotal=0, streak=0, maxStreak=0;
-let hintShown=false;
+// 変数は上部で宣言済み
 
 // ===================== 画面遷移 =====================
 function showScreen(id) { document.querySelectorAll('.screen').forEach(s=>s.classList.remove('active')); document.getElementById(id).classList.add('active'); }
-function goTop() { if(recognition){try{recognition.abort();}catch(e){}} showScreen('screenTop'); }
+function goTop() { stopTimer(); if(recognition){try{recognition.abort();}catch(e){}} showScreen('screenTop'); }
 
 function goPlayerSelect() {
   const playerList = students && students.length > 0
@@ -1073,7 +1175,19 @@ function goCategory() {
 }
 
 function goLevel(cat) {
-  document.getElementById('levelTitle').textContent = cat.name + 'の むずかしさをえらんでね';
+  const isHira = cat.id.startsWith('hira_');
+  if(isHira) {
+    document.getElementById('levelTitle').textContent = cat.name + 'のれんしゅう';
+    // ひらがな用の難易度説明に変更
+    document.getElementById('lv1').innerHTML = '⭐ かんたん<br><span style="font-size:10px;opacity:.8;">1もじ・じゅんばん</span>';
+    document.getElementById('lv2').innerHTML = '⭐⭐ ふつう<br><span style="font-size:10px;opacity:.8;">1もじ・ランダム</span>';
+    document.getElementById('lv3').innerHTML = '⭐⭐⭐ むずかしい<br><span style="font-size:10px;opacity:.8;">たんご・タイムアタック</span>';
+  } else {
+    document.getElementById('levelTitle').textContent = cat.name + 'の むずかしさをえらんでね';
+    document.getElementById('lv1').innerHTML = '⭐ かんたん';
+    document.getElementById('lv2').innerHTML = '⭐⭐ ふつう';
+    document.getElementById('lv3').innerHTML = '⭐⭐⭐ むずかしい';
+  }
   const startBtn = document.getElementById('levelStartBtn');
   startBtn.className = `btn cat-btn ${cat.color}`;
   selectLevel(1);
@@ -1116,12 +1230,41 @@ function startPractice() {
   // 対象カテゴリ・レベルの問題を絞り込み、ランダムに5問選ぶ
   const pool = words.filter(w => w.cat === currentCat && Number(w.level) === currentLevel);
   if(!pool.length) { alert('このカテゴリ・レベルのことばがありません'); return; }
-  sessionWords = shuffleArr([...pool]).slice(0, QUESTIONS_PER_GAME);
+  let selectedWords;
+  if(isHiraganaMode && currentLevel === 1) {
+    // かんたん：1文字のみ・あいうえお順（シャッフルなし）
+    selectedWords = pool.filter(w => w.text.length === 1);
+    // シャッフルしない（そのまま順番通り）
+  } else if(isHiraganaMode && currentLevel === 2) {
+    // ふつう：1文字をシャッフル
+    selectedWords = shuffleArr(pool.filter(w => w.text.length === 1)).slice(0, QUESTIONS_PER_GAME);
+  } else if(isHiraganaMode && currentLevel === 3) {
+    // むずかしい：2文字以上の単語をシャッフル＋タイムアタック
+    selectedWords = shuffleArr(pool.filter(w => w.text.length >= 2)).slice(0, QUESTIONS_PER_GAME);
+  } else {
+    selectedWords = shuffleArr([...pool]).slice(0, QUESTIONS_PER_GAME);
+  }
+  if(!selectedWords || selectedWords.length === 0) {
+    selectedWords = shuffleArr([...pool]).slice(0, QUESTIONS_PER_GAME);
+  }
+  sessionWords = selectedWords;
   filtered = sessionWords;
   idx = 0;
   sessionCorrect=0; sessionTotal=0; streak=0; maxStreak=0;
+  missedWords=[]; isBonusTime=false; bonusWords=[]; bonusIdx=0;
+  // ボーナスヘッダー非表示
+  const bh = document.getElementById('bonusHeader');
+  if(bh) bh.style.display='none';
+  // タイマー停止（前のゲームの残り）
+  stopTimer();
   // バトル初期化（カード読み込み前に実行）
-  setTimeout(()=>initBattle(currentCat, currentLevel), 50);
+  setTimeout(()=>{
+    initBattle(currentCat, currentLevel);
+    // むずかしいひらがなはタイムアタック
+    if(isHiraganaMode && currentLevel === 3) {
+      setTimeout(()=>startTimer(), 300);
+    }
+  }, 50);
   const cat = CATEGORIES.find(c=>c.id===currentCat);
   const badge = document.getElementById('modeBadge');
   badge.style.background = getBadgeBg(currentCat);
@@ -1171,14 +1314,19 @@ function loadCard() {
   document.getElementById('counter').textContent = (idx+1)+' / '+filtered.length;
   document.getElementById('resultBox').textContent = '👆 まず「きく」をおそう';
   document.getElementById('hintText').textContent = '';
-  hintShown=false;
+  hintShown=false; missCount=0;
   updateProgress();
   showRecBtn();
+  // ことばモードは手動ナビ非表示
+  const prevBtn = document.getElementById('prevBtn');
+  const nextBtn = document.getElementById('nextBtn');
+  if(prevBtn) prevBtn.style.display = isHiraganaMode ? '' : 'none';
+  if(nextBtn) nextBtn.style.display = isHiraganaMode ? '' : 'none';
   heardText=''; stopRequested=false;
   if(recognition){try{recognition.abort();}catch(e){} recognition=null;}
 }
 
-function updateProgress() { document.getElementById('progressBar').style.width=(idx/filtered.length*100)+'%'; }
+function updateProgress() { /* プログレスバー削除 */ }
 function updateStreakUI() { document.getElementById('streakBadge').textContent='🔥 '+streak+'れんぞく'; }
 
 function showHint() {
@@ -1245,8 +1393,16 @@ function stopRecAndJudge() {
 
 function doJudge() {
   if(!heardText){ document.getElementById('resultBox').textContent='きこえませんでした。もういちどためしてね。'; return; }
-  const target=filtered[idx].yomi;
-  const ok=heardText===target;
+  const target = filtered[idx].yomi;
+  let judgeText = heardText;
+  // ひらがな1文字モードは最初の1文字だけで判定
+  if(isHiraganaMode && target.length === 1) {
+    judgeText = heardText[0] || heardText;
+  }
+  // 長音・小文字を正規化
+  judgeText = judgeText.replace(/ぁ/g,'あ').replace(/ぃ/g,'い').replace(/ぅ/g,'う')
+    .replace(/ぇ/g,'え').replace(/ぉ/g,'お').replace(/ー/g,'');
+  const ok = judgeText === target || heardText === target;
   sessionTotal++;
   records.push({student:currentStudent?currentStudent.name:'?',word:filtered[idx].text,result:ok?'o':'d',time:new Date().toLocaleString('ja-JP')});
   try{localStorage.setItem('records',JSON.stringify(records));}catch(e){}
@@ -1274,15 +1430,55 @@ function doJudge() {
     else if(streak>=3) showStamp('🌟\n3れんぞく！');
     else showFireworks();
     if(idx+1>=filtered.length){
-      // 全問クリア→敵を倒す
-      setTimeout(()=>defeatEnemy(), 800);
+      stopTimer();
+      if(isBonusTime) {
+        // ボーナスタイム全問正解 → クリア！
+        setTimeout(()=>defeatEnemy(), 800);
+      } else if(missedWords.length === 0) {
+        // 通常全問正解（ミスなし）→ そのままクリア
+        setTimeout(()=>defeatEnemy(), 800);
+      } else {
+        // ミスあり → ボーナスタイムチェック
+        setTimeout(()=>checkBonusOrEnd(), 1200);
+      }
     } else {
       setTimeout(()=>{ idx++; loadCard(); },1500);
     }
   } else {
     streak=0; updateStreakUI();
-    document.getElementById('resultBox').textContent='🤔 もういちどためしてみよう！';
     showMark('d'); playMissSound();
+
+    if(!isHiraganaMode) {
+      if(isBonusTime) {
+        // ボーナスタイム中は1回でもミスでゲームオーバー
+        document.getElementById('resultBox').textContent = '💀 まちがえた… ゲームオーバー！';
+        stopTimer();
+        setTimeout(()=>showGameOver(), 1500);
+      } else {
+        // 通常モード：3回ミスで次へ
+        missCount++;
+        if(missCount >= 3) {
+          if(filtered[idx]) {
+            const alreadyIn = missedWords.some(w=>w.text===filtered[idx].text);
+            if(!alreadyIn) missedWords.push({...filtered[idx]});
+          }
+          document.getElementById('resultBox').textContent = '😢 3かいまちがえたよ… つぎにすすもう！';
+          missCount = 0;
+          if(idx+1 >= filtered.length) {
+            stopTimer();
+            setTimeout(()=>checkBonusOrEnd(), 1500);
+          } else {
+            setTimeout(()=>{ idx++; loadCard(); }, 1800);
+          }
+        } else {
+          const left = 3 - missCount;
+          document.getElementById('resultBox').textContent =
+            '🤔 もういちどためしてみよう！（あと' + left + 'かいでつぎへ）';
+        }
+      }
+    } else {
+      document.getElementById('resultBox').textContent='🤔 もういちどためしてみよう！';
+    }
   }
   heardText=''; stopRequested=false;
 }
@@ -1431,21 +1627,44 @@ const RANKS = [
 ];
 
 const STAMPS = [
-  {id:'first',      emoji:'🎉', name:'はじめての〇',  desc:'はじめてせいかい',      condition:(s)=>s.totalCorrect>=1},
-  {id:'streak3',    emoji:'🔥', name:'3れんぞく',     desc:'3もんれんぞくせいかい',   condition:(s)=>s.maxStreak>=3},
-  {id:'streak5',    emoji:'💥', name:'5れんぞく',     desc:'5もんれんぞくせいかい',   condition:(s)=>s.maxStreak>=5},
-  {id:'streak10',   emoji:'👑', name:'10れんぞく',    desc:'10もんれんぞくせいかい',  condition:(s)=>s.maxStreak>=10},
-  {id:'games5',     emoji:'🎮', name:'5かいプレイ',   desc:'5かいゲームをした',       condition:(s)=>s.totalGames>=5},
-  {id:'games20',    emoji:'🏆', name:'20かいプレイ',  desc:'20かいゲームをした',      condition:(s)=>s.totalGames>=20},
-  {id:'perfect',    emoji:'💯', name:'まんてん',      desc:'5もんぜんぶせいかい',     condition:(s)=>s.hasPerfect},
-  {id:'perfect5',   emoji:'🌈', name:'まんてん5かい', desc:'5もんぜんぶせいかい5かい',condition:(s)=>s.perfectCount>=5},
-  {id:'cat_all',    emoji:'🗺️',name:'ぜんカテゴリ',  desc:'ぜんカテゴリせいかい',    condition:(s)=>s.catsPlayed>=10},
-  {id:'words50',    emoji:'📚', name:'50もんせいかい',desc:'ごうけい50もんせいかい',  condition:(s)=>s.totalCorrect>=50},
-  {id:'words100',   emoji:'🎊', name:'100もんせいかい',desc:'ごうけい100もんせいかい',condition:(s)=>s.totalCorrect>=100},
-  {id:'dousa_pro',  emoji:'🏃', name:'うごきのプロ',  desc:'うごき10もんせいかい',    condition:(s)=>(s.catCorrect['dousa']||0)>=10},
-  {id:'food_pro',   emoji:'🍎', name:'たべもののプロ',desc:'たべもの10もんせいかい',  condition:(s)=>(s.catCorrect['tabemono']||0)>=10},
-  {id:'animal_pro', emoji:'🐶', name:'どうぶつのプロ',desc:'どうぶつ10もんせいかい',  condition:(s)=>(s.catCorrect['doubutsu']||0)>=10},
-  {id:'color_pro',  emoji:'🌈', name:'いろのプロ',    desc:'いろ10もんせいかい',      condition:(s)=>(s.catCorrect['iro']||0)>=10},
+  // ===== せいかい系 =====
+  {id:'first',        emoji:'🎉', name:'はじめての〇',    desc:'はじめてせいかい',           condition:(s)=>s.totalCorrect>=1},
+  {id:'streak3',      emoji:'🔥', name:'3れんぞく',       desc:'3もんれんぞくせいかい',       condition:(s)=>s.maxStreak>=3},
+  {id:'streak5',      emoji:'💥', name:'5れんぞく',       desc:'5もんれんぞくせいかい',       condition:(s)=>s.maxStreak>=5},
+  {id:'streak10',     emoji:'👑', name:'10れんぞく',      desc:'10もんれんぞくせいかい',      condition:(s)=>s.maxStreak>=10},
+  {id:'perfect',      emoji:'💯', name:'まんてん',         desc:'ミスなしでクリア',            condition:(s)=>s.hasPerfect},
+  {id:'perfect5',     emoji:'🌈', name:'まんてん5かい',   desc:'ミスなしで5かいクリア',       condition:(s)=>s.perfectCount>=5},
+  {id:'words50',      emoji:'📚', name:'50もんせいかい',  desc:'ごうけい50もんせいかい',      condition:(s)=>s.totalCorrect>=50},
+  {id:'words100',     emoji:'🎊', name:'100もんせいかい', desc:'ごうけい100もんせいかい',     condition:(s)=>s.totalCorrect>=100},
+  // ===== プレイ回数系 =====
+  {id:'games5',       emoji:'🎮', name:'5かいプレイ',     desc:'5かいゲームをした',           condition:(s)=>s.totalGames>=5},
+  {id:'games20',      emoji:'🏆', name:'20かいプレイ',    desc:'20かいゲームをした',          condition:(s)=>s.totalGames>=20},
+  // ===== 敵撃破：初めて系 =====
+  {id:'first_win',    emoji:'⚔️', name:'はじめてのしょうり', desc:'はじめて敵をたおした',     condition:(s)=>s.totalWins>=1},
+  {id:'perfect_win',  emoji:'🌟', name:'パーフェクトしょうり', desc:'ミスなしでクリア！',      condition:(s)=>s.perfectWins>=1},
+  // ===== 敵撃破：回数系 =====
+  {id:'win3',         emoji:'🥉', name:'3かいしょうり',   desc:'ごうけい3かいクリア',         condition:(s)=>s.totalWins>=3},
+  {id:'win10',        emoji:'🥈', name:'10かいしょうり',  desc:'ごうけい10かいクリア',        condition:(s)=>s.totalWins>=10},
+  {id:'win30',        emoji:'🥇', name:'30かいしょうり',  desc:'ごうけい30かいクリア',        condition:(s)=>s.totalWins>=30},
+  {id:'win50',        emoji:'👑', name:'50かいしょうり',  desc:'ごうけい50かいクリア',        condition:(s)=>s.totalWins>=50},
+  // ===== 敵撃破：レベル別 =====
+  {id:'lv1_win5',     emoji:'🌱', name:'かんたんせいは',  desc:'かんたんを5かいクリア',       condition:(s)=>(s.lvWins&&s.lvWins[1]||0)>=5},
+  {id:'lv2_win5',     emoji:'🔥', name:'ふつうせいは',    desc:'ふつうを5かいクリア',         condition:(s)=>(s.lvWins&&s.lvWins[2]||0)>=5},
+  {id:'lv3_win3',     emoji:'💀', name:'むずかしいせいは', desc:'むずかしいを3かいクリア',    condition:(s)=>(s.lvWins&&s.lvWins[3]||0)>=3},
+  {id:'lv3_win10',    emoji:'👹', name:'むずかしいマスター', desc:'むずかしいを10かいクリア', condition:(s)=>(s.lvWins&&s.lvWins[3]||0)>=10},
+  // ===== カテゴリ制覇系 =====
+  {id:'cat_dousa',    emoji:'🏃', name:'うごきせいは',    desc:'うごきを全レベルクリア',      condition:(s)=>(s.catLvWins&&['dousa_1','dousa_2','dousa_3'].every(k=>s.catLvWins[k]>=1))},
+  {id:'cat_tabemono', emoji:'🍎', name:'たべものせいは',  desc:'たべものを全レベルクリア',    condition:(s)=>(s.catLvWins&&['tabemono_1','tabemono_2','tabemono_3'].every(k=>s.catLvWins[k]>=1))},
+  {id:'cat_hira',     emoji:'🔤', name:'ひらがなせいは',  desc:'ひらがなを全行クリア',        condition:(s)=>(s.hiraRowsCleared||0)>=10},
+  {id:'cat_all',      emoji:'🗺️', name:'ぜんカテゴリせいは', desc:'ぜんカテゴリ1かいクリア',condition:(s)=>Object.keys(s.catLvWins||{}).length>=10},
+  // ===== ことばプロ系 =====
+  {id:'dousa_pro',    emoji:'🏃', name:'うごきのプロ',    desc:'うごき10もんせいかい',        condition:(s)=>(s.catCorrect&&s.catCorrect['dousa']||0)>=10},
+  {id:'food_pro',     emoji:'🍎', name:'たべもののプロ',  desc:'たべもの10もんせいかい',      condition:(s)=>(s.catCorrect&&s.catCorrect['tabemono']||0)>=10},
+  {id:'animal_pro',   emoji:'🐶', name:'どうぶつのプロ',  desc:'どうぶつ10もんせいかい',      condition:(s)=>(s.catCorrect&&s.catCorrect['doubutsu']||0)>=10},
+  {id:'color_pro',    emoji:'🌈', name:'いろのプロ',      desc:'いろ10もんせいかい',          condition:(s)=>(s.catCorrect&&s.catCorrect['iro']||0)>=10},
+  // ===== ボーナスタイム系 =====
+  {id:'bonus_win1',   emoji:'💪', name:'ボーナスくぐり',  desc:'ボーナスタイムからクリア',    condition:(s)=>s.bonusWins>=1},
+  {id:'bonus_win5',   emoji:'🦸', name:'ボーナスマスター', desc:'ボーナスタイムから5かいクリア', condition:(s)=>s.bonusWins>=5},
 ];
 
 // ===================== 統計データ =====================
@@ -1466,8 +1685,19 @@ function loadStats() {
   return loadPlayerStats(name);
 }
 function initStats() {
-  return { totalCorrect:0, totalGames:0, maxStreak:0, hasPerfect:false, perfectCount:0,
-           catsPlayed:0, catCorrect:{}, catTotal:{}, earnedStamps:[], xp:0, recentScores:[] };
+  return {
+    totalCorrect:0, totalGames:0, maxStreak:0,
+    hasPerfect:false, perfectCount:0,
+    catsPlayed:0, catCorrect:{}, catTotal:{},
+    earnedStamps:[], xp:0, recentScores:[],
+    // 敵撃破系
+    totalWins:0,      // 合計クリア回数
+    perfectWins:0,    // ミスなしクリア回数
+    bonusWins:0,      // ボーナスタイムからクリア回数
+    lvWins:{},        // レベル別クリア回数 {1:0, 2:0, 3:0}
+    catLvWins:{},     // カテゴリ×レベル別クリア {dousa_1:0, ...}
+    hiraRowsCleared:0 // ひらがな行クリア数
+  };
 }
 function saveStats(s) {
   if(!s) return;
@@ -1527,8 +1757,6 @@ function showLevelUp(idx) {
 }
 
 // ===================== マイページ =====================
-let myPagePlayer = null;
-
 function goMyPageSelect() {
   // studentsが空でもデフォルトを用意
   const playerList = students && students.length > 0
@@ -1739,25 +1967,123 @@ const ENEMIES = [
   { cat:'hira_wa', lv:3, name:'わをんドラゴン',        emoji:'🐉', hp:5 },
 ];
 
-let currentEnemy = null;
-let enemyCurrentHp = 5;
-let enemyMaxHp = 5;
+// currentEnemy等は上部で宣言済み
 
 function getEnemy(cat, lv) {
   const found = ENEMIES.find(e => e.cat === cat && e.lv === lv);
   return found || { name:'なぞのてき', emoji:'👾', hp:5 };
 }
 
+// SVG敵キャラ生成関数
+function createEnemySVG(cat, lv) {
+  // カテゴリ・レベルで色と形を変える
+  const palettes = {
+    dousa:   {body:'#EF5350',eye:'#fff',pupil:'#333',horn:'#D32F2F'},
+    nichijo: {body:'#7B1FA2',eye:'#FFE082',pupil:'#333',horn:'#4A148C'},
+    tabemono:{body:'#FF7043',eye:'#fff',pupil:'#333',horn:'#BF360C'},
+    doubutsu:{body:'#388E3C',eye:'#FFEB3B',pupil:'#1B5E20',horn:'#1B5E20'},
+    norimono:{body:'#1565C0',eye:'#80D8FF',pupil:'#333',horn:'#0D47A1'},
+    karada:  {body:'#AD1457',eye:'#F8BBD9',pupil:'#333',horn:'#880E4F'},
+    kimochi: {body:'#6A1B9A',eye:'#CE93D8',pupil:'#333',horn:'#4A148C'},
+    iro:     {body:'#00838F',eye:'#E0F7FA',pupil:'#333',horn:'#006064'},
+    kazoku:  {body:'#C62828',eye:'#FFCDD2',pupil:'#333',horn:'#B71C1C'},
+    gakkou:  {body:'#283593',eye:'#C5CAE9',pupil:'#333',horn:'#1A237E'},
+  };
+  const hiraColor = {body:'#00838F',eye:'#E0F7FA',pupil:'#004D40',horn:'#006064'};
+  const p = cat.startsWith('hira_') ? hiraColor : (palettes[cat] || palettes.dousa);
+
+  // レベルで見た目を変える
+  const scale = lv === 3 ? 1.15 : lv === 2 ? 1.0 : 0.88;
+  const horns = lv >= 2;
+  const crown = lv === 3;
+  const eyeCount = lv >= 2 ? 3 : 2; // レベル2以上は目が3つ
+
+  let svg = '<svg viewBox="0 0 100 100" xmlns="http://www.w3.org/2000/svg" width="110" height="110">';
+
+  // 影
+  svg += '<ellipse cx="50" cy="92" rx="28" ry="6" fill="rgba(0,0,0,0.15)"/>';
+
+  // 王冠（レベル3）
+  if(crown) {
+    svg += '<polygon points="25,38 32,26 42,34 50,22 58,34 68,26 75,38" fill="#FFD600" stroke="#F9A825" stroke-width="1.5"/>';
+  }
+
+  // 角（レベル2以上）
+  if(horns) {
+    svg += '<polygon points="30,45 22,20 38,38" fill="' + p.horn + '"/>';
+    svg += '<polygon points="70,45 78,20 62,38" fill="' + p.horn + '"/>';
+  }
+
+  // 体
+  svg += '<ellipse cx="50" cy="62" rx="24" ry="18" fill="' + p.body + '"/>';
+
+  // 頭
+  svg += '<circle cx="50" cy="48" r="26" fill="' + p.body + '"/>';
+
+  // 耳
+  svg += '<ellipse cx="26" cy="44" rx="8" ry="11" fill="' + p.body + '"/>';
+  svg += '<ellipse cx="74" cy="44" rx="8" ry="11" fill="' + p.body + '"/>';
+  svg += '<ellipse cx="26" cy="44" rx="5" ry="7" fill="' + p.horn + '" opacity="0.5"/>';
+  svg += '<ellipse cx="74" cy="44" rx="5" ry="7" fill="' + p.horn + '" opacity="0.5"/>';
+
+  // 目
+  if(eyeCount === 3) {
+    // 3つ目
+    svg += '<circle cx="38" cy="44" r="6" fill="' + p.eye + '"/>';
+    svg += '<circle cx="62" cy="44" r="6" fill="' + p.eye + '"/>';
+    svg += '<circle cx="50" cy="36" r="5" fill="#FFD600"/>';
+    svg += '<circle cx="38" cy="44" r="3" fill="' + p.pupil + '"/>';
+    svg += '<circle cx="62" cy="44" r="3" fill="' + p.pupil + '"/>';
+    svg += '<circle cx="50" cy="36" r="2.5" fill="' + p.pupil + '"/>';
+  } else {
+    svg += '<circle cx="40" cy="46" r="7" fill="' + p.eye + '"/>';
+    svg += '<circle cx="60" cy="46" r="7" fill="' + p.eye + '"/>';
+    svg += '<circle cx="40" cy="46" r="3.5" fill="' + p.pupil + '"/>';
+    svg += '<circle cx="60" cy="46" r="3.5" fill="' + p.pupil + '"/>';
+    // 眼光
+    svg += '<circle cx="41" cy="45" r="1.2" fill="rgba(255,255,255,0.8)"/>';
+    svg += '<circle cx="61" cy="45" r="1.2" fill="rgba(255,255,255,0.8)"/>';
+  }
+
+  // 口（レベルで変える）
+  if(lv === 3) {
+    // ギザギザ牙
+    svg += '<path d="M40 56 Q50 65 60 56" stroke="rgba(0,0,0,0.4)" stroke-width="2" fill="none"/>';
+    svg += '<line x1="44" y1="57" x2="44" y2="62" stroke="white" stroke-width="2"/>';
+    svg += '<line x1="50" y1="58" x2="50" y2="64" stroke="white" stroke-width="2.5"/>';
+    svg += '<line x1="56" y1="57" x2="56" y2="62" stroke="white" stroke-width="2"/>';
+  } else if(lv === 2) {
+    svg += '<path d="M41 56 Q50 63 59 56" stroke="rgba(0,0,0,0.3)" stroke-width="1.5" fill="none"/>';
+    svg += '<line x1="45" y1="57" x2="45" y2="61" stroke="white" stroke-width="1.5"/>';
+    svg += '<line x1="55" y1="57" x2="55" y2="61" stroke="white" stroke-width="1.5"/>';
+  } else {
+    svg += '<path d="M42 56 Q50 62 58 56" stroke="rgba(0,0,0,0.25)" stroke-width="1.5" fill="none"/>';
+  }
+
+  // 腕
+  svg += '<ellipse cx="28" cy="66" rx="7" ry="11" fill="' + p.body + '" transform="rotate(-20,28,66)"/>';
+  svg += '<ellipse cx="72" cy="66" rx="7" ry="11" fill="' + p.body + '" transform="rotate(20,72,66)"/>';
+
+  // 足
+  svg += '<ellipse cx="42" cy="78" rx="8" ry="7" fill="' + p.body + '"/>';
+  svg += '<ellipse cx="58" cy="78" rx="8" ry="7" fill="' + p.body + '"/>';
+
+  svg += '</svg>';
+  return svg;
+}
+
 function initBattle(cat, lv) {
   currentEnemy = getEnemy(cat, lv);
-  enemyMaxHp = filtered.length; // 問題数＝HP
+  enemyMaxHp = filtered.length;
   enemyCurrentHp = enemyMaxHp;
   updateHpBar(true);
-  const charEl = document.getElementById('enemyChar');
-  charEl.textContent = currentEnemy.emoji;
-  charEl.style.animation = '';
-  void charEl.offsetWidth;
-  charEl.style.animation = 'enemyFloat 3s ease-in-out infinite';
+
+  // SVG敵キャラを生成
+  const wrap = document.getElementById('enemySvgWrap');
+  wrap.innerHTML = createEnemySVG(cat, lv);
+  wrap.style.animation = '';
+  void wrap.offsetWidth;
+  wrap.style.animation = 'enemyFloat 3s ease-in-out infinite';
   document.getElementById('enemyName').textContent = currentEnemy.name;
 }
 
@@ -1779,7 +2105,7 @@ function damageEnemy() {
   updateHpBar(false);
 
   // ダメージアニメーション
-  const charEl = document.getElementById('enemyChar');
+  const charEl = document.getElementById('enemySvgWrap');
   charEl.style.animation = 'enemyDamage .4s ease-out';
   setTimeout(()=>{
     charEl.style.animation = 'enemyFloat 3s ease-in-out infinite';
@@ -1799,16 +2125,7 @@ function damageEnemy() {
   playAttackSound();
 }
 
-function defeatEnemy() {
-  const charEl = document.getElementById('enemyChar');
-  charEl.style.animation = 'enemyDefeat .8s ease-out forwards';
-  playVictorySound();
-  showFireworks();
-  showFireworks();
-  setTimeout(()=>{
-    showVictoryScreen();
-  }, 1200);
-}
+
 
 function showVictoryScreen() {
   const rate = sessionTotal>0 ? Math.round(sessionCorrect/sessionTotal*100) : 0;
@@ -1825,6 +2142,31 @@ function showVictoryScreen() {
   if(rate===100){ stats.hasPerfect=true; stats.perfectCount=(stats.perfectCount||0)+1; }
   stats.catsPlayed = Object.keys(stats.catTotal||{}).length;
   stats.recentScores = (stats.recentScores||[]).concat(rate).slice(-10);
+
+  // 敵撃破統計
+  stats.totalWins = (stats.totalWins||0) + 1;
+  // ミスなしクリア判定（missedWordsが空＝ボーナスなし）
+  if(missedWords.length === 0 && !isBonusTime) {
+    stats.perfectWins = (stats.perfectWins||0) + 1;
+  }
+  // ボーナスタイムからのクリア
+  if(isBonusTime) {
+    stats.bonusWins = (stats.bonusWins||0) + 1;
+  }
+  // レベル別クリア
+  if(!stats.lvWins) stats.lvWins = {};
+  stats.lvWins[currentLevel] = (stats.lvWins[currentLevel]||0) + 1;
+  // カテゴリ×レベル別クリア
+  if(!stats.catLvWins) stats.catLvWins = {};
+  const catLvKey = currentCat + '_' + currentLevel;
+  stats.catLvWins[catLvKey] = (stats.catLvWins[catLvKey]||0) + 1;
+  // ひらがな行クリア数
+  if(isHiraganaMode) {
+    const hiraKeys = Object.keys(stats.catLvWins).filter(k=>k.startsWith('hira_'));
+    const uniqueRows = new Set(hiraKeys.map(k=>k.replace(/_\d+$/,'')));
+    stats.hiraRowsCleared = uniqueRows.size;
+  }
+
   saveStats(stats);
   checkStamps();
 
@@ -1957,8 +2299,6 @@ function printReport() {
 
 
 // ===================== ひらがな練習モード =====================
-let isHiraganaMode = false;
-let currentHiraganaRow = null;
 
 function goHiragana() {
   const grid = document.getElementById('hiraganaGrid');
@@ -2055,16 +2395,154 @@ function startHiraganaRow(row) {
   enemyCurrentHp = enemyMaxHp;
   setTimeout(()=>{
     updateHpBar(true);
-    const charEl = document.getElementById('enemyChar');
-    charEl.textContent = enemy.emoji;
-    charEl.style.animation = '';
-    void charEl.offsetWidth;
-    charEl.style.animation = 'enemyFloat 3s ease-in-out infinite';
+    const charEl = document.getElementById('enemySvgWrap');
+    if(charEl) {
+      charEl.style.animation = '';
+      void charEl.offsetWidth;
+      charEl.style.animation = 'enemyFloat 3s ease-in-out infinite';
+    }
     document.getElementById('enemyName').textContent = enemy.name;
   }, 50);
 
   loadCard();
   showScreen('screenPractice');
+}
+
+
+// ===================== タイムアタックタイマー =====================
+
+function startTimer() {
+  timerSeconds = TIME_ATTACK_SEC;
+  isTimeAttack = true;
+  document.getElementById('timerWrap').style.display = 'block';
+  updateTimerUI();
+  clearInterval(timerInterval);
+  timerInterval = setInterval(function() {
+    timerSeconds--;
+    updateTimerUI();
+    if(timerSeconds <= 0) {
+      clearInterval(timerInterval);
+      timerInterval = null;
+      timeUp();
+    }
+  }, 1000);
+}
+
+function stopTimer() {
+  clearInterval(timerInterval);
+  timerInterval = null;
+  document.getElementById('timerWrap').style.display = 'none';
+  isTimeAttack = false;
+}
+
+function updateTimerUI() {
+  const pct = timerSeconds / TIME_ATTACK_SEC * 100;
+  const circle = document.getElementById('timerCircle');
+  const numEl  = document.getElementById('timerNum');
+  if(!circle || !numEl) return;
+  numEl.textContent = timerSeconds;
+  // 円グラフ
+  const color = timerSeconds > 15 ? '#4CAF50' : timerSeconds > 8 ? '#FF8C42' : '#EF5350';
+  circle.style.background = 'conic-gradient(' + color + ' ' + pct + '%, #eee ' + pct + '%)';
+  numEl.style.color = color;
+  // 緊急アニメーション
+  const wrap = document.getElementById('timerWrap');
+  if(timerSeconds <= 8) wrap.classList.add('urgent');
+  else wrap.classList.remove('urgent');
+}
+
+function timeUp() {
+  // 時間切れ → 結果画面へ
+  if(recognition) { try { recognition.abort(); } catch(e){} recognition = null; }
+  stopTimer();
+  // タイムアップ表示
+  document.getElementById('resultBox').textContent = '⏰ じかんきれ！';
+  playMissSound();
+  setTimeout(()=>{
+    defeatEnemy(); // 敵は倒せなかったが結果表示
+    // 実際は敗北だが同じ勝利画面を使う（メッセージを変える）
+  }, 1000);
+}
+
+
+// ===================== ボーナスタイム・ゲームオーバー =====================
+
+function checkBonusOrEnd() {
+  if(missedWords.length > 0 && !isBonusTime) {
+    startBonusTime();
+  } else {
+    // ミスなし or ボーナス後 → 通常終了（ここには来ないはず）
+    showVictoryScreen();
+  }
+}
+
+function startBonusTime() {
+  isBonusTime = true;
+  bonusWords = shuffleArr([...missedWords]);
+  bonusIdx = 0;
+  missCount = 0;
+
+  // ボーナスヘッダー表示
+  const bh = document.getElementById('bonusHeader');
+  if(bh) {
+    bh.style.display = '';
+    document.getElementById('bonusSubText').textContent =
+      'まちがえた ' + bonusWords.length + 'もんにちょうせん！';
+  }
+
+  // 敵を復活（HPバーを赤く点滅）
+  const wrap = document.getElementById('enemySvgWrap');
+  if(wrap) {
+    wrap.style.animation = '';
+    void wrap.offsetWidth;
+    wrap.style.animation = 'enemyFloat 3s ease-in-out infinite';
+    wrap.style.filter = 'drop-shadow(0 0 8px #FFD600)';
+  }
+  enemyCurrentHp = bonusWords.length;
+  enemyMaxHp = bonusWords.length;
+  updateHpBar(true);
+
+  // ボーナス問題をfilteredにセット
+  filtered = bonusWords;
+  idx = 0;
+  loadCard();
+
+  // アナウンス
+  document.getElementById('resultBox').textContent =
+    '⭐ ボーナスタイム！まちがえたことばをもう一度！';
+}
+
+function showGameOver() {
+  // SVGの敵をゲームオーバー表示
+  const wrap = document.getElementById('enemySvgWrap');
+  if(wrap) { wrap.style.filter = ''; }
+
+  const goEnemy = document.getElementById('gameoverEnemy');
+  if(goEnemy && currentEnemy) goEnemy.textContent = currentEnemy.emoji;
+  document.getElementById('goCorrect').textContent = sessionCorrect;
+  document.getElementById('goTotal').textContent   = sessionTotal;
+
+  // 統計更新
+  stats.totalGames++;
+  stats.recentScores = (stats.recentScores||[]).concat(0).slice(-10);
+  saveStats(stats);
+
+  showScreen('screenGameOver');
+}
+
+// defeatEnemyに演出追加（敵がフェードアウト）
+function defeatEnemy() {
+  const wrap = document.getElementById('enemySvgWrap');
+  if(wrap) {
+    wrap.style.filter = '';
+    wrap.style.animation = 'enemyDefeat .8s ease-out forwards';
+  }
+  playVictorySound();
+  showFireworks(); showFireworks();
+  // ボーナスヘッダー非表示
+  const bh = document.getElementById('bonusHeader');
+  if(bh) bh.style.display = 'none';
+  setTimeout(()=>{ showVictoryScreen(); }, 1200);
 }
 
 </script>
