@@ -77,14 +77,12 @@ body{font-family:'Zen Maru Gothic','Hiragino Maru Gothic ProN',sans-serif;backgr
 .progress-wrap{width:100%;background:#eee;border-radius:999px;height:10px;margin-bottom:.75rem;overflow:hidden;}
 .progress-bar{height:100%;border-radius:999px;background:linear-gradient(90deg,var(--orange),var(--red));transition:width .4s ease;}
 .card{background:var(--white);border-radius:var(--radius);box-shadow:var(--shadow);padding:1.75rem 1.5rem 1.5rem;text-align:center;width:100%;position:relative;overflow:hidden;}
-.hint-text{font-size:12px;color:var(--orange);min-height:18px;margin-bottom:.25rem;font-weight:700;}
 .word-illust{font-size:88px;line-height:1;margin-bottom:.5rem;display:block;transition:transform .3s;}
 .word-text{font-family:'Kaisei Decol',serif;font-size:36px;font-weight:700;color:var(--text);margin-bottom:1rem;letter-spacing:.08em;}
 .btn-row{display:flex;gap:8px;justify-content:center;margin-bottom:.75rem;flex-wrap:wrap;}
 .btn-play {background:var(--blue);color:#fff;padding:12px 20px;font-size:15px;box-shadow:0 3px 10px rgba(79,195,247,.35);}
 .btn-rec  {background:var(--red);color:#fff;padding:12px 20px;font-size:15px;box-shadow:0 3px 10px rgba(239,83,80,.35);}
 .btn-stop {background:#555;color:#fff;padding:12px 20px;font-size:15px;display:none;}
-.btn-hint {background:var(--yellow-light);color:#E65100;padding:10px 16px;font-size:13px;border:2px solid #FFE082;}
 .result-box{min-height:50px;background:#F9F9F9;border-radius:14px;padding:11px 14px;font-size:14px;color:#555;margin-bottom:.75rem;display:flex;align-items:center;justify-content:center;text-align:center;line-height:1.6;width:100%;border:1.5px solid #eee;}
 .end-btn{background:#FFE0B2;color:#E65100;padding:10px 24px;font-size:14px;margin-top:.5rem;}
 .nav{display:flex;align-items:center;justify-content:center;gap:20px;margin-top:1rem;width:100%;}
@@ -471,16 +469,12 @@ input[type=range]{width:100px;accent-color:var(--orange);}
   </div>
 
   <div class="card">
-    <div class="hint-text" id="hintText"></div>
     <span class="word-illust" id="emoji">🏃</span>
     <div class="word-text" id="word">はしる</div>
     <div class="btn-row">
       <button class="btn btn-play" onclick="playWord()">🔊 きく</button>
       <button class="btn btn-rec" id="recBtn" onclick="startRec()">🎙️ はなす</button>
       <button class="btn btn-stop" id="stopBtn" onclick="stopRecAndJudge()">■ とめる</button>
-    </div>
-    <div class="btn-row">
-      <button class="btn btn-hint" onclick="showHint()">💡 ヒント</button>
     </div>
     <div class="result-box" id="resultBox">👆 まず「きく」をおそう</div>
     <button class="btn end-btn" onclick="stopTimer();goCategory()">🏁 おわる</button>
@@ -1109,10 +1103,10 @@ let filtered=[], sessionWords=[], idx=0, speed=.55;
 let recognition=null, heardText='', stopRequested=false;
 let currentStudent=null, currentCat='dousa', currentLevel=1;
 let sessionCorrect=0, sessionTotal=0, streak=0, maxStreak=0;
-let hintShown=false;
 let isHiraganaMode=false, currentHiraganaRow=null;
 let isTimeAttack=false, timerSeconds=30, timerInterval=null;
 const TIME_ATTACK_SEC=30;
+let recTimeout=null; // 録音タイムアウト
 let missCount=0, missedWords=[], isBonusTime=false;
 let bonusWords=[], bonusIdx=0;
 let currentEnemy=null, enemyCurrentHp=5, enemyMaxHp=5;
@@ -1346,8 +1340,7 @@ function loadCard() {
   }
   document.getElementById('counter').textContent = (idx+1)+' / '+filtered.length;
   document.getElementById('resultBox').textContent = '👆 まず「きく」をおそう';
-  document.getElementById('hintText').textContent = '';
-  hintShown=false; missCount=0;
+  missCount=0;
   updateProgress();
   showRecBtn();
   // ことばモードは手動ナビ非表示
@@ -1362,12 +1355,6 @@ function loadCard() {
 function updateProgress() { /* プログレスバー削除 */ }
 function updateStreakUI() { document.getElementById('streakBadge').textContent='🔥 '+streak+'れんぞく'; }
 
-function showHint() {
-  if(hintShown) return;
-  const w = filtered[idx];
-  document.getElementById('hintText').textContent = '💡 さいしょのもじは「'+w.text[0]+'」だよ！';
-  hintShown=true;
-}
 
 function playWord() {
   window.speechSynthesis.cancel();
@@ -1394,7 +1381,11 @@ function getBestHiragana(results) {
   return candidates;
 }
 
-function showRecBtn() { document.getElementById('recBtn').style.display='inline-flex'; document.getElementById('stopBtn').style.display='none'; }
+function showRecBtn() {
+  clearTimeout(recTimeout);
+  document.getElementById('recBtn').style.display='inline-flex';
+  document.getElementById('stopBtn').style.display='none';
+}
 function showStopBtn() { document.getElementById('recBtn').style.display='none'; document.getElementById('stopBtn').style.display='inline-flex'; }
 
 function startRec() {
@@ -1403,13 +1394,20 @@ function startRec() {
   heardText=''; stopRequested=false;
   recognition=new SR(); recognition.lang='ja-JP'; recognition.interimResults=false;
   recognition.maxAlternatives=5; recognition.continuous=true;
-  recognition.onstart=()=>{ showStopBtn(); document.getElementById('resultBox').textContent='🎙️ はなしてね… おわったら「とめる」をおそう'; };
+  recognition.onstart=()=>{
+    showStopBtn();
+    document.getElementById('resultBox').textContent='🎙️ はなしてね… おわったら「とめる」をおそう';
+    // 5秒で自動終了
+    clearTimeout(recTimeout);
+    recTimeout = setTimeout(function(){
+      if(recognition){ stopRecAndJudge(); }
+    }, 5000);
+  };
   recognition.onresult=(e)=>{
     for(let i=e.resultIndex;i<e.results.length;i++){
-      const candidates=getBestHiragana(e.results[i]);
-      const target=filtered[idx]?filtered[idx].yomi:'';
-      const matched=candidates.find(c=>c===target);
-      heardText=matched||candidates[0]||'';
+      // 1番目（最も確信度が高い）の認識結果をそのまま使う
+      const raw = e.results[i][0].transcript.replace(/\s/g,'');
+      if(raw) heardText = toHiragana(raw);
     }
     if(stopRequested){ doJudge(); try{recognition.abort();}catch(e){} recognition=null; }
   };
