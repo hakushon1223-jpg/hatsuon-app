@@ -204,7 +204,7 @@ input[type=range]{width:100px;accent-color:var(--orange);}
 
 <!-- タイトル -->
 <div class="screen active" id="screenTop">
-  <div class="title-card" onclick="goCategory()">
+  <div class="title-card" onclick="goPlayerSelect()">
     <span class="title-emoji">🎤</span>
     <div class="title-text">はつおんれんしゅう</div>
     <div class="title-sub">タップしてはじめよう！</div>
@@ -215,11 +215,18 @@ input[type=range]{width:100px;accent-color:var(--orange);}
   </div>
 </div>
 
+<!-- プレイヤー選択（練習前） -->
+<div class="screen" id="screenPlayerSelect">
+  <p class="section-title">👤 だれがれんしゅうする？</p>
+  <div class="student-grid" id="practiceStudentGrid"></div>
+  <button class="back-btn" onclick="showScreen('screenTop')">← もどる</button>
+</div>
+
 <!-- カテゴリ選択 -->
 <div class="screen" id="screenCategory">
   <p class="section-title">どのカテゴリをれんしゅうする？</p>
   <div class="category-grid" id="categoryGrid"></div>
-  <button class="back-btn" onclick="showScreen('screenTop')">← もどる</button>
+  <button class="back-btn" onclick="showScreen('screenPlayerSelect')">← もどる</button>
 </div>
 
 <!-- 難易度選択 -->
@@ -231,7 +238,7 @@ input[type=range]{width:100px;accent-color:var(--orange);}
     <div class="level-badge lv3" id="lv3" onclick="selectLevel(3)">⭐⭐⭐ むずかしい</div>
   </div>
   <div class="category-grid" style="grid-template-columns:1fr;gap:10px;">
-    <button class="btn cat-btn" id="levelStartBtn" style="font-size:18px;padding:18px;" onclick="goStudentSelect()">▶ このむずかしさではじめる</button>
+    <button class="btn cat-btn" id="levelStartBtn" style="font-size:18px;padding:18px;" onclick="startPractice()">▶ このむずかしさではじめる</button>
   </div>
   <button class="back-btn" onclick="showScreen('screenCategory')">← もどる</button>
 </div>
@@ -409,7 +416,8 @@ input[type=range]{width:100px;accent-color:var(--orange);}
   <button class="back-btn" onclick="goTop()">← もどる</button>
 </div>
 
-<script>
+<script>var stats; // プレイヤー別に管理（initで初期化）
+
 // ===================== 問題データ（10カテゴリ×3難易度） =====================
 const CATEGORIES = [
   { id:'dousa',    name:'うごき',    emoji:'🏃', color:'cat-dousa',    label:'からだをうごかすことば' },
@@ -635,9 +643,7 @@ function loadData() {
     records  = JSON.parse(localStorage.getItem('records'))     || [];
   } catch(e) { words=[...ALL_WORDS]; students=[{name:'せいと１',mode:'all'},{name:'せいと２',mode:'all'}]; records=[]; }
 }
-loadData();
-let stats = loadStats();
-
+// ===== 初期化（DOM読み込み後に実行）=====
 let filtered=[], sessionWords=[], idx=0, speed=.55;
 let recognition=null, heardText='', stopRequested=false;
 let currentStudent=null, currentCat='dousa', currentLevel=1;
@@ -647,6 +653,40 @@ let hintShown=false;
 // ===================== 画面遷移 =====================
 function showScreen(id) { document.querySelectorAll('.screen').forEach(s=>s.classList.remove('active')); document.getElementById(id).classList.add('active'); }
 function goTop() { if(recognition){try{recognition.abort();}catch(e){}} showScreen('screenTop'); }
+
+function goPlayerSelect() {
+  const playerList = students && students.length > 0
+    ? students
+    : [{name:'せいと１',mode:'all'},{name:'せいと２',mode:'all'},{name:'せいと３',mode:'all'}];
+
+  const grid = document.getElementById('practiceStudentGrid');
+  if(!grid) return;
+  grid.innerHTML = '';
+
+  playerList.forEach(function(s, i) {
+    const btn = document.createElement('button');
+    btn.className = 'btn student-sel-btn' + (i===0?' selected':'');
+    const pStats = (function(){ try{ return loadPlayerStats(s.name); }catch(e){ return initStats(); } })();
+    const r = getCurrentRank(pStats.xp);
+    btn.innerHTML = '<div style="text-align:center;">'
+      + '<div style="font-size:32px;margin-bottom:4px;">' + r.rank.emoji + '</div>'
+      + '<div style="font-size:16px;font-weight:700;color:#333;">' + s.name + '</div>'
+      + '<div style="font-size:11px;color:#888;margin-top:2px;">Lv.' + (r.idx+1) + ' ' + r.rank.name + '</div>'
+      + '</div>';
+    btn.onclick = function() {
+      document.querySelectorAll('#practiceStudentGrid .student-sel-btn').forEach(b=>b.classList.remove('selected'));
+      btn.classList.add('selected');
+      currentStudent = s;
+      stats = (function(){ try{ return loadPlayerStats(s.name); }catch(e){ return initStats(); } })();
+      goCategory();
+    };
+    grid.appendChild(btn);
+  });
+
+  // デフォルトで最初のプレイヤーを選択
+  currentStudent = playerList[0];
+  showScreen('screenPlayerSelect');
+}
 
 function goCategory() {
   const grid = document.getElementById('categoryGrid');
@@ -698,8 +738,8 @@ function goStudentSelect() {
 
 // ===================== 練習 =====================
 function startPractice() {
-  // プレイヤーのstatsを読み込む
-  if(currentStudent) stats = loadPlayerStats(currentStudent.name);
+  // プレイヤーのstatsを読み込む（関数定義後なので安全）
+  stats = currentStudent ? loadPlayerStats(currentStudent.name) : (loadPlayerStats('__global__') || initStats());
   // 対象カテゴリ・レベルの問題を絞り込み、ランダムに5問選ぶ
   const pool = words.filter(w => w.cat === currentCat && Number(w.level) === currentLevel);
   if(!pool.length) { alert('このカテゴリ・レベルのことばがありません'); return; }
@@ -1010,12 +1050,14 @@ function initStats() {
            catsPlayed:0, catCorrect:{}, catTotal:{}, earnedStamps:[], xp:0, recentScores:[] };
 }
 function saveStats(s) {
+  if(!s) return;
   const name = currentStudent ? currentStudent.name : '__global__';
   savePlayerStats(name, s);
 }
 
 
 function addXP(amount) {
+  if(!stats) stats = initStats();
   const oldLevel = getRankIndex(stats.xp);
   stats.xp += amount;
   const newLevel = getRankIndex(stats.xp);
@@ -1196,6 +1238,11 @@ function drawLineChart() {
   });
 }
 
+// ===== アプリ起動時の初期化 =====
+(function init() {
+  loadData();
+  stats = initStats(); // デフォルト値（プレイヤー選択時に上書き）
+})();
 </script>
 </body>
 </html>
