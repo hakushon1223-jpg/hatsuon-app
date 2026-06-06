@@ -71,7 +71,7 @@ body{font-family:'Zen Maru Gothic','Hiragino Maru Gothic ProN',sans-serif;backgr
 .student-sel-btn.selected{border-color:var(--orange);background:var(--orange-light);}
 
 /* 練習画面 */
-.practice-header{display:flex;align-items:center;justify-content:space-between;width:100%;margin-bottom:.75rem;}
+.practice-header{display:flex;align-items:center;justify-content:center;width:100%;margin-bottom:.75rem;}
 .mode-badge{font-size:12px;font-weight:700;padding:4px 12px;border-radius:999px;}
 .streak-badge{font-size:12px;font-weight:700;padding:4px 12px;border-radius:999px;background:var(--yellow-light);color:#E65100;}
 .progress-wrap{width:100%;background:#eee;border-radius:999px;height:10px;margin-bottom:.75rem;overflow:hidden;}
@@ -345,7 +345,7 @@ input[type=range]{width:100px;accent-color:var(--orange);}
   border:3px solid transparent;
   transition:transform .12s, box-shadow .12s, border-color .12s;
   user-select:none;
-  justify-content:space-between;
+  justify-content:center;
   overflow:hidden;
   box-sizing:border-box;
 }
@@ -366,19 +366,8 @@ input[type=range]{width:100px;accent-color:var(--orange);}
   flex-shrink:0;
 }
 .level-card-btn.active .lv-name { color:#fff; }
-.lv-desc {
-  font-size:14px; color:#888;
-  background:rgba(0,0,0,.06);
-  border-radius:999px; padding:5px 12px;
-  white-space:nowrap;
-  flex-shrink:0;
-  max-width:180px;
-  overflow:hidden;
-  text-overflow:ellipsis;
-}
-.level-card-btn.active .lv-desc {
-  background:rgba(255,255,255,.25); color:#fff;
-}
+
+.level-card-btn.active 
 </style>
 </head>
 <body>
@@ -427,17 +416,14 @@ input[type=range]{width:100px;accent-color:var(--orange);}
     <div class="level-card-btn lv1-card active" id="lv1" onclick="selectLevel(1)">
       <span class="lv-stars">⭐</span>
       <span class="lv-name">かんたん</span>
-      <span class="lv-desc" id="lv1desc">みじかいことば</span>
     </div>
     <div class="level-card-btn lv2-card" id="lv2" onclick="selectLevel(2)">
       <span class="lv-stars">⭐⭐</span>
       <span class="lv-name">ふつう</span>
-      <span class="lv-desc" id="lv2desc">すこしながいことば</span>
     </div>
     <div class="level-card-btn lv3-card" id="lv3" onclick="selectLevel(3)">
       <span class="lv-stars">⭐⭐⭐</span>
       <span class="lv-name">むずかしい</span>
-      <span class="lv-desc" id="lv3desc">ながいことば</span>
     </div>
   </div>
   <button class="btn cat-btn" id="levelStartBtn" style="width:100%;font-size:26px;padding:24px;margin-top:.75rem;background:linear-gradient(135deg,#FF8C42,#EF5350);" onclick="startPractice()">▶ はじめる</button>
@@ -1232,15 +1218,8 @@ function goLevel(cat) {
   const isHira = cat.id.startsWith('hira_');
   if(isHira) {
     document.getElementById('levelTitle').textContent = cat.name + 'のれんしゅう';
-    // ひらがな用の難易度説明に変更
-    document.getElementById('lv1desc').textContent = '1もじ・じゅんばん';
-    document.getElementById('lv2desc').textContent = '1もじ・ランダム';
-    document.getElementById('lv3desc').textContent = 'たんご・タイムアタック';
   } else {
     document.getElementById('levelTitle').textContent = cat.name + 'の むずかしさをえらんでね';
-    document.getElementById('lv1desc').textContent = 'みじかいことば';
-    document.getElementById('lv2desc').textContent = 'すこしながいことば';
-    document.getElementById('lv3desc').textContent = 'ながいことば';
   }
   const startBtn = document.getElementById('levelStartBtn');
   startBtn.className = `btn cat-btn ${cat.color}`;
@@ -1435,14 +1414,33 @@ function startRec() {
     if(stopRequested){ doJudge(); try{recognition.abort();}catch(e){} recognition=null; }
   };
   recognition.onerror=(ev)=>{ if(ev.error!=='aborted') document.getElementById('resultBox').textContent='きこえませんでした。もういちどためしてね。'; showRecBtn(); };
-  recognition.onend=()=>{ showRecBtn(); if(stopRequested&&heardText) doJudge(); };
+  recognition.onend=()=>{
+    showRecBtn();
+    if(stopRequested && heardText) doJudge();
+    else if(stopRequested && !heardText) {
+      // 結果なしで終了した場合は何もしない（タイムアウトで処理）
+    }
+  };
   recognition.start();
 }
 
 function stopRecAndJudge() {
   stopRequested=true; showRecBtn();
-  if(heardText){ doJudge(); if(recognition){try{recognition.abort();}catch(e){}} recognition=null; }
-  else{ document.getElementById('resultBox').textContent='⏳ はんていちゅう…'; if(recognition){try{recognition.stop();}catch(e){}} }
+  if(heardText){
+    doJudge();
+    if(recognition){try{recognition.abort();}catch(e){}} recognition=null;
+  } else {
+    document.getElementById('resultBox').textContent='⏳ はんていちゅう…';
+    if(recognition){try{recognition.stop();}catch(e){}}
+    // 2秒待って結果が来なければ「きこえなかった」と判定
+    setTimeout(function(){
+      if(stopRequested && !heardText){
+        document.getElementById('resultBox').textContent='きこえませんでした。もういちどためしてね。';
+        stopRequested=false;
+        if(recognition){try{recognition.abort();}catch(e){}} recognition=null;
+      }
+    }, 2000);
+  }
 }
 
 function doJudge() {
