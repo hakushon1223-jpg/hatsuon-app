@@ -20,9 +20,7 @@
   .btn:active { transform: scale(0.95); opacity: 0.8; }
   .btn-play { background: #4FC3F7; color: #fff; }
   .btn-rec { background: #EF5350; color: #fff; }
-  .btn-rec.recording { background: #B71C1C; animation: recpulse 0.5s ease-in-out infinite alternate; }
   .btn-stop { background: #555; color: #fff; display: none; }
-  @keyframes recpulse { from { opacity: 1; } to { opacity: 0.5; } }
   .result-box { min-height: 52px; background: #F5F5F5; border-radius: 12px; padding: 12px 14px; font-size: 15px; color: #555; margin-bottom: 1rem; display: flex; align-items: center; justify-content: center; text-align: center; line-height: 1.6; }
   .next-btn { display: block; width: 100%; padding: 14px; border-radius: 999px; border: none; background: #66BB6A; color: #fff; font-size: 18px; font-weight: 700; font-family: inherit; cursor: pointer; transition: opacity 0.15s, transform 0.1s; }
   .next-btn:disabled { background: #ccc; cursor: not-allowed; }
@@ -84,24 +82,36 @@
 </div>
 
 <script>
+// 各単語に読み仮名（よみ）を追加
 const words = [
-  { text:'はしる', emoji:'🏃', cat:'dousa' },
-  { text:'とぶ', emoji:'🦅', cat:'dousa' },
-  { text:'たべる', emoji:'🍙', cat:'dousa' },
-  { text:'のむ', emoji:'🧃', cat:'dousa' },
-  { text:'ねる', emoji:'😴', cat:'dousa' },
-  { text:'あそぶ', emoji:'⚽', cat:'dousa' },
-  { text:'かく', emoji:'✏️', cat:'dousa' },
-  { text:'よむ', emoji:'📖', cat:'dousa' },
-  { text:'おはよう', emoji:'🌅', cat:'nichijo' },
-  { text:'ありがとう', emoji:'🙏', cat:'nichijo' },
-  { text:'ごめんなさい', emoji:'😢', cat:'nichijo' },
-  { text:'いただきます', emoji:'🍽️', cat:'nichijo' },
-  { text:'おやすみ', emoji:'🌙', cat:'nichijo' },
-  { text:'いってきます', emoji:'👋', cat:'nichijo' },
-  { text:'ただいま', emoji:'🏠', cat:'nichijo' },
-  { text:'きもちいい', emoji:'😊', cat:'nichijo' },
+  { text:'はしる', yomi:'はしる', emoji:'🏃', cat:'dousa' },
+  { text:'とぶ', yomi:'とぶ', emoji:'🦅', cat:'dousa' },
+  { text:'たべる', yomi:'たべる', emoji:'🍙', cat:'dousa' },
+  { text:'のむ', yomi:'のむ', emoji:'🧃', cat:'dousa' },
+  { text:'ねる', yomi:'ねる', emoji:'😴', cat:'dousa' },
+  { text:'あそぶ', yomi:'あそぶ', emoji:'⚽', cat:'dousa' },
+  { text:'かく', yomi:'かく', emoji:'✏️', cat:'dousa' },
+  { text:'よむ', yomi:'よむ', emoji:'📖', cat:'dousa' },
+  { text:'おはよう', yomi:'おはよう', emoji:'🌅', cat:'nichijo' },
+  { text:'ありがとう', yomi:'ありがとう', emoji:'🙏', cat:'nichijo' },
+  { text:'ごめんなさい', yomi:'ごめんなさい', emoji:'😢', cat:'nichijo' },
+  { text:'いただきます', yomi:'いただきます', emoji:'🍽️', cat:'nichijo' },
+  { text:'おやすみ', yomi:'おやすみ', emoji:'🌙', cat:'nichijo' },
+  { text:'いってきます', yomi:'いってきます', emoji:'👋', cat:'nichijo' },
+  { text:'ただいま', yomi:'ただいま', emoji:'🏠', cat:'nichijo' },
+  { text:'きもちいい', yomi:'きもちいい', emoji:'😊', cat:'nichijo' },
 ];
+
+// 漢字→よみがな対応表（音声認識が漢字を返すケースに対応）
+const kanjiMap = {
+  '走る':'はしる', '飛ぶ':'とぶ', '食べる':'たべる', '飲む':'のむ',
+  '寝る':'ねる', '遊ぶ':'あそぶ', '書く':'かく', '読む':'よむ',
+  'お早う':'おはよう', 'お早うございます':'おはようございます',
+  'ありがとう':'ありがとう', 'ごめんなさい':'ごめんなさい',
+  'いただきます':'いただきます', 'お休み':'おやすみ',
+  '行ってきます':'いってきます', 'ただいま':'ただいま',
+  '気持ちいい':'きもちいい', '気持ち良い':'きもちいい',
+};
 
 const speedMap = {1:0.45,2:0.55,3:0.70,4:0.85,5:1.00};
 const speedNames = {1:'とてもおそい',2:'ゆっくり',3:'ふつう',4:'すこしはやい',5:'はやい'};
@@ -112,6 +122,16 @@ let speed = 0.55;
 let recognition = null;
 let heardText = '';
 let stopRequested = false;
+
+// 漢字をひらがなに変換（対応表 + カタカナ→ひらがな）
+function toHiragana(str) {
+  // まず対応表で変換
+  if (kanjiMap[str]) return kanjiMap[str];
+  // カタカナ→ひらがな
+  return str.replace(/[\u30A1-\u30F6]/g, c =>
+    String.fromCharCode(c.charCodeAt(0) - 0x60)
+  ).replace(/\s/g,'');
+}
 
 function playSuccessSound() {
   try {
@@ -183,7 +203,6 @@ function loadCard() {
 
 function showRecBtn() {
   document.getElementById('recBtn').style.display = 'inline-flex';
-  document.getElementById('recBtn').classList.remove('recording');
   document.getElementById('stopBtn').style.display = 'none';
 }
 
@@ -213,7 +232,7 @@ function startRec() {
   recognition.lang = 'ja-JP';
   recognition.interimResults = false;
   recognition.maxAlternatives = 5;
-  recognition.continuous = true; // iPhoneのSafariではtrueが必要
+  recognition.continuous = true;
 
   recognition.onstart = () => {
     showStopBtn();
@@ -222,10 +241,9 @@ function startRec() {
 
   recognition.onresult = (e) => {
     for (let i = e.resultIndex; i < e.results.length; i++) {
-      const t = e.results[i][0].transcript.replace(/\s/g,'');
-      if (t) heardText = t;
+      const raw = e.results[i][0].transcript.replace(/\s/g,'');
+      if (raw) heardText = toHiragana(raw);
     }
-    // とめるが押されていたら結果が来たタイミングで判定
     if (stopRequested) {
       doJudge();
       try { recognition.abort(); } catch(e){}
@@ -251,8 +269,6 @@ function startRec() {
 function stopRecAndJudge() {
   stopRequested = true;
   showRecBtn();
-  // onresult か onend のタイミングで doJudge が呼ばれる
-  // heardTextがすでにあれば今すぐ判定
   if (heardText) {
     doJudge();
     if (recognition) { try { recognition.abort(); } catch(e){} recognition = null; }
@@ -267,14 +283,14 @@ function doJudge() {
     document.getElementById('resultBox').textContent = 'きこえませんでした。もういちどためしてね。';
     return;
   }
-  const target = filtered[idx].text;
+  const target = filtered[idx].yomi;
   if (heardText === target) {
-    document.getElementById('resultBox').textContent = '✨ 「' + heardText + '」→ よくできました！';
+    document.getElementById('resultBox').textContent = '✨ よくできました！';
     document.getElementById('nextBtn').disabled = false;
     showMark('o');
     playSuccessSound();
   } else {
-    document.getElementById('resultBox').textContent = '🤔 「' + heardText + '」とよめました。もういちどためしてみよう！';
+    document.getElementById('resultBox').textContent = '🤔 もういちどためしてみよう！';
     document.getElementById('nextBtn').disabled = true;
     showMark('d');
     playMissSound();
