@@ -55,6 +55,7 @@ body{font-family:'Zen Maru Gothic','Hiragino Maru Gothic ProN',sans-serif;backgr
 .cat-iro     {background:linear-gradient(135deg,#00ACC1,#006064);}
 .cat-kazoku  {background:linear-gradient(135deg,#F06292,#AD1457);}
 .cat-gakkou  {background:linear-gradient(135deg,#5C6BC0,#1A237E);}
+.cat-hira    {background:linear-gradient(135deg,#00BCD4,#0097A7);}
 
 /* 難易度バッジ */
 .level-badges{display:flex;gap:8px;justify-content:center;margin-bottom:1.25rem;flex-wrap:wrap;width:100%;}
@@ -299,7 +300,21 @@ input[type=range]{width:100px;accent-color:var(--orange);}
 <div class="screen" id="screenCategory">
   <p class="section-title">どのカテゴリをれんしゅうする？</p>
   <div class="category-grid" id="categoryGrid"></div>
+  <div style="width:100%;margin-top:12px;">
+    <button class="btn cat-btn" style="width:100%;background:linear-gradient(135deg,#F06292,#9C27B0);border-radius:20px;box-shadow:0 4px 20px rgba(0,0,0,.10);padding:18px;" onclick="goHiragana()">
+      <span class="cat-emoji">🔤</span>
+      <span class="cat-name">ひらがなれんしゅう</span>
+      <span class="cat-level">あいうえお〜わをん・だくてん</span>
+    </button>
+  </div>
   <button class="back-btn" onclick="showScreen('screenPlayerSelect')">← もどる</button>
+</div>
+
+<!-- ひらがな行選択 -->
+<div class="screen" id="screenHiragana">
+  <p class="section-title">🔤 どのぎょうをれんしゅうする？</p>
+  <div class="category-grid" id="hiraganaGrid"></div>
+  <button class="back-btn" onclick="showScreen('screenCategory')">← もどる</button>
 </div>
 
 <!-- 難易度選択 -->
@@ -540,6 +555,17 @@ const CATEGORIES = [
   { id:'iro',      name:'いろ',      emoji:'🌈', color:'cat-iro',      label:'いろのなまえ' },
   { id:'kazoku',   name:'かぞく',    emoji:'👨‍👩‍👧', color:'cat-kazoku', label:'かぞくのよびかた' },
   { id:'gakkou',   name:'がっこう',  emoji:'🏫', color:'cat-gakkou',  label:'がっこうのことば' },
+  // ひらがな行
+  { id:'hira_a',   name:'あいうえお',emoji:'🔤', color:'cat-hira',    label:'あ行のはつおん' },
+  { id:'hira_ka',  name:'かきくけこ',emoji:'🔤', color:'cat-hira',    label:'か行のはつおん' },
+  { id:'hira_sa',  name:'さしすせそ',emoji:'🔤', color:'cat-hira',    label:'さ行のはつおん' },
+  { id:'hira_ta',  name:'たちつてと',emoji:'🔤', color:'cat-hira',    label:'た行のはつおん' },
+  { id:'hira_na',  name:'なにぬねの',emoji:'🔤', color:'cat-hira',    label:'な行のはつおん' },
+  { id:'hira_ha',  name:'はひふへほ',emoji:'🔤', color:'cat-hira',    label:'は行のはつおん' },
+  { id:'hira_ma',  name:'まみむめも',emoji:'🔤', color:'cat-hira',    label:'ま行のはつおん' },
+  { id:'hira_ya',  name:'やゆよ',    emoji:'🔤', color:'cat-hira',    label:'や行のはつおん' },
+  { id:'hira_ra',  name:'らりるれろ',emoji:'🔤', color:'cat-hira',    label:'ら行のはつおん' },
+  { id:'hira_wa',  name:'わをん',    emoji:'🔤', color:'cat-hira',    label:'わ行・んのはつおん' },
 ];
 
 // level: 1=かんたん 2=ふつう 3=むずかしい
@@ -707,7 +733,209 @@ const ALL_WORDS = [
   {text:'プール',    emoji:'🏊',cat:'gakkou',level:2, yomi:'ぷーる'},
   {text:'じゅぎょう',emoji:'📖',cat:'gakkou',level:3, yomi:'じゅぎょう'},
   {text:'しゅくだい', emoji:'📝',cat:'gakkou',level:3, yomi:'しゅくだい'},
+
+  // ===== ひらがな あ行 =====
+  {text:'あ', emoji:'🍭', cat:'hira_a', level:1, yomi:'あ'},
+  {text:'い', emoji:'🐬', cat:'hira_a', level:1, yomi:'い'},
+  {text:'う', emoji:'🐮', cat:'hira_a', level:1, yomi:'う'},
+  {text:'え', emoji:'🦐', cat:'hira_a', level:1, yomi:'え'},
+  {text:'お', emoji:'🍱', cat:'hira_a', level:1, yomi:'お'},
+  {text:'あか', emoji:'🔴', cat:'hira_a', level:2, yomi:'あか'},
+  {text:'いえ', emoji:'🏠', cat:'hira_a', level:2, yomi:'いえ'},
+  {text:'うえ', emoji:'⬆️', cat:'hira_a', level:2, yomi:'うえ'},
+  {text:'おに', emoji:'👹', cat:'hira_a', level:2, yomi:'おに'},
+  {text:'あおい', emoji:'🔵', cat:'hira_a', level:3, yomi:'あおい'},
+  {text:'うえき', emoji:'🌱', cat:'hira_a', level:3, yomi:'うえき'},
+  {text:'おおきい', emoji:'🐘', cat:'hira_a', level:3, yomi:'おおきい'},
+
+  // ===== ひらがな か行 =====
+  {text:'か', emoji:'🦌', cat:'hira_ka', level:1, yomi:'か'},
+  {text:'き', emoji:'🌲', cat:'hira_ka', level:1, yomi:'き'},
+  {text:'く', emoji:'👄', cat:'hira_ka', level:1, yomi:'く'},
+  {text:'け', emoji:'🦶', cat:'hira_ka', level:1, yomi:'け'},
+  {text:'こ', emoji:'👶', cat:'hira_ka', level:1, yomi:'こ'},
+  {text:'かお', emoji:'😊', cat:'hira_ka', level:2, yomi:'かお'},
+  {text:'きる', emoji:'✂️', cat:'hira_ka', level:2, yomi:'きる'},
+  {text:'くも', emoji:'☁️', cat:'hira_ka', level:2, yomi:'くも'},
+  {text:'こえ', emoji:'📣', cat:'hira_ka', level:2, yomi:'こえ'},
+  {text:'かがみ', emoji:'🪞', cat:'hira_ka', level:3, yomi:'かがみ'},
+  {text:'くだもの', emoji:'🍇', cat:'hira_ka', level:3, yomi:'くだもの'},
+  {text:'こうえん', emoji:'🌳', cat:'hira_ka', level:3, yomi:'こうえん'},
+
+  // ===== ひらがな さ行 =====
+  {text:'さ', emoji:'🐟', cat:'hira_sa', level:1, yomi:'さ'},
+  {text:'し', emoji:'🦁', cat:'hira_sa', level:1, yomi:'し'},
+  {text:'す', emoji:'🍣', cat:'hira_sa', level:1, yomi:'す'},
+  {text:'せ', emoji:'🦒', cat:'hira_sa', level:1, yomi:'せ'},
+  {text:'そ', emoji:'🌿', cat:'hira_sa', level:1, yomi:'そ'},
+  {text:'さかな', emoji:'🐟', cat:'hira_sa', level:2, yomi:'さかな'},
+  {text:'しろ', emoji:'⬜', cat:'hira_sa', level:2, yomi:'しろ'},
+  {text:'すいか', emoji:'🍉', cat:'hira_sa', level:2, yomi:'すいか'},
+  {text:'そら', emoji:'🌤️', cat:'hira_sa', level:2, yomi:'そら'},
+  {text:'さんぽ', emoji:'🚶', cat:'hira_sa', level:3, yomi:'さんぽ'},
+  {text:'しんぶん', emoji:'📰', cat:'hira_sa', level:3, yomi:'しんぶん'},
+  {text:'せんせい', emoji:'👩‍🏫', cat:'hira_sa', level:3, yomi:'せんせい'},
+
+  // ===== ひらがな た行 =====
+  {text:'た', emoji:'🥁', cat:'hira_ta', level:1, yomi:'た'},
+  {text:'ち', emoji:'🌍', cat:'hira_ta', level:1, yomi:'ち'},
+  {text:'つ', emoji:'🌙', cat:'hira_ta', level:1, yomi:'つ'},
+  {text:'て', emoji:'✋', cat:'hira_ta', level:1, yomi:'て'},
+  {text:'と', emoji:'🐯', cat:'hira_ta', level:1, yomi:'と'},
+  {text:'たこ', emoji:'🐙', cat:'hira_ta', level:2, yomi:'たこ'},
+  {text:'ちず', emoji:'🗺️', cat:'hira_ta', level:2, yomi:'ちず'},
+  {text:'つき', emoji:'🌙', cat:'hira_ta', level:2, yomi:'つき'},
+  {text:'てがみ', emoji:'✉️', cat:'hira_ta', level:2, yomi:'てがみ'},
+  {text:'たいよう', emoji:'☀️', cat:'hira_ta', level:3, yomi:'たいよう'},
+  {text:'ちいさい', emoji:'🐭', cat:'hira_ta', level:3, yomi:'ちいさい'},
+  {text:'とけい', emoji:'⏰', cat:'hira_ta', level:3, yomi:'とけい'},
+
+  // ===== ひらがな な行 =====
+  {text:'な', emoji:'🍆', cat:'hira_na', level:1, yomi:'な'},
+  {text:'に', emoji:'🌈', cat:'hira_na', level:1, yomi:'に'},
+  {text:'ぬ', emoji:'🧶', cat:'hira_na', level:1, yomi:'ぬ'},
+  {text:'ね', emoji:'😴', cat:'hira_na', level:1, yomi:'ね'},
+  {text:'の', emoji:'🍂', cat:'hira_na', level:1, yomi:'の'},
+  {text:'なに', emoji:'❓', cat:'hira_na', level:2, yomi:'なに'},
+  {text:'にわ', emoji:'🌻', cat:'hira_na', level:2, yomi:'にわ'},
+  {text:'ねこ', emoji:'🐱', cat:'hira_na', level:2, yomi:'ねこ'},
+  {text:'のこる', emoji:'⏳', cat:'hira_na', level:2, yomi:'のこる'},
+  {text:'なつやすみ', emoji:'🏖️', cat:'hira_na', level:3, yomi:'なつやすみ'},
+  {text:'にんじん', emoji:'🥕', cat:'hira_na', level:3, yomi:'にんじん'},
+  {text:'ねむたい', emoji:'😪', cat:'hira_na', level:3, yomi:'ねむたい'},
+
+  // ===== ひらがな は行 =====
+  {text:'は', emoji:'🌸', cat:'hira_ha', level:1, yomi:'は'},
+  {text:'ひ', emoji:'☀️', cat:'hira_ha', level:1, yomi:'ひ'},
+  {text:'ふ', emoji:'💨', cat:'hira_ha', level:1, yomi:'ふ'},
+  {text:'へ', emoji:'➡️', cat:'hira_ha', level:1, yomi:'へ'},
+  {text:'ほ', emoji:'⭐', cat:'hira_ha', level:1, yomi:'ほ'},
+  {text:'はな', emoji:'🌺', cat:'hira_ha', level:2, yomi:'はな'},
+  {text:'ひこうき', emoji:'✈️', cat:'hira_ha', level:2, yomi:'ひこうき'},
+  {text:'ふね', emoji:'🚢', cat:'hira_ha', level:2, yomi:'ふね'},
+  {text:'ほし', emoji:'⭐', cat:'hira_ha', level:2, yomi:'ほし'},
+  {text:'はっぱ', emoji:'🍃', cat:'hira_ha', level:3, yomi:'はっぱ'},
+  {text:'ひまわり', emoji:'🌻', cat:'hira_ha', level:3, yomi:'ひまわり'},
+  {text:'ふうせん', emoji:'🎈', cat:'hira_ha', level:3, yomi:'ふうせん'},
+
+  // ===== ひらがな ま行 =====
+  {text:'ま', emoji:'🐎', cat:'hira_ma', level:1, yomi:'ま'},
+  {text:'み', emoji:'👁️', cat:'hira_ma', level:1, yomi:'み'},
+  {text:'む', emoji:'🐛', cat:'hira_ma', level:1, yomi:'む'},
+  {text:'め', emoji:'👁️', cat:'hira_ma', level:1, yomi:'め'},
+  {text:'も', emoji:'🍑', cat:'hira_ma', level:1, yomi:'も'},
+  {text:'まど', emoji:'🪟', cat:'hira_ma', level:2, yomi:'まど'},
+  {text:'みず', emoji:'💧', cat:'hira_ma', level:2, yomi:'みず'},
+  {text:'むし', emoji:'🐛', cat:'hira_ma', level:2, yomi:'むし'},
+  {text:'もり', emoji:'🌲', cat:'hira_ma', level:2, yomi:'もり'},
+  {text:'まいにち', emoji:'📅', cat:'hira_ma', level:3, yomi:'まいにち'},
+  {text:'みかん', emoji:'🍊', cat:'hira_ma', level:3, yomi:'みかん'},
+  {text:'むらさき', emoji:'🟣', cat:'hira_ma', level:3, yomi:'むらさき'},
+
+  // ===== ひらがな や行 =====
+  {text:'や', emoji:'🏹', cat:'hira_ya', level:1, yomi:'や'},
+  {text:'ゆ', emoji:'♨️', cat:'hira_ya', level:1, yomi:'ゆ'},
+  {text:'よ', emoji:'🌙', cat:'hira_ya', level:1, yomi:'よ'},
+  {text:'やま', emoji:'⛰️', cat:'hira_ya', level:2, yomi:'やま'},
+  {text:'ゆき', emoji:'❄️', cat:'hira_ya', level:2, yomi:'ゆき'},
+  {text:'よる', emoji:'🌙', cat:'hira_ya', level:2, yomi:'よる'},
+  {text:'やさしい', emoji:'😊', cat:'hira_ya', level:3, yomi:'やさしい'},
+  {text:'ゆうやけ', emoji:'🌅', cat:'hira_ya', level:3, yomi:'ゆうやけ'},
+  {text:'よろしく', emoji:'🤝', cat:'hira_ya', level:3, yomi:'よろしく'},
+
+  // ===== ひらがな ら行 =====
+  {text:'ら', emoji:'🎷', cat:'hira_ra', level:1, yomi:'ら'},
+  {text:'り', emoji:'🍎', cat:'hira_ra', level:1, yomi:'り'},
+  {text:'る', emoji:'🔄', cat:'hira_ra', level:1, yomi:'る'},
+  {text:'れ', emoji:'🪣', cat:'hira_ra', level:1, yomi:'れ'},
+  {text:'ろ', emoji:'🕯️', cat:'hira_ra', level:1, yomi:'ろ'},
+  {text:'らっぱ', emoji:'🎺', cat:'hira_ra', level:2, yomi:'らっぱ'},
+  {text:'りんご', emoji:'🍎', cat:'hira_ra', level:2, yomi:'りんご'},
+  {text:'るす', emoji:'🏠', cat:'hira_ra', level:2, yomi:'るす'},
+  {text:'ろうそく', emoji:'🕯️', cat:'hira_ra', level:2, yomi:'ろうそく'},
+  {text:'らいおん', emoji:'🦁', cat:'hira_ra', level:3, yomi:'らいおん'},
+  {text:'りょこう', emoji:'✈️', cat:'hira_ra', level:3, yomi:'りょこう'},
+  {text:'れいぞうこ', emoji:'🧊', cat:'hira_ra', level:3, yomi:'れいぞうこ'},
+
+  // ===== ひらがな わ行・ん =====
+  {text:'わ', emoji:'🎋', cat:'hira_wa', level:1, yomi:'わ'},
+  {text:'を', emoji:'✍️', cat:'hira_wa', level:1, yomi:'を'},
+  {text:'ん', emoji:'🥱', cat:'hira_wa', level:1, yomi:'ん'},
+  {text:'わに', emoji:'🐊', cat:'hira_wa', level:2, yomi:'わに'},
+  {text:'わたし', emoji:'👤', cat:'hira_wa', level:2, yomi:'わたし'},
+  {text:'わかる', emoji:'💡', cat:'hira_wa', level:2, yomi:'わかる'},
+  {text:'わたあめ', emoji:'🍭', cat:'hira_wa', level:3, yomi:'わたあめ'},
+  {text:'わいわい', emoji:'🎉', cat:'hira_wa', level:3, yomi:'わいわい'},
 ];
+
+
+// ===================== ひらがな行データ =====================
+const HIRAGANA_ROWS = [
+  { id:'a_row',  name:'あ行', emoji:'🔤', color:'cat-iro',
+    chars:['あ','い','う','え','お'],
+    kanjiMapExtra:{} },
+  { id:'ka_row', name:'か行', emoji:'🔤', color:'cat-dousa',
+    chars:['か','き','く','け','こ'],
+    kanjiMapExtra:{} },
+  { id:'sa_row', name:'さ行', emoji:'🔤', color:'cat-nichijo',
+    chars:['さ','し','す','せ','そ'],
+    kanjiMapExtra:{} },
+  { id:'ta_row', name:'た行', emoji:'🔤', color:'cat-tabemono',
+    chars:['た','ち','つ','て','と'],
+    kanjiMapExtra:{} },
+  { id:'na_row', name:'な行', emoji:'🔤', color:'cat-doubutsu',
+    chars:['な','に','ぬ','ね','の'],
+    kanjiMapExtra:{} },
+  { id:'ha_row', name:'は行', emoji:'🔤', color:'cat-norimono',
+    chars:['は','ひ','ふ','へ','ほ'],
+    kanjiMapExtra:{} },
+  { id:'ma_row', name:'ま行', emoji:'🔤', color:'cat-karada',
+    chars:['ま','み','む','め','も'],
+    kanjiMapExtra:{} },
+  { id:'ya_row', name:'や行', emoji:'🔤', color:'cat-kimochi',
+    chars:['や','ゆ','よ'],
+    kanjiMapExtra:{} },
+  { id:'ra_row', name:'ら行', emoji:'🔤', color:'cat-kazoku',
+    chars:['ら','り','る','れ','ろ'],
+    kanjiMapExtra:{} },
+  { id:'wa_row', name:'わ行', emoji:'🔤', color:'cat-gakkou',
+    chars:['わ','を','ん'],
+    kanjiMapExtra:{} },
+  { id:'ga_row', name:'が行', emoji:'🔤', color:'cat-dousa',
+    chars:['が','ぎ','ぐ','げ','ご'],
+    kanjiMapExtra:{} },
+  { id:'za_row', name:'ざ行', emoji:'🔤', color:'cat-nichijo',
+    chars:['ざ','じ','ず','ぜ','ぞ'],
+    kanjiMapExtra:{} },
+  { id:'da_row', name:'だ行', emoji:'🔤', color:'cat-tabemono',
+    chars:['だ','ぢ','づ','で','ど'],
+    kanjiMapExtra:{} },
+  { id:'ba_row', name:'ば行', emoji:'🔤', color:'cat-doubutsu',
+    chars:['ば','び','ぶ','べ','ぼ'],
+    kanjiMapExtra:{} },
+  { id:'pa_row', name:'ぱ行', emoji:'🔤', color:'cat-norimono',
+    chars:['ぱ','ぴ','ぷ','ぺ','ぽ'],
+    kanjiMapExtra:{} },
+];
+
+// ひらがな絵文字マップ（1文字ずつ）
+const HIRAGANA_EMOJI = {
+  'あ':'🐛','い':'🐬','う':'🐄','え':'🦭','お':'👘',
+  'か':'🦀','き':'🌲','く':'🌙','け':'🎎','こ':'🤲',
+  'さ':'🌸','し':'🦁','す':'🍉','せ':'🏄','そ':'🌊',
+  'た':'🐙','ち':'🦋','つ':'🌷','て':'✋','と':'🐯',
+  'な':'🍆','に':'🌈','ぬ':'🪆','ね':'😴','の':'🐻',
+  'は':'🌺','ひ':'🛸','ふ':'🚢','へ':'🐍','ほ':'⭐',
+  'ま':'🎠','み':'🍊','む':'🐛','め':'👁️','も':'🍑',
+  'や':'🏹','ゆ':'🦄','よ':'💎',
+  'ら':'🦁','り':'🍎','る':'🌀','れ':'🔴','ろ':'🕯️',
+  'わ':'⭕','を':'🎯','ん':'🍩',
+  'が':'🐊','ぎ':'🎸','ぐ':'🌿','げ':'🦔','ご':'🦍',
+  'ざ':'🌊','じ':'⏰','ず':'🍣','ぜ':'✈️','ぞ':'🐘',
+  'だ':'🥁','ぢ':'🧩','づ':'🌿','で':'🏠','ど':'🚪',
+  'ば':'🌹','び':'🎵','ぶ':'🍇','べ':'🔔','ぼ':'⚽',
+  'ぱ':'🎉','ぴ':'🎹','ぷ':'🎈','ぺ':'🖊️','ぽ':'🫧',
+};
 
 // kanjiMap
 const kanjiMap = {
@@ -801,13 +1029,46 @@ function goPlayerSelect() {
 function goCategory() {
   const grid = document.getElementById('categoryGrid');
   grid.innerHTML = '';
-  CATEGORIES.forEach(cat => {
+
+  // ことばカテゴリ（語彙10種）
+  const wordCats = CATEGORIES.filter(c => !c.id.startsWith('hira_'));
+  const hiraCats = CATEGORIES.filter(c => c.id.startsWith('hira_'));
+
+  // 語彙セクションタイトル
+  const title1 = document.createElement('div');
+  title1.style.cssText = 'grid-column:1/-1;font-size:13px;font-weight:700;color:#888;margin-bottom:-4px;';
+  title1.textContent = '📚 ことばのれんしゅう';
+  grid.appendChild(title1);
+
+  wordCats.forEach(cat => {
     const btn = document.createElement('button');
-    btn.className = `btn cat-btn ${cat.color}`;
-    btn.innerHTML = `<span class="cat-emoji">${cat.emoji}</span><span class="cat-name">${cat.name}</span><span class="cat-level">${cat.label}</span>`;
+    btn.className = 'btn cat-btn ' + cat.color;
+    btn.innerHTML = '<span class="cat-emoji">' + cat.emoji + '</span><span class="cat-name">' + cat.name + '</span><span class="cat-level">' + cat.label + '</span>';
     btn.onclick = () => { currentCat = cat.id; goLevel(cat); };
     grid.appendChild(btn);
   });
+
+  // ひらがなセクションタイトル
+  const divider = document.createElement('div');
+  divider.style.cssText = 'grid-column:1/-1;border-top:1.5px dashed #ddd;margin:6px 0;';
+  grid.appendChild(divider);
+  const title2 = document.createElement('div');
+  title2.style.cssText = 'grid-column:1/-1;font-size:13px;font-weight:700;color:#888;margin-bottom:-4px;';
+  title2.textContent = '🔤 ひらがなのれんしゅう（行ごと）';
+  grid.appendChild(title2);
+
+  // ひらがなは3列グリッドで表示
+  const hiraGrid = document.createElement('div');
+  hiraGrid.style.cssText = 'grid-column:1/-1;display:grid;grid-template-columns:1fr 1fr 1fr;gap:8px;';
+  hiraCats.forEach(cat => {
+    const btn = document.createElement('button');
+    btn.style.cssText = 'padding:14px 6px;border-radius:16px;background:linear-gradient(135deg,#00BCD4,#0097A7);color:#fff;border:none;cursor:pointer;font-family:inherit;font-weight:700;font-size:15px;box-shadow:0 3px 10px rgba(0,188,212,.3);';
+    btn.textContent = cat.name;
+    btn.onclick = () => { currentCat = cat.id; goLevel(cat); };
+    hiraGrid.appendChild(btn);
+  });
+  grid.appendChild(hiraGrid);
+
   showScreen('screenCategory');
 }
 
@@ -848,6 +1109,8 @@ function goStudentSelect() {
 
 // ===================== 練習 =====================
 function startPractice() {
+  // ひらがなモードかどうか判定
+  isHiraganaMode = currentCat.startsWith('hira_');
   // プレイヤーのstatsを読み込む（関数定義後なので安全）
   stats = currentStudent ? loadPlayerStats(currentStudent.name) : (loadPlayerStats('__global__') || initStats());
   // 対象カテゴリ・レベルの問題を絞り込み、ランダムに5問選ぶ
@@ -882,8 +1145,29 @@ function shuffleArr(arr) {
 function loadCard() {
   if(!filtered.length) return;
   const w = filtered[idx];
-  document.getElementById('emoji').textContent = w.emoji;
-  document.getElementById('word').textContent  = w.text;
+  const emojiEl = document.getElementById('emoji');
+  const wordEl  = document.getElementById('word');
+
+  if(isHiraganaMode) {
+    // ひらがなモード：イラスト非表示、文字を特大表示
+    emojiEl.style.display = 'none';
+    wordEl.textContent = w.text;
+    wordEl.style.fontSize = w.text.length === 1 ? '120px' : w.text.length <= 3 ? '80px' : '56px';
+    wordEl.style.letterSpacing = '0.1em';
+    wordEl.style.color = '#FF8C42';
+    wordEl.style.textShadow = '0 4px 12px rgba(255,140,66,0.25)';
+    wordEl.style.marginBottom = '1.5rem';
+  } else {
+    // 通常モード：イラスト表示、通常フォントサイズ
+    emojiEl.style.display = '';
+    emojiEl.textContent = w.emoji;
+    wordEl.textContent = w.text;
+    wordEl.style.fontSize = '';
+    wordEl.style.letterSpacing = '';
+    wordEl.style.color = '';
+    wordEl.style.textShadow = '';
+    wordEl.style.marginBottom = '';
+  }
   document.getElementById('counter').textContent = (idx+1)+' / '+filtered.length;
   document.getElementById('resultBox').textContent = '👆 まず「きく」をおそう';
   document.getElementById('hintText').textContent = '';
@@ -1422,6 +1706,37 @@ const ENEMIES = [
   { cat:'gakkou',   lv:1, name:'いたずらおばけ',       emoji:'👻', hp:5 },
   { cat:'gakkou',   lv:2, name:'じゅけんモンスター',   emoji:'📚', hp:5 },
   { cat:'gakkou',   lv:3, name:'きょだいせんせい',     emoji:'👨‍🏫', hp:5 },
+  // ひらがな行
+  { cat:'hira_a',  lv:1, name:'あいうえおモンスター',  emoji:'🔡', hp:5 },
+  { cat:'hira_a',  lv:2, name:'あいうえおまじん',      emoji:'💬', hp:5 },
+  { cat:'hira_a',  lv:3, name:'あいうえおドラゴン',    emoji:'🐲', hp:5 },
+  { cat:'hira_ka', lv:1, name:'かきくけこおばけ',      emoji:'👻', hp:5 },
+  { cat:'hira_ka', lv:2, name:'かきくけこまじん',      emoji:'🧙', hp:5 },
+  { cat:'hira_ka', lv:3, name:'かきくけこりゅう',      emoji:'🐉', hp:5 },
+  { cat:'hira_sa', lv:1, name:'さしすせそスライム',    emoji:'🟢', hp:5 },
+  { cat:'hira_sa', lv:2, name:'さしすせそまじん',      emoji:'🧝', hp:5 },
+  { cat:'hira_sa', lv:3, name:'さしすせそドラゴン',    emoji:'🐲', hp:5 },
+  { cat:'hira_ta', lv:1, name:'たちつてとモンスター',  emoji:'👾', hp:5 },
+  { cat:'hira_ta', lv:2, name:'たちつてとまじん',      emoji:'😈', hp:5 },
+  { cat:'hira_ta', lv:3, name:'たちつてとりゅう',      emoji:'🐉', hp:5 },
+  { cat:'hira_na', lv:1, name:'なにぬねのゴースト',    emoji:'👻', hp:5 },
+  { cat:'hira_na', lv:2, name:'なにぬねのまじん',      emoji:'🧞', hp:5 },
+  { cat:'hira_na', lv:3, name:'なにぬねのドラゴン',    emoji:'🐲', hp:5 },
+  { cat:'hira_ha', lv:1, name:'はひふへほオバケ',      emoji:'🎃', hp:5 },
+  { cat:'hira_ha', lv:2, name:'はひふへほまじん',      emoji:'👹', hp:5 },
+  { cat:'hira_ha', lv:3, name:'はひふへほりゅう',      emoji:'🐉', hp:5 },
+  { cat:'hira_ma', lv:1, name:'まみむめもスライム',    emoji:'🫧', hp:5 },
+  { cat:'hira_ma', lv:2, name:'まみむめもまじん',      emoji:'🧙', hp:5 },
+  { cat:'hira_ma', lv:3, name:'まみむめもドラゴン',    emoji:'🐲', hp:5 },
+  { cat:'hira_ya', lv:1, name:'やゆよモンスター',      emoji:'👾', hp:5 },
+  { cat:'hira_ya', lv:2, name:'やゆよまじん',          emoji:'😈', hp:5 },
+  { cat:'hira_ya', lv:3, name:'やゆよドラゴン',        emoji:'🐉', hp:5 },
+  { cat:'hira_ra', lv:1, name:'らりるれろオバケ',      emoji:'👻', hp:5 },
+  { cat:'hira_ra', lv:2, name:'らりるれろまじん',      emoji:'🧝', hp:5 },
+  { cat:'hira_ra', lv:3, name:'らりるれろドラゴン',    emoji:'🐲', hp:5 },
+  { cat:'hira_wa', lv:1, name:'わをんモンスター',      emoji:'🌀', hp:5 },
+  { cat:'hira_wa', lv:2, name:'わをんまじん',          emoji:'🧞', hp:5 },
+  { cat:'hira_wa', lv:3, name:'わをんドラゴン',        emoji:'🐉', hp:5 },
 ];
 
 let currentEnemy = null;
@@ -1638,6 +1953,118 @@ function printReport() {
   win.document.write('<br><button onclick="window.print()" style="width:100%;padding:12px;background:#FF8C42;color:#fff;border:none;border-radius:8px;font-size:16px;cursor:pointer;">🖨️ このページをいんさつ・PDFで保存</button>');
   win.document.write('</body></html>');
   win.document.close();
+}
+
+
+// ===================== ひらがな練習モード =====================
+let isHiraganaMode = false;
+let currentHiraganaRow = null;
+
+function goHiragana() {
+  const grid = document.getElementById('hiraganaGrid');
+  grid.innerHTML = '';
+
+  // 基本行（あ〜わ）
+  const basicRows = HIRAGANA_ROWS.filter(r =>
+    ['a_row','ka_row','sa_row','ta_row','na_row','ha_row','ma_row','ya_row','ra_row','wa_row'].includes(r.id)
+  );
+  // 濁点・半濁点行
+  const dakuRows = HIRAGANA_ROWS.filter(r =>
+    ['ga_row','za_row','da_row','ba_row','pa_row'].includes(r.id)
+  );
+
+  // 基本行グリッド
+  const basicLabel = document.createElement('p');
+  basicLabel.style.cssText = 'width:100%;font-size:13px;font-weight:700;color:#888;margin-bottom:8px;';
+  basicLabel.textContent = '── きほんのぎょう ──';
+  grid.appendChild(basicLabel);
+
+  const basicGrid = document.createElement('div');
+  basicGrid.style.cssText = 'display:grid;grid-template-columns:1fr 1fr;gap:10px;width:100%;margin-bottom:12px;';
+  basicRows.forEach(row => buildHiraganaRowBtn(row, basicGrid));
+  grid.appendChild(basicGrid);
+
+  // 濁点行
+  const dakuLabel = document.createElement('p');
+  dakuLabel.style.cssText = 'width:100%;font-size:13px;font-weight:700;color:#888;margin-bottom:8px;';
+  dakuLabel.textContent = '── だくてん・はんだくてんのぎょう ──';
+  grid.appendChild(dakuLabel);
+
+  const dakuGrid = document.createElement('div');
+  dakuGrid.style.cssText = 'display:grid;grid-template-columns:1fr 1fr;gap:10px;width:100%;';
+  dakuRows.forEach(row => buildHiraganaRowBtn(row, dakuGrid));
+  grid.appendChild(dakuGrid);
+
+  showScreen('screenHiragana');
+}
+
+function buildHiraganaRowBtn(row, container) {
+  const btn = document.createElement('button');
+  btn.className = 'btn cat-btn ' + row.color;
+  btn.style.cssText = 'border-radius:18px;padding:14px 8px;';
+  // 文字を大きく表示
+  const charsPreview = row.chars.join('・');
+  btn.innerHTML = '<span class="cat-emoji" style="font-size:28px;font-family:sans-serif;">'
+    + row.chars[0] + '</span>'
+    + '<span class="cat-name">' + row.name + '</span>'
+    + '<span class="cat-level" style="font-size:10px;">' + charsPreview + '</span>';
+  btn.onclick = () => startHiraganaRow(row);
+  container.appendChild(btn);
+}
+
+function startHiraganaRow(row) {
+  isHiraganaMode = true;
+  currentHiraganaRow = row;
+
+  // ひらがな1文字を問題として並べる（全文字 or ランダム5文字）
+  const chars = row.chars;
+  const wordList = chars.map(c => ({
+    text: c,
+    yomi: c,
+    emoji: HIRAGANA_EMOJI[c] || '🔤',
+    cat: row.id,
+    level: 1,
+  }));
+
+  // stats読み込み
+  stats = currentStudent ? loadPlayerStats(currentStudent.name) : initStats();
+
+  filtered = wordList;
+  sessionWords = wordList;
+  idx = 0;
+  sessionCorrect=0; sessionTotal=0; streak=0; maxStreak=0;
+  currentCat = row.id;
+  currentLevel = 1;
+
+  // バッジ設定
+  const badge = document.getElementById('modeBadge');
+  badge.style.background = '#F06292';
+  badge.style.color = '#fff';
+  badge.textContent = '🔤 ' + row.name;
+  updateStreakUI();
+
+  // 敵設定（ひらがな用）
+  const hiraganaEnemies = [
+    {name:'もじおばけ',emoji:'👻'},
+    {name:'アルファベットモンスター',emoji:'🔠'},
+    {name:'ことばのまじん',emoji:'🧙'},
+  ];
+  const enemy = hiraganaEnemies[Math.floor(Math.random()*hiraganaEnemies.length)];
+  currentEnemy = { name:enemy.name, emoji:enemy.emoji, hp:chars.length };
+  enemyMaxHp = chars.length;
+  enemyCurrentHp = enemyMaxHp;
+  setTimeout(()=>{
+    updateHpBar(true);
+    const charEl = document.getElementById('enemyChar');
+    charEl.textContent = enemy.emoji;
+    charEl.style.animation = '';
+    void charEl.offsetWidth;
+    charEl.style.animation = 'enemyFloat 3s ease-in-out infinite';
+    document.getElementById('enemyName').textContent = enemy.name;
+  }, 50);
+
+  loadCard();
+  showScreen('screenPractice');
 }
 
 </script>
