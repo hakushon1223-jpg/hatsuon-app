@@ -1199,6 +1199,62 @@ const kanjiMap = {
   '和':'わ','話':'わ','輪':'わ',
 };
 
+
+// ひらがな→ローマ字（音素）変換テーブル
+const HIRA_ROMAJI = {
+  'あ':'a','い':'i','う':'u','え':'e','お':'o',
+  'か':'ka','き':'ki','く':'ku','け':'ke','こ':'ko',
+  'が':'ga','ぎ':'gi','ぐ':'gu','げ':'ge','ご':'go',
+  'さ':'sa','し':'si','す':'su','せ':'se','そ':'so',
+  'ざ':'za','じ':'zi','ず':'zu','ぜ':'ze','ぞ':'zo',
+  'た':'ta','ち':'ti','つ':'tu','て':'te','と':'to',
+  'だ':'da','ぢ':'di','づ':'du','で':'de','ど':'do',
+  'な':'na','に':'ni','ぬ':'nu','ね':'ne','の':'no',
+  'は':'ha','ひ':'hi','ふ':'hu','へ':'he','ほ':'ho',
+  'ば':'ba','び':'bi','ぶ':'bu','べ':'be','ぼ':'bo',
+  'ぱ':'pa','ぴ':'pi','ぷ':'pu','ぺ':'pe','ぽ':'po',
+  'ま':'ma','み':'mi','む':'mu','め':'me','も':'mo',
+  'や':'ya','ゆ':'yu','よ':'yo',
+  'ら':'ra','り':'ri','る':'ru','れ':'re','ろ':'ro',
+  'わ':'wa','を':'o','ん':'n',
+  'きゃ':'kya','きゅ':'kyu','きょ':'kyo',
+  'しゃ':'sya','しゅ':'syu','しょ':'syo',
+  'ちゃ':'tya','ちゅ':'tyu','ちょ':'tyo',
+  'にゃ':'nya','にゅ':'nyu','にょ':'nyo',
+  'ひゃ':'hya','ひゅ':'hyu','ひょ':'hyo',
+  'みゃ':'mya','みゅ':'myu','みょ':'myo',
+  'りゃ':'rya','りゅ':'ryu','りょ':'ryo',
+  'ぎゃ':'gya','ぎゅ':'gyu','ぎょ':'gyo',
+  'じゃ':'zya','じゅ':'zyu','じょ':'zyo',
+  'びゃ':'bya','びゅ':'byu','びょ':'byo',
+  'ぴゃ':'pya','ぴゅ':'pyu','ぴょ':'pyo',
+};
+
+// 文字列をローマ字（音素列）に変換
+function toRomaji(hira) {
+  let s = hira;
+  // カタカナ→ひらがな
+  s = s.replace(/[\u30A1-\u30F6]/g, c=>String.fromCharCode(c.charCodeAt(0)-0x60));
+  let result = '';
+  let i = 0;
+  while(i < s.length) {
+    // 2文字（拗音）を先にチェック
+    const two = s.substr(i,2);
+    if(HIRA_ROMAJI[two]) { result += HIRA_ROMAJI[two]; i += 2; continue; }
+    const one = s[i];
+    if(HIRA_ROMAJI[one]) { result += HIRA_ROMAJI[one]; }
+    else if(one === 'っ') { /* 促音は無視 */ }
+    else if(one === 'ー') { /* 長音は無視 */ }
+    i++;
+  }
+  return result;
+}
+
+// 母音だけ抽出（最後の手段の判定用）
+function vowelsOnly(romaji) {
+  return romaji.replace(/[^aiueo]/g, '');
+}
+
 const QUESTIONS_PER_GAME = 5;
 const speedMap   = {1:.45,2:.55,3:.70,4:.85,5:1.00};
 const speedNames = {1:'とてもおそい',2:'ゆっくり',3:'ふつう',4:'すこしはやい',5:'はやい'};
@@ -1560,25 +1616,24 @@ function startRec() {
       for(let j = 0; j < e.results[i].length; j++) {
         const raw = e.results[i][j].transcript.replace(/\s/g,'');
         const converted = toHiragana(raw);
+        // ひらがな1文字：音素（ローマ字）でも照合
+        let hiraMatch = false;
+        if(isHiraganaMode && target.length === 1) {
+          const tR = toRomaji(target);
+          const cR = toRomaji(converted);
+          const rR = toRomaji(raw);
+          hiraMatch =
+            raw === target || converted === target ||
+            raw.includes(target) || converted.includes(target) ||
+            cR === tR || rR === tR ||
+            cR.startsWith(tR) || rR.startsWith(tR) ||
+            (vowelsOnly(cR)[0] === tR) || (vowelsOnly(rR)[0] === tR);
+        }
         if(e.results[i].isFinal) {
-          // ひらがな1文字：目標が含まれていれば即採用
-          if(isHiraganaMode && target.length === 1) {
-            if(raw === target || converted === target ||
-               raw.includes(target) || converted.includes(target)) {
-              latestFinal = target; // 正解として確定
-              break;
-            }
-          }
+          if(hiraMatch) { latestFinal = target; break; }
           if(!latestFinal) latestFinal = converted;
         } else {
-          // 途中テキスト
-          if(isHiraganaMode && target.length === 1) {
-            if(raw === target || converted === target ||
-               raw.includes(target) || converted.includes(target)) {
-              latestInterim = target;
-              break;
-            }
-          }
+          if(hiraMatch) { latestInterim = target; break; }
           if(!latestInterim) latestInterim = converted;
         }
       }
@@ -1670,52 +1725,63 @@ function doJudge() {
     return;
   }
   const target = filtered[idx].yomi;
-  let judgeText = heardText;
+  let judgeText = toHiragana(heardText);
 
-  // ひらがなモードの特別処理
-  if(isHiraganaMode) {
-    const converted = toHiragana(heardText);
-    if(target.length === 1) {
-      // 1文字判定：以下のいずれかで正解
-      const isOk =
-        heardText === target ||           // 完全一致
-        converted === target ||           // 変換後一致
-        heardText.includes(target) ||     // 含む
-        converted.includes(target) ||     // 変換後含む
-        heardText[0] === target ||        // 最初の1文字
-        converted[0] === target;          // 変換後の最初の1文字
-      judgeText = isOk ? target : (converted[0] || heardText[0] || heardText);
-    } else {
-      // 複数文字：変換後で判定
-      judgeText = converted;
+  // ===== ローマ字（音素）ベースの判定 =====
+  // 音声認識は漢字・カタカナ・同音異義語で返すため、
+  // 「音」に変換して比較するのが最も確実
+  const targetRomaji = toRomaji(target);
+  const heardRomaji  = toRomaji(toHiragana(heardText));
+  const rawRomaji    = toRomaji(heardText); // 変換前の生テキストも
+
+  let ok = false;
+
+  if(isHiraganaMode && target.length === 1) {
+    // ===== ひらがな1文字：音素で柔軟に判定 =====
+    const tR = targetRomaji; // 例: 'a'
+    // 認識結果の各文字をローマ字化して、目標の音が含まれるか確認
+    const allRomaji = heardRomaji + ' ' + rawRomaji;
+    ok =
+      heardRomaji === tR ||                    // 音が完全一致
+      rawRomaji === tR ||
+      heardRomaji.startsWith(tR) ||            // 音で始まる
+      rawRomaji.startsWith(tR) ||
+      allRomaji.includes(tR) ||                // 音が含まれる
+      // 母音が一致（「え」を「えー」「A」等と言った場合）
+      (tR.length === 1 && vowelsOnly(heardRomaji)[0] === tR) ||
+      (tR.length === 1 && vowelsOnly(rawRomaji)[0] === tR) ||
+      // ひらがな文字そのものの一致もチェック
+      heardText.includes(target) ||
+      judgeText.includes(target);
+  } else {
+    // ===== 複数文字・ことばモード：音素ベース＋表記ベース =====
+    function normalize(s) {
+      return s
+        .replace(/ぁ/g,'あ').replace(/ぃ/g,'い').replace(/ぅ/g,'う')
+        .replace(/ぇ/g,'え').replace(/ぉ/g,'お')
+        .replace(/ゃ/g,'や').replace(/ゅ/g,'ゆ').replace(/ょ/g,'よ')
+        .replace(/っ/g,'').replace(/ー/g,'')
+        .replace(/[。、！？]/g,'').replace(/\s/g,'');
     }
+    const nJudge = normalize(judgeText);
+    const nTarget = normalize(target);
+
+    ok =
+      // 表記ベース
+      judgeText === target ||
+      nJudge === nTarget ||
+      (nTarget.length >= 3 && nJudge.startsWith(nTarget)) ||
+      (nTarget.length >= 4 && nJudge.startsWith(nTarget.slice(0, -1))) ||
+      (nTarget.length >= 5 && nJudge.startsWith(nTarget.slice(0, 3))) ||
+      // 音素ベース（漢字で返ってきても音で一致）
+      heardRomaji === targetRomaji ||
+      rawRomaji === targetRomaji ||
+      (targetRomaji.length >= 4 && heardRomaji.startsWith(targetRomaji)) ||
+      (targetRomaji.length >= 4 && rawRomaji.startsWith(targetRomaji)) ||
+      // 音素の前方一致（長い言葉）
+      (targetRomaji.length >= 6 && heardRomaji.startsWith(targetRomaji.slice(0, -2))) ||
+      (targetRomaji.length >= 6 && rawRomaji.startsWith(targetRomaji.slice(0, -2)));
   }
-
-  // 正規化関数（小文字・長音・ゆれを吸収）
-  function normalize(s) {
-    return s
-      .replace(/ぁ/g,'あ').replace(/ぃ/g,'い').replace(/ぅ/g,'う')
-      .replace(/ぇ/g,'え').replace(/ぉ/g,'お')
-      .replace(/ゃ/g,'や').replace(/ゅ/g,'ゆ').replace(/ょ/g,'よ')
-      .replace(/っ/g,'')     // 促音除去
-      .replace(/ー/g,'')     // 長音除去
-      .replace(/[。、！？]/g,'')
-      .replace(/\s/g,'');
-  }
-
-  const normJudge  = normalize(judgeText);
-  const normTarget = normalize(target);
-
-  // 各種一致チェック
-  const ok =
-    judgeText === target ||                                    // 完全一致
-    normJudge === normTarget ||                               // 正規化後一致
-    // 語尾に余分な言葉がついた場合（いただきます→いただきました 等）
-    (normTarget.length >= 3 && normJudge.startsWith(normTarget)) ||
-    // 語尾の1文字が違う（おやすみ→おやすみな 等）
-    (normTarget.length >= 4 && normJudge.startsWith(normTarget.slice(0, -1))) ||
-    // 語頭だけで判定（長い言葉は最初の3文字が合えばOK）
-    (normTarget.length >= 5 && normJudge.startsWith(normTarget.slice(0, 3)));
 
 
   sessionTotal++;
