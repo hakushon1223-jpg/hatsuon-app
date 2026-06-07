@@ -1213,6 +1213,7 @@ let isHiraganaMode=false, currentHiraganaRow=null;
 let isTimeAttack=false, timerSeconds=30, timerInterval=null;
 const TIME_ATTACK_SEC=30;
 let recTimeout=null; // 録音タイムアウト
+let interimText='';  // 音声認識途中テキスト（グローバル）
 let missCount=0, missedWords=[], isBonusTime=false;
 let bonusWords=[], bonusIdx=0;
 let currentEnemy=null, enemyCurrentHp=5, enemyMaxHp=5;
@@ -1527,63 +1528,80 @@ function startRec() {
     return;
   }
 
-  heardText = ''; stopRequested = false;
+  heardText = ''; interimText = ''; stopRequested = false;
   clearTimeout(recTimeout);
 
   recognition = new SR();
   recognition.lang = 'ja-JP';
-  recognition.interimResults = true;   // 途中結果も取得（重要）
-  recognition.maxAlternatives = 1;     // 1つに絞る（多いと混乱する）
-  recognition.continuous = true;       // 連続認識
-
-  let interimText = '';  // 途中の認識テキスト
+  recognition.interimResults = true;
+  recognition.maxAlternatives = 3;
+  recognition.continuous = true;
 
   recognition.onstart = () => {
     showStopBtn();
-    document.getElementById('resultBox').textContent = '🎙️ はなしてね…';
-    // 10秒で自動停止
+    const target = filtered[idx] ? filtered[idx].yomi : '';
+    if(isHiraganaMode && target.length === 1) {
+      document.getElementById('resultBox').textContent = '🎙️ 「' + target + '」といってね…';
+    } else {
+      document.getElementById('resultBox').textContent = '🎙️ はなしてね…';
+    }
     clearTimeout(recTimeout);
     recTimeout = setTimeout(() => { stopRecAndJudge(); }, 10000);
   };
 
   recognition.onresult = (e) => {
-    let finalText = '';
-    interimText = '';
+    const target = filtered[idx] ? filtered[idx].yomi : '';
+    let latestFinal = '';
+    let latestInterim = '';
 
-    for(let i = 0; i < e.results.length; i++) {
-      const t = e.results[i][0].transcript.replace(/\s/g, '');
-      if(e.results[i].isFinal) {
-        finalText += t;
-      } else {
-        interimText += t;
+    // 最新の認識結果だけ取得
+    for(let i = e.resultIndex; i < e.results.length; i++) {
+      // 全候補をチェック
+      for(let j = 0; j < e.results[i].length; j++) {
+        const raw = e.results[i][j].transcript.replace(/\s/g,'');
+        const converted = toHiragana(raw);
+        if(e.results[i].isFinal) {
+          // ひらがな1文字：目標が含まれていれば即採用
+          if(isHiraganaMode && target.length === 1) {
+            if(raw === target || converted === target ||
+               raw.includes(target) || converted.includes(target)) {
+              latestFinal = target; // 正解として確定
+              break;
+            }
+          }
+          if(!latestFinal) latestFinal = converted;
+        } else {
+          // 途中テキスト
+          if(isHiraganaMode && target.length === 1) {
+            if(raw === target || converted === target ||
+               raw.includes(target) || converted.includes(target)) {
+              latestInterim = target;
+              break;
+            }
+          }
+          if(!latestInterim) latestInterim = converted;
+        }
       }
     }
 
-    const target = filtered[idx] ? filtered[idx].yomi : '';
-
-    // ひらがな1文字モードは途中テキストも積極活用
-    if(isHiraganaMode && target.length === 1) {
-      const checkText = finalText || interimText;
-      if(checkText) {
-        // 全文字をひらがなに変換して各文字を確認
-        const converted = toHiragana(checkText);
-        // 含まれていればすぐ正解とする
-        if(converted.includes(target) || checkText.includes(target)) {
-          heardText = target;
-          document.getElementById('resultBox').textContent = '🎙️ ' + target + '…';
-        } else {
-          heardText = toHiragana(checkText[0] || checkText);
-          document.getElementById('resultBox').textContent = '🎙️ ' + converted + '…';
-        }
+    if(latestFinal) {
+      heardText = latestFinal;
+      document.getElementById('resultBox').textContent = '🎙️ ' + heardText + '…';
+      // ひらがな1文字で正解が確定したら即判定
+      if(isHiraganaMode && target.length === 1 && heardText === target) {
+        clearTimeout(recTimeout);
+        stopRequested = true;
+        try { recognition.stop(); } catch(e2) {}
       }
-    } else {
-      // 確定テキストがあればheardTextを更新
-      if(finalText) {
-        heardText = toHiragana(finalText);
-        document.getElementById('resultBox').textContent = '🎙️ ' + heardText + '…';
-      } else if(interimText) {
-        // 途中テキストを表示（heardTextはまだ更新しない）
-        document.getElementById('resultBox').textContent = '🎙️ ' + toHiragana(interimText) + '…';
+    } else if(latestInterim) {
+      interimText = latestInterim;
+      document.getElementById('resultBox').textContent = '🎙️ ' + latestInterim + '…';
+      // ひらがな1文字で正解が途中で確定したら即判定
+      if(isHiraganaMode && target.length === 1 && latestInterim === target) {
+        heardText = target;
+        clearTimeout(recTimeout);
+        stopRequested = true;
+        try { recognition.stop(); } catch(e2) {}
       }
     }
   };
@@ -1591,11 +1609,17 @@ function startRec() {
   recognition.onerror = (ev) => {
     clearTimeout(recTimeout);
     if(ev.error === 'no-speech') {
-      // 無音 → 何も聞こえなかった
-      document.getElementById('resultBox').textContent = 'きこえませんでした。もういちどためしてね。';
+      // 無音の場合もinterimTextがあれば使う
+      if(interimText) {
+        heardText = interimText;
+        doJudge();
+      } else {
+        document.getElementById('resultBox').textContent = 'きこえませんでした。もういちどためしてね。';
+      }
     } else if(ev.error === 'not-allowed') {
       document.getElementById('resultBox').textContent = 'マイクのきょかをかくにんしてね。';
     } else if(ev.error !== 'aborted') {
+      if(interimText) { heardText = interimText; doJudge(); return; }
       document.getElementById('resultBox').textContent = 'もういちどためしてね。';
     }
     showRecBtn();
@@ -1607,16 +1631,9 @@ function startRec() {
     showRecBtn();
     recognition = null;
 
-    // interimTextが残っていたらheardTextに採用
+    // heardTextがなければinterimTextを使う
     if(!heardText && interimText) {
-      // ひらがな1文字モードは途中テキストも使う
-      const target = filtered[idx] ? filtered[idx].yomi : '';
-      if(isHiraganaMode && target.length === 1) {
-        const converted = toHiragana(interimText);
-        heardText = converted.includes(target) ? target : (toHiragana(interimText[0]) || converted);
-      } else {
-        heardText = toHiragana(interimText);
-      }
+      heardText = interimText;
     }
 
     if(stopRequested || heardText) {
@@ -1657,23 +1674,20 @@ function doJudge() {
 
   // ひらがなモードの特別処理
   if(isHiraganaMode) {
+    const converted = toHiragana(heardText);
     if(target.length === 1) {
-      // 1文字の場合：認識結果の最初の1文字・最後の1文字・全体で判定
-      const candidates = [
-        heardText[0],
-        heardText[heardText.length - 1],
-        heardText,
-      ].filter(Boolean).map(c => toHiragana(c));
-      // いずれかが正解なら即OK
-      if(candidates.some(c => c === target)) {
-        heardText = target; // 強制的に正解テキストにセット
-        judgeText = target;
-      } else {
-        judgeText = candidates[0] || heardText[0] || heardText;
-      }
+      // 1文字判定：以下のいずれかで正解
+      const isOk =
+        heardText === target ||           // 完全一致
+        converted === target ||           // 変換後一致
+        heardText.includes(target) ||     // 含む
+        converted.includes(target) ||     // 変換後含む
+        heardText[0] === target ||        // 最初の1文字
+        converted[0] === target;          // 変換後の最初の1文字
+      judgeText = isOk ? target : (converted[0] || heardText[0] || heardText);
     } else {
-      // 複数文字：全体で判定
-      judgeText = toHiragana(heardText);
+      // 複数文字：変換後で判定
+      judgeText = converted;
     }
   }
 
