@@ -1063,34 +1063,98 @@ const HIRAGANA_EMOJI = {
 
 // kanjiMap
 const kanjiMap = {
-  '立つ':'たつ','座る':'すわる','歩く':'あるく','走る':'はしる','飛ぶ':'とぶ',
-  '寝る':'ねる','食べる':'たべる','飲む':'のむ','泣く':'なく','笑う':'わらう',
-  '遊ぶ':'あそぶ','書く':'かく','描く':'かく','読む':'よむ','見る':'みる',
-  '聞く':'きく','踊る':'おどる','泳ぐ':'およぐ','投げる':'なげる','教える':'おしえる',
-  'お早う':'おはよう','おはようございます':'おはよう','ありがとうございます':'ありがとう',
-  '御免なさい':'ごめんなさい','頂きます':'いただきます','只今':'ただいま',
-  '行ってきます':'いってきます','お休み':'おやすみ','お休みなさい':'おやすみ',
-  '行って来ます':'いってきます','気持ちいい':'きもちいい','気持ち良い':'きもちいい',
-  'お願いします':'おねがいします','大丈夫':'だいじょうぶ','助けて':'たすけて',
-  'もう一度':'もういちど','分かりません':'わかりません',
-  '犬':'いぬ','猫':'ねこ','兎':'うさぎ','熊':'くま','豚':'ぶた','牛':'うし',
-  '鳥':'とり','蛙':'かえる','魚':'さかな','象':'ぞう','麒麟':'きりん',
-  '車':'くるま','電車':'でんしゃ','自転車':'じてんしゃ','飛行機':'ひこうき','船':'ふね',
-  '救急車':'きゅうきゅうしゃ','消防車':'しょうぼうしゃ','新幹線':'しんかんせん',
-  '目':'め','鼻':'はな','口':'くち','手':'て','足':'あし','耳':'みみ',
-  '髪の毛':'かみのけ','お腹':'おなか','背中':'せなか','肩':'かた','指':'ゆび',
-  '肘':'ひじ','膝':'ひざ','眉毛':'まゆげ',
-  '嬉しい':'うれしい','悲しい':'かなしい','怖い':'こわい','楽しい':'たのしい',
-  '痛い':'いたい','疲れた':'つかれた','恥ずかしい':'はずかしい','怒った':'おこった',
-  '寂しい':'さびしい',
-  '赤':'あか','青':'あお','黄色':'きいろ','緑':'みどり','白':'しろ','黒':'くろ',
-  '桃色':'ももいろ','紫':'むらさき','茶色':'ちゃいろ','水色':'みずいろ','金色':'きんいろ',
-  'お父さん':'おとうさん','お母さん':'おかあさん','お兄さん':'おにいさん',
-  'お姉さん':'おねえさん','赤ちゃん':'あかちゃん','お爺さん':'おじいさん',
+  // うごき
+  '立つ':'たつ','座る':'すわる','歩く':'あるく','走る':'はしる',
+  '飛ぶ':'とぶ','跳ぶ':'とぶ','飛':'とぶ',
+  '寝る':'ねる','眠る':'ねる',
+  '食べる':'たべる','食べ':'たべる',
+  '飲む':'のむ','飲':'のむ',
+  '泣く':'なく','笑う':'わらう','笑':'わらう',
+  '遊ぶ':'あそぶ',
+  '書く':'かく','描く':'かく','掻く':'かく',
+  '読む':'よむ','詠む':'よむ',
+  '見る':'みる','観る':'みる',
+  '聞く':'きく','聴く':'きく',
+  '踊る':'おどる','泳ぐ':'およぐ',
+  '投げる':'なげる','教える':'おしえる',
+  '捕まえる':'つかまえる','掴まえる':'つかまえる',
+
+  // にちじょう
+  'お早う':'おはよう','お早うございます':'おはよう',
+  'おはようございます':'おはよう','おはよ':'おはよう',
+  'ありがとうございます':'ありがとう','有難う':'ありがとう','有り難う':'ありがとう',
+  'ありがと':'ありがとう',
+  '御免なさい':'ごめんなさい','ごめん':'ごめんなさい','ごめんね':'ごめんなさい',
+  '頂きます':'いただきます','いただく':'いただきます',
+  'ただいまです':'ただいま','只今':'ただいま','ただ今':'ただいま',
+  '行ってきます':'いってきます','行って来ます':'いってきます','いってきまーす':'いってきます',
+  'お休み':'おやすみ','お休みなさい':'おやすみ','おやすみなさい':'おやすみ',
+  '気持ちいい':'きもちいい','気持ち良い':'きもちいい','気持ちいー':'きもちいい',
+  'お願いします':'おねがいします','お願い':'おねがいします',
+  '大丈夫':'だいじょうぶ','大丈夫です':'だいじょうぶ',
+  '助けて':'たすけて','助けてください':'たすけて',
+  'もう一度':'もういちど','もう一回':'もういちど',
+  '分かりません':'わかりません','わかりません':'わかりません',
+  'お帰りなさい':'おかえりなさい','お帰り':'おかえりなさい',
+
+  // たべもの
+  'ご飯':'ごはん','御飯':'ごはん',
+  '牛乳':'ぎゅうにゅう','お茶':'おちゃ',
+  'アイス':'あいすくりーむ','アイスクリーム':'あいすくりーむ',
+  'ハンバーガー':'はんばーがー','オムライス':'おむらいす',
+  'チョコレート':'ちょこれーと','チョコ':'ちょこれーと',
+
+  // どうぶつ
+  '犬':'いぬ','猫':'ねこ','兎':'うさぎ','兔':'うさぎ',
+  '熊':'くま','豚':'ぶた','牛':'うし','鳥':'とり',
+  '蛙':'かえる','蛙':'かえる','魚':'さかな',
+  '象':'ぞう','麒麟':'きりん','ライオン':'らいおん',
+  'ペンギン':'ぺんぎん','亀':'かめ','コアラ':'こあら',
+  'パンダ':'ぱんだ','ワニ':'わに','猿':'さる','サル':'さる',
+
+  // のりもの
+  '車':'くるま','電車':'でんしゃ','自転車':'じてんしゃ',
+  '飛行機':'ひこうき','船':'ふね','救急車':'きゅうきゅうしゃ',
+  '消防車':'しょうぼうしゃ','新幹線':'しんかんせん',
+  'パトカー':'ぱとかー','タクシー':'たくしー',
+  'ヘリコプター':'へりこぷたー','ロケット':'ろけっと',
+
+  // からだ
+  '目':'め','眼':'め','鼻':'はな','口':'くち','手':'て',
+  '足':'あし','耳':'みみ','髪の毛':'かみのけ','髪':'かみのけ',
+  'お腹':'おなか','腹':'おなか','背中':'せなか',
+  '肩':'かた','指':'ゆび','肘':'ひじ','膝':'ひざ','眉毛':'まゆげ',
+
+  // きもち
+  '嬉しい':'うれしい','嬉し':'うれしい',
+  '悲しい':'かなしい','悲し':'かなしい',
+  '怖い':'こわい','楽しい':'たのしい','楽し':'たのしい',
+  '痛い':'いたい','疲れた':'つかれた','疲れ':'つかれた',
+  '恥ずかしい':'はずかしい','怒った':'おこった','怒る':'おこった',
+  '寂しい':'さびしい','びっくりした':'びっくりした','びっくり':'びっくりした',
+  'ドキドキ':'どきどきする','ドキドキする':'どきどきする',
+
+  // いろ
+  '赤':'あか','青':'あお','黄色':'きいろ','黄':'きいろ',
+  '緑':'みどり','白':'しろ','黒':'くろ',
+  '桃色':'ももいろ','ピンク':'ももいろ',
+  '紫':'むらさき','茶色':'ちゃいろ','茶':'ちゃいろ',
+  '水色':'みずいろ','金色':'きんいろ','オレンジ':'おれんじ',
+
+  // かぞく
+  'お父さん':'おとうさん','父':'おとうさん',
+  'お母さん':'おかあさん','母':'おかあさん',
+  'お兄さん':'おにいさん','兄':'おにいさん',
+  'お姉さん':'おねえさん','姉':'おねえさん',
+  '赤ちゃん':'あかちゃん','お爺さん':'おじいさん',
   'お婆さん':'おばあさん','兄弟':'きょうだい',
-  '先生':'せんせい','友達':'ともだち','教室':'きょうしつ','鉛筆':'えんぴつ',
-  '体育館':'たいいくかん','食堂':'しょくどう','図書館':'としょかん',
-  '授業':'じゅぎょう','宿題':'しゅくだい',
+
+  // がっこう
+  '先生':'せんせい','友達':'ともだち','友だち':'ともだち',
+  '教室':'きょうしつ','鉛筆':'えんぴつ',
+  '体育館':'たいいくかん','食堂':'しょくどう',
+  '図書館':'としょかん','授業':'じゅぎょう','宿題':'しゅくだい',
+  'プール':'ぷーる','ノート':'のーと','カバン':'かばん','鞄':'かばん',
 };
 
 const QUESTIONS_PER_GAME = 5;
@@ -1368,11 +1432,24 @@ function playWord() {
 
 function toHiragana(str) {
   let s = str.replace(/\s/g,'');
+
+  // 完全一致
   if(kanjiMap[s]) return kanjiMap[s];
-  for(const [k,v] of Object.entries(kanjiMap)){ if(s.includes(k)) return v; }
-  s = s.replace(/[\u30A1-\u30F6]/g,c=>String.fromCharCode(c.charCodeAt(0)-0x60));
-  s = s.replace(/[\u4E00-\u9FFF\u3400-\u4DBF]/g,'');
-  return s;
+
+  // カタカナ→ひらがな変換してから再チェック
+  let kana = s.replace(/[\u30A1-\u30F6]/g, c=>String.fromCharCode(c.charCodeAt(0)-0x60));
+  if(kanjiMap[kana]) return kanjiMap[kana];
+
+  // 部分一致（長いキーから順にチェック）
+  const keys = Object.keys(kanjiMap).sort((a,b)=>b.length-a.length);
+  for(const k of keys){
+    if(s.includes(k)) return kanjiMap[k];
+    if(kana.includes(k)) return kanjiMap[k];
+  }
+
+  // 漢字除去
+  kana = kana.replace(/[\u4E00-\u9FFF\u3400-\u4DBF]/g,'');
+  return kana;
 }
 
 function getBestHiragana(results) {
@@ -1389,70 +1466,150 @@ function showRecBtn() {
 function showStopBtn() { document.getElementById('recBtn').style.display='none'; document.getElementById('stopBtn').style.display='inline-flex'; }
 
 function startRec() {
-  const SR=window.SpeechRecognition||window.webkitSpeechRecognition;
-  if(!SR){ document.getElementById('resultBox').textContent='このブラウザはマイクにたいおうしていません。'; return; }
-  heardText=''; stopRequested=false;
-  recognition=new SR(); recognition.lang='ja-JP'; recognition.interimResults=false;
-  recognition.maxAlternatives=5; recognition.continuous=true;
-  recognition.onstart=()=>{
+  const SR = window.SpeechRecognition || window.webkitSpeechRecognition;
+  if(!SR) {
+    document.getElementById('resultBox').textContent = 'このブラウザはマイクにたいおうしていません。';
+    return;
+  }
+
+  heardText = ''; stopRequested = false;
+  clearTimeout(recTimeout);
+
+  recognition = new SR();
+  recognition.lang = 'ja-JP';
+  recognition.interimResults = true;   // 途中結果も取得（重要）
+  recognition.maxAlternatives = 1;     // 1つに絞る（多いと混乱する）
+  recognition.continuous = true;       // 連続認識
+
+  let interimText = '';  // 途中の認識テキスト
+
+  recognition.onstart = () => {
     showStopBtn();
-    document.getElementById('resultBox').textContent='🎙️ はなしてね… おわったら「とめる」をおそう';
-    // 5秒で自動終了
+    document.getElementById('resultBox').textContent = '🎙️ はなしてね…';
+    // 10秒で自動停止
     clearTimeout(recTimeout);
-    recTimeout = setTimeout(function(){
-      if(recognition){ stopRecAndJudge(); }
-    }, 5000);
+    recTimeout = setTimeout(() => { stopRecAndJudge(); }, 10000);
   };
-  recognition.onresult=(e)=>{
-    for(let i=e.resultIndex;i<e.results.length;i++){
-      // 1番目（最も確信度が高い）の認識結果をそのまま使う
-      const raw = e.results[i][0].transcript.replace(/\s/g,'');
-      if(raw) heardText = toHiragana(raw);
+
+  recognition.onresult = (e) => {
+    let finalText = '';
+    interimText = '';
+
+    for(let i = 0; i < e.results.length; i++) {
+      const t = e.results[i][0].transcript.replace(/\s/g, '');
+      if(e.results[i].isFinal) {
+        finalText += t;
+      } else {
+        interimText += t;
+      }
     }
-    if(stopRequested){ doJudge(); try{recognition.abort();}catch(e){} recognition=null; }
+
+    // 確定テキストがあればheardTextを更新
+    if(finalText) {
+      heardText = toHiragana(finalText);
+      document.getElementById('resultBox').textContent = '🎙️ ' + heardText + '…';
+    } else if(interimText) {
+      // 途中テキストを表示（heardTextはまだ更新しない）
+      document.getElementById('resultBox').textContent = '🎙️ ' + toHiragana(interimText) + '…';
+    }
   };
-  recognition.onerror=(ev)=>{ if(ev.error!=='aborted') document.getElementById('resultBox').textContent='きこえませんでした。もういちどためしてね。'; showRecBtn(); };
-  recognition.onend=()=>{
+
+  recognition.onerror = (ev) => {
+    clearTimeout(recTimeout);
+    if(ev.error === 'no-speech') {
+      // 無音 → 何も聞こえなかった
+      document.getElementById('resultBox').textContent = 'きこえませんでした。もういちどためしてね。';
+    } else if(ev.error === 'not-allowed') {
+      document.getElementById('resultBox').textContent = 'マイクのきょかをかくにんしてね。';
+    } else if(ev.error !== 'aborted') {
+      document.getElementById('resultBox').textContent = 'もういちどためしてね。';
+    }
     showRecBtn();
-    if(stopRequested && heardText) doJudge();
-    else if(stopRequested && !heardText) {
-      // 結果なしで終了した場合は何もしない（タイムアウトで処理）
+    recognition = null;
+  };
+
+  recognition.onend = () => {
+    clearTimeout(recTimeout);
+    showRecBtn();
+    recognition = null;
+
+    // interimTextが残っていたらheardTextに採用
+    if(!heardText && interimText) {
+      heardText = toHiragana(interimText);
+    }
+
+    if(stopRequested) {
+      doJudge();
+    }
+    // stopRequestedでない場合（自然に終了）もheardTextがあれば判定
+    else if(heardText) {
+      stopRequested = true;
+      doJudge();
     }
   };
-  recognition.start();
+
+  try {
+    recognition.start();
+  } catch(e) {
+    document.getElementById('resultBox').textContent = 'マイクをつかえませんでした。';
+    showRecBtn();
+  }
 }
 
 function stopRecAndJudge() {
-  stopRequested=true; showRecBtn();
-  if(heardText){
-    doJudge();
-    if(recognition){try{recognition.abort();}catch(e){}} recognition=null;
+  clearTimeout(recTimeout);
+  stopRequested = true;
+  showRecBtn();
+
+  if(recognition) {
+    try { recognition.stop(); } catch(e) {}
+    // onendで doJudge が呼ばれる
   } else {
-    document.getElementById('resultBox').textContent='⏳ はんていちゅう…';
-    if(recognition){try{recognition.stop();}catch(e){}}
-    // 2秒待って結果が来なければ「きこえなかった」と判定
-    setTimeout(function(){
-      if(stopRequested && !heardText){
-        document.getElementById('resultBox').textContent='きこえませんでした。もういちどためしてね。';
-        stopRequested=false;
-        if(recognition){try{recognition.abort();}catch(e){}} recognition=null;
-      }
-    }, 2000);
+    // 既に終了済み
+    doJudge();
   }
 }
 
 function doJudge() {
-  if(!heardText){ document.getElementById('resultBox').textContent='きこえませんでした。もういちどためしてね。'; return; }
+  if(!heardText){
+    document.getElementById('resultBox').textContent='きこえませんでした。もういちどためしてね。';
+    return;
+  }
   const target = filtered[idx].yomi;
   let judgeText = heardText;
-  // ひらがな1文字モードは最初の1文字だけで判定
+
+  // ひらがな1文字は最初の1文字で判定
   if(isHiraganaMode && target.length === 1) {
     judgeText = heardText[0] || heardText;
   }
-  // 長音・小文字を正規化
-  judgeText = judgeText.replace(/ぁ/g,'あ').replace(/ぃ/g,'い').replace(/ぅ/g,'う')
-    .replace(/ぇ/g,'え').replace(/ぉ/g,'お').replace(/ー/g,'');
-  const ok = judgeText === target || heardText === target;
+
+  // 正規化関数（小文字・長音・ゆれを吸収）
+  function normalize(s) {
+    return s
+      .replace(/ぁ/g,'あ').replace(/ぃ/g,'い').replace(/ぅ/g,'う')
+      .replace(/ぇ/g,'え').replace(/ぉ/g,'お')
+      .replace(/ゃ/g,'や').replace(/ゅ/g,'ゆ').replace(/ょ/g,'よ')
+      .replace(/っ/g,'')     // 促音除去
+      .replace(/ー/g,'')     // 長音除去
+      .replace(/[。、！？]/g,'')
+      .replace(/\s/g,'');
+  }
+
+  const normJudge  = normalize(judgeText);
+  const normTarget = normalize(target);
+
+  // 各種一致チェック
+  const ok =
+    judgeText === target ||                                    // 完全一致
+    normJudge === normTarget ||                               // 正規化後一致
+    // 語尾に余分な言葉がついた場合（いただきます→いただきました 等）
+    (normTarget.length >= 3 && normJudge.startsWith(normTarget)) ||
+    // 語尾の1文字が違う（おやすみ→おやすみな 等）
+    (normTarget.length >= 4 && normJudge.startsWith(normTarget.slice(0, -1))) ||
+    // 語頭だけで判定（長い言葉は最初の3文字が合えばOK）
+    (normTarget.length >= 5 && normJudge.startsWith(normTarget.slice(0, 3)));
+
+
   sessionTotal++;
   records.push({student:currentStudent?currentStudent.name:'?',word:filtered[idx].text,result:ok?'o':'d',time:new Date().toLocaleString('ja-JP')});
   try{localStorage.setItem('records',JSON.stringify(records));}catch(e){}
