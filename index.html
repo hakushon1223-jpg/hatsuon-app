@@ -1155,6 +1155,48 @@ const kanjiMap = {
   '体育館':'たいいくかん','食堂':'しょくどう',
   '図書館':'としょかん','授業':'じゅぎょう','宿題':'しゅくだい',
   'プール':'ぷーる','ノート':'のーと','カバン':'かばん','鞄':'かばん',
+
+  // ひらがな1文字専用（音声認識が漢字で返すケース）
+  '亜':'あ','阿':'あ','唖':'あ',
+  '以':'い','伊':'い','位':'い','意':'い','医':'い','異':'い',
+  '宇':'う','羽':'う','右':'う','雨':'う',
+  '絵':'え','江':'え','柄':'え','恵':'え',
+  '尾':'お','緒':'お','御':'お','雄':'お',
+  '可':'か','花':'か','佳':'か','加':'か','火':'か','家':'か','歌':'か',
+  '木':'き','気':'き','記':'き','機':'き','鬼':'き','輝':'き',
+  '久':'く','句':'く','工':'く','口':'く','区':'く',
+  '毛':'け','計':'け','景':'け',
+  '子':'こ','小':'こ','古':'こ','個':'こ','虎':'こ',
+  '左':'さ','差':'さ','佐':'さ','砂':'さ',
+  '士':'し','仕':'し','史':'し','四':'し','詩':'し',
+  '主':'す','寿':'す','朱':'す','素':'す',
+  '世':'せ','背':'せ','西':'せ',
+  '祖':'そ','組':'そ',
+  '田':'た','太':'た','多':'た',
+  '地':'ち','知':'ち','智':'ち','千':'ち','血':'ち',
+  '通':'つ','津':'つ','鶴':'つ',
+  '手':'て','天':'て','典':'て',
+  '戸':'と','土':'と','投':'と','島':'と',
+  '名':'な','奈':'な','那':'な','菜':'な',
+  '二':'に','日':'に','虹':'に',
+  '音':'ね','根':'ね',
+  '野':'の','乃':'の','能':'の',
+  '葉':'は','派':'は','波':'は','刃':'は',
+  '日':'ひ','比':'ひ','灯':'ひ','火':'ひ',
+  '不':'ふ','付':'ふ','府':'ふ','富':'ふ','風':'ふ',
+  '辺':'へ','変':'へ',
+  '保':'ほ','歩':'ほ','母':'ほ',
+  '真':'ま','馬':'ま','万':'ま','麻':'ま',
+  '実':'み','味':'み','身':'み','見':'み','海':'み',
+  '武':'む','夢':'む','無':'む',
+  '目':'め','芽':'め','女':'め',
+  '矢':'や','夜':'や','八':'や',
+  '由':'ゆ','友':'ゆ','湯':'ゆ','結':'ゆ',
+  '予':'よ','余':'よ','善':'よ',
+  '里':'り','利':'り','理':'り',
+  '礼':'れ','麗':'れ','例':'れ',
+  '路':'ろ','老':'ろ',
+  '和':'わ','話':'わ','輪':'わ',
 };
 
 const QUESTIONS_PER_GAME = 5;
@@ -1432,13 +1474,26 @@ function playWord() {
 
 function toHiragana(str) {
   let s = str.replace(/\s/g,'');
+  if(!s) return '';
 
-  // 完全一致
-  if(kanjiMap[s]) return kanjiMap[s];
-
-  // カタカナ→ひらがな変換してから再チェック
+  // カタカナ→ひらがな（先に変換）
   let kana = s.replace(/[\u30A1-\u30F6]/g, c=>String.fromCharCode(c.charCodeAt(0)-0x60));
+
+  // ひらがなのみなら変換不要
+  if(/^[\u3041-\u3096ー]+$/.test(kana)) return kana;
+
+  // kanjiMap完全一致（元の文字列）
+  if(kanjiMap[s]) return kanjiMap[s];
+  // kanjiMap完全一致（カタカナ変換後）
   if(kanjiMap[kana]) return kanjiMap[kana];
+
+  // 1文字の場合：kanjiMapで直接変換
+  if(s.length === 1) {
+    if(kanjiMap[s]) return kanjiMap[s];
+    // 漢字の読みを試みる（kanjiMapにあれば）
+    const hiraganaChar = kana.replace(/[\u4E00-\u9FFF\u3400-\u4DBF]/g,'');
+    if(hiraganaChar) return hiraganaChar;
+  }
 
   // 部分一致（長いキーから順にチェック）
   const keys = Object.keys(kanjiMap).sort((a,b)=>b.length-a.length);
@@ -1447,9 +1502,9 @@ function toHiragana(str) {
     if(kana.includes(k)) return kanjiMap[k];
   }
 
-  // 漢字除去
-  kana = kana.replace(/[\u4E00-\u9FFF\u3400-\u4DBF]/g,'');
-  return kana;
+  // 漢字除去（残ったひらがな・カタカナを返す）
+  kana = kana.replace(/[\u4E00-\u9FFF\u3400-\u4DBF\u3005\u3006]/g,'');
+  return kana || s[0] || '';
 }
 
 function getBestHiragana(results) {
@@ -1504,13 +1559,32 @@ function startRec() {
       }
     }
 
-    // 確定テキストがあればheardTextを更新
-    if(finalText) {
-      heardText = toHiragana(finalText);
-      document.getElementById('resultBox').textContent = '🎙️ ' + heardText + '…';
-    } else if(interimText) {
-      // 途中テキストを表示（heardTextはまだ更新しない）
-      document.getElementById('resultBox').textContent = '🎙️ ' + toHiragana(interimText) + '…';
+    const target = filtered[idx] ? filtered[idx].yomi : '';
+
+    // ひらがな1文字モードは途中テキストも積極活用
+    if(isHiraganaMode && target.length === 1) {
+      const checkText = finalText || interimText;
+      if(checkText) {
+        // 全文字をひらがなに変換して各文字を確認
+        const converted = toHiragana(checkText);
+        // 含まれていればすぐ正解とする
+        if(converted.includes(target) || checkText.includes(target)) {
+          heardText = target;
+          document.getElementById('resultBox').textContent = '🎙️ ' + target + '…';
+        } else {
+          heardText = toHiragana(checkText[0] || checkText);
+          document.getElementById('resultBox').textContent = '🎙️ ' + converted + '…';
+        }
+      }
+    } else {
+      // 確定テキストがあればheardTextを更新
+      if(finalText) {
+        heardText = toHiragana(finalText);
+        document.getElementById('resultBox').textContent = '🎙️ ' + heardText + '…';
+      } else if(interimText) {
+        // 途中テキストを表示（heardTextはまだ更新しない）
+        document.getElementById('resultBox').textContent = '🎙️ ' + toHiragana(interimText) + '…';
+      }
     }
   };
 
@@ -1535,14 +1609,17 @@ function startRec() {
 
     // interimTextが残っていたらheardTextに採用
     if(!heardText && interimText) {
-      heardText = toHiragana(interimText);
+      // ひらがな1文字モードは途中テキストも使う
+      const target = filtered[idx] ? filtered[idx].yomi : '';
+      if(isHiraganaMode && target.length === 1) {
+        const converted = toHiragana(interimText);
+        heardText = converted.includes(target) ? target : (toHiragana(interimText[0]) || converted);
+      } else {
+        heardText = toHiragana(interimText);
+      }
     }
 
-    if(stopRequested) {
-      doJudge();
-    }
-    // stopRequestedでない場合（自然に終了）もheardTextがあれば判定
-    else if(heardText) {
+    if(stopRequested || heardText) {
       stopRequested = true;
       doJudge();
     }
@@ -1578,9 +1655,26 @@ function doJudge() {
   const target = filtered[idx].yomi;
   let judgeText = heardText;
 
-  // ひらがな1文字は最初の1文字で判定
-  if(isHiraganaMode && target.length === 1) {
-    judgeText = heardText[0] || heardText;
+  // ひらがなモードの特別処理
+  if(isHiraganaMode) {
+    if(target.length === 1) {
+      // 1文字の場合：認識結果の最初の1文字・最後の1文字・全体で判定
+      const candidates = [
+        heardText[0],
+        heardText[heardText.length - 1],
+        heardText,
+      ].filter(Boolean).map(c => toHiragana(c));
+      // いずれかが正解なら即OK
+      if(candidates.some(c => c === target)) {
+        heardText = target; // 強制的に正解テキストにセット
+        judgeText = target;
+      } else {
+        judgeText = candidates[0] || heardText[0] || heardText;
+      }
+    } else {
+      // 複数文字：全体で判定
+      judgeText = toHiragana(heardText);
+    }
   }
 
   // 正規化関数（小文字・長音・ゆれを吸収）
