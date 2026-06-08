@@ -1530,38 +1530,63 @@ function playWord() {
 }
 
 function toHiragana(str) {
+  if(!str) return '';
   let s = str.replace(/\s/g,'');
   if(!s) return '';
 
-  // カタカナ→ひらがな（先に変換）
+  // 数字→ひらがな
+  const numMap = {'0':'れい','1':'いち','2':'に','3':'さん','4':'し',
+    '5':'ご','6':'ろく','7':'なな','8':'はち','9':'く',
+    '０':'れい','１':'いち','２':'に','３':'さん','４':'し',
+    '５':'ご','６':'ろく','７':'なな','８':'はち','９':'く'};
+  if(numMap[s]) return numMap[s];
+
+  // アルファベット→ひらがな（よみかた）
+  const alphaMap = {
+    'a':'えー','b':'びー','c':'しー','d':'でぃー','e':'いー',
+    'f':'えふ','g':'じー','h':'えいち','i':'あい','j':'じぇー',
+    'k':'けー','l':'える','m':'えむ','n':'えぬ','o':'おー',
+    'p':'ぴー','q':'きゅー','r':'あーる','s':'えす','t':'てぃー',
+    'u':'ゆー','v':'ぶい','w':'だぶりゅー','x':'えっくす',
+    'y':'わい','z':'ぜっと',
+    'A':'えー','B':'びー','C':'しー','D':'でぃー','E':'いー',
+    'K':'けー','N':'えぬ','O':'おー','U':'ゆー','W':'だぶりゅー',
+  };
+  if(alphaMap[s]) return alphaMap[s];
+  if(alphaMap[s.toLowerCase()]) return alphaMap[s.toLowerCase()];
+
+  // カタカナ→ひらがな
   let kana = s.replace(/[\u30A1-\u30F6]/g, c=>String.fromCharCode(c.charCodeAt(0)-0x60));
 
-  // ひらがなのみなら変換不要
-  if(/^[\u3041-\u3096ー]+$/.test(kana)) return kana;
+  // ひらがなのみなら返す
+  if(/^[\u3041-\u3096ーっ]+$/.test(kana)) return kana;
 
-  // kanjiMap完全一致（元の文字列）
+  // kanjiMap完全一致
   if(kanjiMap[s]) return kanjiMap[s];
-  // kanjiMap完全一致（カタカナ変換後）
   if(kanjiMap[kana]) return kanjiMap[kana];
 
-  // 1文字の場合：kanjiMapで直接変換
-  if(s.length === 1) {
-    if(kanjiMap[s]) return kanjiMap[s];
-    // 漢字の読みを試みる（kanjiMapにあれば）
-    const hiraganaChar = kana.replace(/[\u4E00-\u9FFF\u3400-\u4DBF]/g,'');
-    if(hiraganaChar) return hiraganaChar;
-  }
-
-  // 部分一致（長いキーから順にチェック）
+  // 部分一致（長いキーから）
   const keys = Object.keys(kanjiMap).sort((a,b)=>b.length-a.length);
   for(const k of keys){
     if(s.includes(k)) return kanjiMap[k];
     if(kana.includes(k)) return kanjiMap[k];
   }
 
-  // 漢字除去（残ったひらがな・カタカナを返す）
+  // 漢字を1文字ずつkanjiMapで変換
+  let result2 = '';
+  for(const ch of kana){
+    if(kanjiMap[ch]) result2 += kanjiMap[ch];
+    else if(/[\u4E00-\u9FFF\u3400-\u4DBF]/.test(ch)) {
+      // kanjiMapにない漢字は除去
+    } else {
+      result2 += ch;
+    }
+  }
+  if(result2) return result2;
+
+  // 漢字除去して残りを返す
   kana = kana.replace(/[\u4E00-\u9FFF\u3400-\u4DBF\u3005\u3006]/g,'');
-  return kana || s[0] || '';
+  return kana || '';
 }
 
 function getBestHiragana(results) {
