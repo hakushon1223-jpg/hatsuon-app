@@ -1320,6 +1320,8 @@ let recTimeout=null; // 録音タイムアウト
 let interimText='';  // 音声認識途中テキスト（グローバル）
 let judged=false;    // この録音セッションで判定済みか
 let recRetry=0;      // 自動リトライ回数
+let voiceDetected=false; // マイク音量で声を検知したか
+let audioStream=null, audioCtxVD=null, vdTimer=null;
 let missCount=0, missedWords=[], isBonusTime=false;
 let bonusWords=[], bonusIdx=0;
 let currentEnemy=null, enemyCurrentHp=5, enemyMaxHp=5;
@@ -1337,7 +1339,7 @@ function loadData() {
 
 // ===================== 画面遷移 =====================
 function showScreen(id) { document.querySelectorAll('.screen').forEach(s=>s.classList.remove('active')); document.getElementById(id).classList.add('active'); }
-function goTop() { stopTimer(); if(recognition){try{recognition.abort();}catch(e){}} showScreen('screenTop'); }
+function goTop() { stopTimer(); stopVoiceDetect(); if(recognition){try{recognition.abort();}catch(e){}} showScreen('screenTop'); }
 
 function goPlayerSelect() {
   const playerList = students && students.length > 0
@@ -1563,6 +1565,7 @@ function loadCard() {
   if(nextBtn) nextBtn.style.display = isHiraganaMode ? '' : 'none';
   heardText=''; interimText=''; stopRequested=false; judged=false;
   clearTimeout(recTimeout);
+  stopVoiceDetect();
   if(recognition){try{recognition.abort();}catch(e){} recognition=null;}
 }
 
@@ -1574,6 +1577,7 @@ function playWord() {
   // 認識中なら停止
   if(recognition){ try{recognition.abort();}catch(e){} recognition=null; showRecBtn(); }
   clearTimeout(recTimeout);
+  stopVoiceDetect();
   window.speechSynthesis.cancel();
   const w = filtered[idx];
   const u = new SpeechSynthesisUtterance(w.text);
@@ -1656,6 +1660,42 @@ function showRecBtn() {
 }
 function showStopBtn() { document.getElementById('recBtn').style.display='none'; document.getElementById('stopBtn').style.display='inline-flex'; }
 
+
+// ===== マイク音量で「声を出したか」を検知 =====
+async function startVoiceDetect() {
+  voiceDetected = false;
+  try {
+    audioStream = await navigator.mediaDevices.getUserMedia({ audio: true });
+    if(!audioCtxVD) audioCtxVD = new (window.AudioContext || window.webkitAudioContext)();
+    if(audioCtxVD.state === 'suspended') { try { await audioCtxVD.resume(); } catch(e){} }
+    const source = audioCtxVD.createMediaStreamSource(audioStream);
+    const analyser = audioCtxVD.createAnalyser();
+    analyser.fftSize = 512;
+    source.connect(analyser);
+    const data = new Uint8Array(analyser.frequencyBinCount);
+    clearInterval(vdTimer);
+    vdTimer = setInterval(() => {
+      analyser.getByteFrequencyData(data);
+      let sum = 0;
+      for(let i = 0; i < data.length; i++) sum += data[i];
+      const avg = sum / data.length;
+      if(avg > 28) { // しきい値：声を検知
+        voiceDetected = true;
+      }
+    }, 80);
+  } catch(e) {
+    // マイク取得失敗時は音量検知なしで続行
+  }
+}
+
+function stopVoiceDetect() {
+  clearInterval(vdTimer); vdTimer = null;
+  if(audioStream) {
+    try { audioStream.getTracks().forEach(t => t.stop()); } catch(e) {}
+    audioStream = null;
+  }
+}
+
 function playStartBeep() {
   // マイク起動の合図音「ピッ」
   try {
@@ -1683,6 +1723,8 @@ function startRec(isAutoRetry) {
   try { window.speechSynthesis.cancel(); } catch(e) {}
   heardText = ''; interimText = ''; stopRequested = false; judged = false;
   clearTimeout(recTimeout);
+  // ひらがなモードはマイク音量検知も並行起動
+  if(isHiraganaMode) { startVoiceDetect(); }
 
   recognition = new SR();
   recognition.lang = 'ja-JP';
@@ -1695,8 +1737,7 @@ function startRec(isAutoRetry) {
     playStartBeep(); // 合図音「ピッ」
     const target = filtered[idx] ? filtered[idx].yomi : '';
     if(isHiraganaMode && target.length === 1) {
-      // のばして言うと認識されやすい
-      document.getElementById('resultBox').textContent = '🎙️ 「' + target + 'ー」とのばしていってね！';
+      document.getElementById('resultBox').textContent = '🎙️ 「' + target + '」といってね！';
     } else {
       document.getElementById('resultBox').textContent = '🎙️ はなしてね…';
     }
@@ -1777,22 +1818,33 @@ function startRec(isAutoRetry) {
     showRecBtn();
     recognition = null;
 
-    if(judged) return; // 既に判定済みなら何もしない
+    if(judged) { stopVoiceDetect(); return; }
 
     // heardTextがなければinterimTextを使う
     if(!heardText && interimText) {
       heardText = interimText;
     }
 
+    const target = filtered[idx] ? filtered[idx].yomi : '';
+
     if(heardText) {
+      stopVoiceDetect();
+      judged = true;
+      doJudge();
+    } else if(isHiraganaMode && voiceDetected) {
+      // 認識結果は空だが、マイクで声を検知 → 発声できたので正解扱い
+      stopVoiceDetect();
+      heardText = target;
       judged = true;
       doJudge();
     } else if(recRetry < 1 && !stopRequested) {
-      // 聞こえなかった → 1回だけ自動でマイク再起動
+      // 声も検知できなかった → 1回だけ自動でマイク再起動
+      stopVoiceDetect();
       recRetry++;
       document.getElementById('resultBox').textContent = '🎙️ もういちど！おおきなこえでいってみよう！';
       setTimeout(() => startRec(true), 600);
     } else {
+      stopVoiceDetect();
       document.getElementById('resultBox').textContent = 'きこえませんでした。「はなす」をおしてもういちど！';
     }
   };
