@@ -1199,6 +1199,20 @@ const kanjiMap = {
   '礼':'れ','麗':'れ','例':'れ',
   '路':'ろ','老':'ろ',
   '和':'わ','話':'わ','輪':'わ',
+  // のばした発音で返りやすいパターン
+  '良い':'いい','言い':'いい','飯':'いい','言':'い',
+  'いいー':'いい','ええー':'ええ','ああー':'ああ',
+  '唸':'う','卯':'う','胡':'う',
+  '絵ー':'え','重':'え',
+  '王':'おう','大':'おお','多':'おお',
+  '蚊':'か','課':'か','日':'か',
+  '黄':'き','期':'き','喜':'き',
+  '苦':'く','空':'くう','食う':'くう',
+  '異':'い','井':'い','医':'い','胃':'い',
+  '葦':'い','亥':'い',
+  '宇':'う','卯':'う','鵜':'う',
+  '荏':'え','餌':'え','柄':'え',
+  '雄':'お','緒':'お','男':'お',
 };
 
 
@@ -1257,6 +1271,38 @@ function vowelsOnly(romaji) {
   return romaji.replace(/[^aiueo]/g, '');
 }
 
+// 子音の「にた音」グループ（やさしい判定用）
+// か行↔が行、さ行↔ざ行、た行↔だ行、は行↔ば行↔ぱ行 は同じ扱い
+const CONSONANT_GROUPS = {
+  'k':'kg', 'g':'kg',
+  's':'sz', 'z':'sz',
+  't':'td', 'd':'td',
+  'h':'hbp', 'b':'hbp', 'p':'hbp',
+  'n':'nm', 'm':'nm',
+  'r':'r', 'w':'w', 'y':'y',
+};
+
+// 1モーラのローマ字を「子音＋母音」に分解
+function splitMora(romaji) {
+  if(!romaji) return null;
+  const m = romaji.match(/^([kgsztdnhbpmyrw]*)([aiueo])/);
+  if(!m) return null;
+  return { c: m[1] || '', v: m[2] };
+}
+
+// 2つのモーラが「にた音」かどうか（母音一致＋子音が同グループ）
+function isSimilarMora(romajiA, romajiB) {
+  const a = splitMora(romajiA);
+  const b = splitMora(romajiB);
+  if(!a || !b) return false;
+  if(a.v !== b.v) return false;       // 母音は必ず一致
+  if(a.c === b.c) return true;        // 子音同じ
+  const gA = CONSONANT_GROUPS[a.c] || a.c;
+  const gB = CONSONANT_GROUPS[b.c] || b.c;
+  return gA === gB;                   // 同グループならOK
+}
+
+
 const QUESTIONS_PER_GAME = 5;
 const speedMap   = {1:.45,2:.55,3:.70,4:.85,5:1.00};
 const speedNames = {1:'とてもおそい',2:'ゆっくり',3:'ふつう',4:'すこしはやい',5:'はやい'};
@@ -1273,6 +1319,7 @@ const TIME_ATTACK_SEC=30;
 let recTimeout=null; // 録音タイムアウト
 let interimText='';  // 音声認識途中テキスト（グローバル）
 let judged=false;    // この録音セッションで判定済みか
+let recRetry=0;      // 自動リトライ回数
 let missCount=0, missedWords=[], isBonusTime=false;
 let bonusWords=[], bonusIdx=0;
 let currentEnemy=null, enemyCurrentHp=5, enemyMaxHp=5;
@@ -1609,12 +1656,28 @@ function showRecBtn() {
 }
 function showStopBtn() { document.getElementById('recBtn').style.display='none'; document.getElementById('stopBtn').style.display='inline-flex'; }
 
-function startRec() {
+function playStartBeep() {
+  // マイク起動の合図音「ピッ」
+  try {
+    const ctx = new(window.AudioContext||window.webkitAudioContext)();
+    const o = ctx.createOscillator(), g = ctx.createGain();
+    o.connect(g); g.connect(ctx.destination);
+    o.frequency.value = 880; o.type = 'sine';
+    g.gain.setValueAtTime(.3, ctx.currentTime);
+    g.gain.exponentialRampToValueAtTime(.001, ctx.currentTime + .15);
+    o.start(ctx.currentTime); o.stop(ctx.currentTime + .15);
+  } catch(e) {}
+}
+
+function startRec(isAutoRetry) {
   const SR = window.SpeechRecognition || window.webkitSpeechRecognition;
   if(!SR) {
     document.getElementById('resultBox').textContent = 'このブラウザはマイクにたいおうしていません。';
     return;
   }
+
+  // 手動で押した場合はリトライ回数リセット
+  if(!isAutoRetry) recRetry = 0;
 
   // 音声再生中なら停止（再生と認識の干渉防止）
   try { window.speechSynthesis.cancel(); } catch(e) {}
@@ -1624,14 +1687,16 @@ function startRec() {
   recognition = new SR();
   recognition.lang = 'ja-JP';
   recognition.interimResults = true;
-  recognition.maxAlternatives = 3;
+  recognition.maxAlternatives = 10;
   recognition.continuous = true;
 
   recognition.onstart = () => {
     showStopBtn();
+    playStartBeep(); // 合図音「ピッ」
     const target = filtered[idx] ? filtered[idx].yomi : '';
     if(isHiraganaMode && target.length === 1) {
-      document.getElementById('resultBox').textContent = '🎙️ 「' + target + '」といってね…';
+      // のばして言うと認識されやすい
+      document.getElementById('resultBox').textContent = '🎙️ 「' + target + 'ー」とのばしていってね！';
     } else {
       document.getElementById('resultBox').textContent = '🎙️ はなしてね…';
     }
@@ -1661,7 +1726,10 @@ function startRec() {
             raw.includes(target) || converted.includes(target) ||
             cR === tR || rR === tR ||
             cR.startsWith(tR) || rR.startsWith(tR) ||
-            (vowelsOnly(cR)[0] === tR) || (vowelsOnly(rR)[0] === tR);
+            cR.endsWith(tR) || rR.endsWith(tR) ||
+            (tR.length === 1 && vowelsOnly(cR)[0] === tR) ||
+            (tR.length === 1 && vowelsOnly(rR)[0] === tR) ||
+            isSimilarMora(cR, tR) || isSimilarMora(rR, tR);
         }
         if(e.results[i].isFinal) {
           if(hiraMatch) { latestFinal = target; break; }
@@ -1719,8 +1787,13 @@ function startRec() {
     if(heardText) {
       judged = true;
       doJudge();
+    } else if(recRetry < 1 && !stopRequested) {
+      // 聞こえなかった → 1回だけ自動でマイク再起動
+      recRetry++;
+      document.getElementById('resultBox').textContent = '🎙️ もういちど！おおきなこえでいってみよう！';
+      setTimeout(() => startRec(true), 600);
     } else {
-      document.getElementById('resultBox').textContent = 'きこえませんでした。もういちどためしてね。';
+      document.getElementById('resultBox').textContent = 'きこえませんでした。「はなす」をおしてもういちど！';
     }
   };
 
@@ -1787,8 +1860,23 @@ function doJudge() {
       // ひらがな文字そのものの一致もチェック
       heardText.includes(target) ||
       judgeText.includes(target);
+  } else if(isHiraganaMode) {
+    // ===== ひらがな複数文字：やさしい音素判定 =====
+    const tR2 = targetRomaji;
+    const cR2 = heardRomaji;
+    const rR2 = rawRomaji;
+    ok =
+      judgeText === target ||
+      cR2 === tR2 || rR2 === tR2 ||
+      cR2.startsWith(tR2) || rR2.startsWith(tR2) ||
+      // 先頭の2/3が一致すればOK（やさしい）
+      (tR2.length >= 4 && (cR2.startsWith(tR2.slice(0, Math.ceil(tR2.length*2/3))) ||
+                            rR2.startsWith(tR2.slice(0, Math.ceil(tR2.length*2/3))))) ||
+      // 母音列が一致（音の流れが同じ）
+      (vowelsOnly(cR2) === vowelsOnly(tR2)) ||
+      (vowelsOnly(rR2) === vowelsOnly(tR2));
   } else {
-    // ===== 複数文字・ことばモード：音素ベース＋表記ベース =====
+    // ===== ことばモード：音素ベース＋表記ベース =====
     function normalize(s) {
       return s
         .replace(/ぁ/g,'あ').replace(/ぃ/g,'い').replace(/ぅ/g,'う')
