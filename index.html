@@ -76,22 +76,22 @@ body{font-family:'Zen Maru Gothic','Hiragino Maru Gothic ProN',sans-serif;backgr
 .streak-badge{font-size:12px;font-weight:700;padding:4px 12px;border-radius:999px;background:var(--yellow-light);color:#E65100;}
 .progress-wrap{width:100%;background:#eee;border-radius:999px;height:10px;margin-bottom:.75rem;overflow:hidden;}
 .progress-bar{height:100%;border-radius:999px;background:linear-gradient(90deg,var(--orange),var(--red));transition:width .4s ease;}
-.card{background:var(--white);border-radius:var(--radius);box-shadow:var(--shadow);padding:1.75rem 1.5rem 1.5rem;text-align:center;width:100%;position:relative;overflow:hidden;}
+.card{background:var(--white);border-radius:var(--radius);box-shadow:var(--shadow);padding:1.75rem 1.5rem 1.5rem;text-align:center;width:100%;position:relative;overflow:hidden;flex:1;display:flex;flex-direction:column;justify-content:center;}
 .word-illust{font-size:88px;line-height:1;margin-bottom:.5rem;display:block;transition:transform .3s;}
 .word-text{font-family:'Kaisei Decol',serif;font-size:36px;font-weight:700;color:var(--text);margin-bottom:1rem;letter-spacing:.08em;}
 .btn-row{display:flex;gap:8px;justify-content:center;margin-bottom:.75rem;flex-wrap:wrap;}
-.btn-play {background:var(--blue);color:#fff;padding:12px 20px;font-size:15px;box-shadow:0 3px 10px rgba(79,195,247,.35);}
-.btn-rec  {background:var(--red);color:#fff;padding:12px 20px;font-size:15px;box-shadow:0 3px 10px rgba(239,83,80,.35);}
-.btn-stop {background:#555;color:#fff;padding:12px 20px;font-size:15px;display:none;}
+.btn-play {background:var(--blue);color:#fff;padding:18px 24px;font-size:18px;box-shadow:0 3px 10px rgba(79,195,247,.35);}
+.btn-rec  {background:var(--red);color:#fff;padding:26px 48px;font-size:26px;box-shadow:0 6px 20px rgba(239,83,80,.4);border-radius:999px;width:100%;}
+.btn-stop {background:#555;color:#fff;padding:26px 48px;font-size:26px;display:none;border-radius:999px;width:100%;}
 .result-box{min-height:50px;background:#F9F9F9;border-radius:14px;padding:11px 14px;font-size:14px;color:#555;margin-bottom:.75rem;display:flex;align-items:center;justify-content:center;text-align:center;line-height:1.6;width:100%;border:1.5px solid #eee;}
 .end-btn{background:#FFE0B2;color:#E65100;padding:10px 24px;font-size:14px;margin-top:.5rem;}
-.nav{display:flex;align-items:center;justify-content:center;gap:20px;margin-top:1rem;width:100%;}
+.nav{display:flex;align-items:center;justify-content:center;gap:20px;margin-top:.5rem;width:100%;}
 .nav-btn{width:46px;height:46px;border-radius:50%;border:2px solid #ddd;background:var(--white);font-size:20px;cursor:pointer;display:flex;align-items:center;justify-content:center;}
 .counter{font-size:15px;color:var(--gray);min-width:60px;text-align:center;font-weight:700;}
-.speed-row{display:flex;align-items:center;gap:10px;margin-top:.75rem;justify-content:center;}
+.speed-row{display:flex;align-items:center;gap:10px;margin-top:.75rem;justify-content:center;width:100%;}
 .speed-row label{font-size:12px;color:var(--gray);}
 .speed-val{font-size:12px;font-weight:700;color:var(--text);min-width:88px;}
-input[type=range]{width:100px;accent-color:var(--orange);}
+input[type=range]{flex:1;max-width:200px;accent-color:var(--orange);}
 
 /* 結果画面 */
 .result-card{background:var(--white);border-radius:var(--radius);box-shadow:var(--shadow);padding:2.5rem 2rem;text-align:center;width:100%;}
@@ -436,7 +436,7 @@ input[type=range]{width:100px;accent-color:var(--orange);}
 </div>
 
 <!-- 練習 -->
-<div class="screen" id="screenPractice">
+<div class="screen" id="screenPractice" style="flex:1;justify-content:flex-start;min-height:100vh;padding-bottom:1rem;">
   <div class="practice-header">
     <span class="mode-badge" id="modeBadge"></span>
     <span class="streak-badge" id="streakBadge">🔥 0れんぞく</span>
@@ -471,8 +471,10 @@ input[type=range]{width:100px;accent-color:var(--orange);}
   <div class="card">
     <span class="word-illust" id="emoji">🏃</span>
     <div class="word-text" id="word">はしる</div>
-    <div class="btn-row">
+    <div class="btn-row" style="justify-content:center;margin-bottom:.5rem;">
       <button class="btn btn-play" onclick="playWord()">🔊 きく</button>
+    </div>
+    <div style="width:100%;padding:0 .5rem;margin-bottom:.75rem;">
       <button class="btn btn-rec" id="recBtn" onclick="startRec()">🎙️ はなす</button>
       <button class="btn btn-stop" id="stopBtn" onclick="stopRecAndJudge()">■ とめる</button>
     </div>
@@ -1270,6 +1272,7 @@ let isTimeAttack=false, timerSeconds=30, timerInterval=null;
 const TIME_ATTACK_SEC=30;
 let recTimeout=null; // 録音タイムアウト
 let interimText='';  // 音声認識途中テキスト（グローバル）
+let judged=false;    // この録音セッションで判定済みか
 let missCount=0, missedWords=[], isBonusTime=false;
 let bonusWords=[], bonusIdx=0;
 let currentEnemy=null, enemyCurrentHp=5, enemyMaxHp=5;
@@ -1511,7 +1514,8 @@ function loadCard() {
   const nextBtn = document.getElementById('nextBtn');
   if(prevBtn) prevBtn.style.display = isHiraganaMode ? '' : 'none';
   if(nextBtn) nextBtn.style.display = isHiraganaMode ? '' : 'none';
-  heardText=''; stopRequested=false;
+  heardText=''; interimText=''; stopRequested=false; judged=false;
+  clearTimeout(recTimeout);
   if(recognition){try{recognition.abort();}catch(e){} recognition=null;}
 }
 
@@ -1520,6 +1524,9 @@ function updateStreakUI() { document.getElementById('streakBadge').textContent='
 
 
 function playWord() {
+  // 認識中なら停止
+  if(recognition){ try{recognition.abort();}catch(e){} recognition=null; showRecBtn(); }
+  clearTimeout(recTimeout);
   window.speechSynthesis.cancel();
   const w = filtered[idx];
   const u = new SpeechSynthesisUtterance(w.text);
@@ -1609,7 +1616,9 @@ function startRec() {
     return;
   }
 
-  heardText = ''; interimText = ''; stopRequested = false;
+  // 音声再生中なら停止（再生と認識の干渉防止）
+  try { window.speechSynthesis.cancel(); } catch(e) {}
+  heardText = ''; interimText = ''; stopRequested = false; judged = false;
   clearTimeout(recTimeout);
 
   recognition = new SR();
@@ -1688,22 +1697,11 @@ function startRec() {
 
   recognition.onerror = (ev) => {
     clearTimeout(recTimeout);
-    if(ev.error === 'no-speech') {
-      // 無音の場合もinterimTextがあれば使う
-      if(interimText) {
-        heardText = interimText;
-        doJudge();
-      } else {
-        document.getElementById('resultBox').textContent = 'きこえませんでした。もういちどためしてね。';
-      }
-    } else if(ev.error === 'not-allowed') {
+    // 結果はonendで一括処理するため、ここではエラー表示のみ
+    if(ev.error === 'not-allowed') {
       document.getElementById('resultBox').textContent = 'マイクのきょかをかくにんしてね。';
-    } else if(ev.error !== 'aborted') {
-      if(interimText) { heardText = interimText; doJudge(); return; }
-      document.getElementById('resultBox').textContent = 'もういちどためしてね。';
     }
-    showRecBtn();
-    recognition = null;
+    // no-speech等はonendでinterimTextを使って判定するので何もしない
   };
 
   recognition.onend = () => {
@@ -1711,14 +1709,18 @@ function startRec() {
     showRecBtn();
     recognition = null;
 
+    if(judged) return; // 既に判定済みなら何もしない
+
     // heardTextがなければinterimTextを使う
     if(!heardText && interimText) {
       heardText = interimText;
     }
 
-    if(stopRequested || heardText) {
-      stopRequested = true;
+    if(heardText) {
+      judged = true;
       doJudge();
+    } else {
+      document.getElementById('resultBox').textContent = 'きこえませんでした。もういちどためしてね。';
     }
   };
 
@@ -1738,9 +1740,15 @@ function stopRecAndJudge() {
   if(recognition) {
     try { recognition.stop(); } catch(e) {}
     // onendで doJudge が呼ばれる
-  } else {
-    // 既に終了済み
-    doJudge();
+  } else if(!judged) {
+    // 既に終了済みでまだ判定していない場合のみ判定
+    if(!heardText && interimText) heardText = interimText;
+    if(heardText) {
+      judged = true;
+      doJudge();
+    } else {
+      document.getElementById('resultBox').textContent = 'きこえませんでした。もういちどためしてね。';
+    }
   }
 }
 
@@ -1749,6 +1757,7 @@ function doJudge() {
     document.getElementById('resultBox').textContent='きこえませんでした。もういちどためしてね。';
     return;
   }
+  if(!filtered[idx]) return; // 問題が存在しない（全問終了後等）
   const target = filtered[idx].yomi;
   let judgeText = toHiragana(heardText);
 
@@ -2867,16 +2876,14 @@ function updateTimerUI() {
 }
 
 function timeUp() {
-  // 時間切れ → 結果画面へ
+  // 時間切れ → ゲームオーバー
   if(recognition) { try { recognition.abort(); } catch(e){} recognition = null; }
   stopTimer();
-  // タイムアップ表示
   document.getElementById('resultBox').textContent = '⏰ じかんきれ！';
   playMissSound();
   setTimeout(()=>{
-    defeatEnemy(); // 敵は倒せなかったが結果表示
-    // 実際は敗北だが同じ勝利画面を使う（メッセージを変える）
-  }, 1000);
+    showGameOver();
+  }, 1200);
 }
 
 
