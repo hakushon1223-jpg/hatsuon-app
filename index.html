@@ -161,25 +161,6 @@ input[type=range]{flex:1;max-width:200px;accent-color:var(--orange);}
 .stamp-popup .stamp-name{font-size:20px;font-weight:700;color:#fff;margin-top:.5rem;text-shadow:0 2px 8px rgba(0,0,0,.5);}
 @keyframes stampA{0%{transform:translate(-50%,-50%) scale(0) rotate(-20deg);opacity:0;}20%{transform:translate(-50%,-50%) scale(1.2) rotate(5deg);opacity:1;}40%{transform:translate(-50%,-50%) scale(1) rotate(0);opacity:1;}80%{transform:translate(-50%,-50%) scale(1);opacity:1;}100%{transform:translate(-50%,-50%) scale(.8);opacity:0;}}
 
-/* ===== スタンプ帳 ===== */
-.stamp-book-card{background:var(--white);border-radius:var(--radius);box-shadow:var(--shadow);padding:1.5rem;width:100%;margin-bottom:1rem;}
-.stamp-book-title{font-size:15px;font-weight:700;color:var(--text);margin-bottom:.75rem;display:flex;align-items:center;gap:6px;}
-.stamp-grid{display:grid;grid-template-columns:repeat(5,1fr);gap:8px;}
-.stamp-item{aspect-ratio:1;border-radius:14px;display:flex;flex-direction:column;align-items:center;justify-content:center;font-size:26px;position:relative;transition:transform .15s;}
-.stamp-item.earned{background:linear-gradient(135deg,#FFF9C4,#FFE082);box-shadow:0 2px 8px rgba(255,193,7,.3);}
-.stamp-item.locked{background:#F5F5F5;filter:grayscale(1);opacity:.4;}
-.stamp-item .stamp-label{font-size:9px;color:#888;margin-top:2px;text-align:center;line-height:1.2;}
-.stamp-new-badge{position:absolute;top:-4px;right:-4px;background:var(--red);color:#fff;font-size:9px;font-weight:700;border-radius:999px;padding:1px 5px;}
-
-/* ===== レベルアップ ===== */
-.level-card{background:linear-gradient(135deg,#FF8C42,#EF5350);border-radius:var(--radius);box-shadow:var(--shadow);padding:1.5rem;width:100%;color:#fff;text-align:center;margin-bottom:1rem;}
-.level-rank-emoji{font-size:56px;margin-bottom:.5rem;display:block;animation:floatEmoji 3s ease-in-out infinite;}
-.level-rank-name{font-family:'Kaisei Decol',serif;font-size:22px;font-weight:700;margin-bottom:.25rem;}
-.level-rank-sub{font-size:13px;opacity:.85;margin-bottom:1rem;}
-.level-xp-wrap{background:rgba(255,255,255,.25);border-radius:999px;height:14px;overflow:hidden;margin-bottom:.4rem;}
-.level-xp-bar{height:100%;background:#fff;border-radius:999px;transition:width .6s ease;}
-.level-xp-label{font-size:12px;opacity:.85;}
-
 /* ===== グラフ ===== */
 .chart-card{background:var(--white);border-radius:var(--radius);box-shadow:var(--shadow);padding:1.5rem;width:100%;margin-bottom:1rem;}
 .chart-title{font-size:14px;font-weight:700;color:var(--text);margin-bottom:1rem;}
@@ -190,145 +171,9 @@ input[type=range]{flex:1;max-width:200px;accent-color:var(--orange);}
 .bar-fill{height:100%;border-radius:999px;transition:width .6s ease;display:flex;align-items:center;justify-content:flex-end;padding-right:6px;}
 .bar-pct{font-size:10px;font-weight:700;color:#fff;}
 .bar-count{font-size:11px;color:var(--gray);width:32px;text-align:right;flex-shrink:0;}
-.line-chart-wrap{position:relative;width:100%;height:120px;margin-top:.5rem;}
-.line-chart-wrap canvas{width:100%!important;height:120px!important;}
 
-/* レベルアップアニメーション */
-.levelup-overlay{position:fixed;top:0;left:0;right:0;bottom:0;background:rgba(0,0,0,.5);display:flex;align-items:center;justify-content:center;z-index:2000;opacity:0;pointer-events:none;}
-.levelup-overlay.show{animation:lvFade 2.5s ease-out forwards;pointer-events:auto;}
-@keyframes lvFade{0%{opacity:0;}15%{opacity:1;}70%{opacity:1;}100%{opacity:0;}}
-.levelup-box{background:#fff;border-radius:28px;padding:2rem;text-align:center;box-shadow:0 8px 40px rgba(0,0,0,.2);}
-.levelup-box .lv-emoji{font-size:72px;animation:popIn .5s cubic-bezier(.36,1.5,.5,1) forwards;}
-.levelup-box .lv-title{font-family:'Kaisei Decol',serif;font-size:22px;font-weight:700;color:var(--orange);margin:.5rem 0 .25rem;}
-.levelup-box .lv-sub{font-size:14px;color:var(--gray);}
 
-/* ===== バトル画面 ===== */
-.enemy-area {
-  width:100%; text-align:center; margin-bottom:.75rem;
-  position:relative;
-}
-.enemy-svg-wrap {
-  width:120px; height:120px; margin:0 auto .5rem;
-  display:flex; align-items:center; justify-content:center;
-  animation:enemyFloat 3s ease-in-out infinite;
-}
-.enemy-svg-wrap.damaged { animation:enemyDamage .4s ease-out; }
-.enemy-svg-wrap.defeated { animation:enemyDefeat .8s ease-out forwards; }
-@keyframes enemyFloat{0%,100%{transform:translateY(0);}50%{transform:translateY(-8px);}}
-@keyframes enemyDamage{0%{transform:translateX(0) scale(1);}20%{transform:translateX(-10px) scale(.95);}40%{transform:translateX(10px) scale(.95);}60%{transform:translateX(-6px);}80%{transform:translateX(6px);}100%{transform:translateX(0) scale(1);}}
 
-@keyframes enemyDefeat{0%{transform:scale(1);opacity:1;}30%{transform:scale(1.3) rotate(-15deg);}100%{transform:scale(0) rotate(30deg);opacity:0;}}
-
-.enemy-name {
-  font-size:14px; font-weight:700; color:var(--text); margin-bottom:.4rem;
-}
-.hp-wrap {
-  width:100%; background:#eee; border-radius:999px;
-  height:18px; overflow:hidden; margin-bottom:.25rem;
-  box-shadow:inset 0 2px 4px rgba(0,0,0,.1);
-}
-.hp-bar {
-  height:100%; border-radius:999px;
-  background:linear-gradient(90deg,#ef5350,#ff8a65);
-  transition:width .5s cubic-bezier(.4,0,.2,1);
-  position:relative; overflow:hidden;
-}
-.hp-bar::after {
-  content:'';position:absolute;top:0;left:0;right:0;bottom:0;
-  background:linear-gradient(180deg,rgba(255,255,255,.3) 0%,transparent 100%);
-}
-.hp-label {
-  font-size:11px; font-weight:700; color:var(--gray); text-align:right;
-}
-.damage-text {
-  position:absolute; font-size:22px; font-weight:700;
-  color:#EF5350; text-shadow:0 2px 4px rgba(0,0,0,.2);
-  pointer-events:none; z-index:100;
-  animation:dmgFloat .8s ease-out forwards;
-}
-@keyframes dmgFloat{0%{transform:translateY(0);opacity:1;}100%{transform:translateY(-50px);opacity:0;}}
-
-/* 勝利画面 */
-.victory-card {
-  background:linear-gradient(135deg,#FFD600,#FF8C42);
-  border-radius:var(--radius);
-  box-shadow:var(--shadow);
-  padding:2.5rem 2rem; text-align:center; width:100%;
-  color:#fff;
-}
-.victory-title {
-  font-family:'Kaisei Decol',serif;
-  font-size:32px; font-weight:700; margin-bottom:.5rem;
-}
-.victory-enemy {
-  font-size:80px; margin-bottom:.75rem; display:block;
-  animation:popIn .5s cubic-bezier(.36,1.5,.5,1) forwards;
-}
-.victory-sub { font-size:15px; opacity:.9; margin-bottom:1.5rem; }
-
-/* ===== タイムアタック ===== */
-.timer-wrap {
-  width:100%; text-align:center; margin-bottom:.5rem; display:none;
-}
-.timer-circle {
-  width:72px; height:72px; border-radius:50%;
-  background:conic-gradient(#EF5350 0%, #eee 0%);
-  display:flex; align-items:center; justify-content:center;
-  margin:0 auto; position:relative;
-  box-shadow:0 3px 12px rgba(239,83,80,.25);
-  transition:background .1s;
-}
-.timer-circle::before {
-  content:''; position:absolute;
-  width:56px; height:56px; border-radius:50%; background:#fff;
-}
-.timer-num {
-  font-family:'Kaisei Decol',serif;
-  font-size:22px; font-weight:700; color:#EF5350;
-  position:relative; z-index:1;
-}
-.timer-label {
-  font-size:11px; color:var(--gray); margin-top:.25rem;
-}
-.timer-wrap.urgent .timer-circle {
-  animation:timerPulse .4s ease-in-out infinite alternate;
-}
-@keyframes timerPulse {
-  from { transform:scale(1); }
-  to   { transform:scale(1.08); }
-}
-
-/* ===== ゲームオーバー ===== */
-.gameover-card {
-  background:linear-gradient(135deg,#263238,#37474F);
-  border-radius:var(--radius);
-  box-shadow:var(--shadow);
-  padding:2.5rem 2rem; text-align:center; width:100%; color:#fff;
-}
-.gameover-emoji {
-  font-size:80px; margin-bottom:.75rem; display:block;
-  animation:shakeEmoji .6s ease-in-out;
-}
-@keyframes shakeEmoji{0%,100%{transform:rotate(0);}25%{transform:rotate(-15deg);}75%{transform:rotate(15deg);}}
-.gameover-title {
-  font-family:'Kaisei Decol',serif;
-  font-size:28px; font-weight:700; color:#EF5350; margin-bottom:.4rem;
-}
-.gameover-sub { font-size:14px; opacity:.8; margin-bottom:.5rem; }
-
-/* ===== ボーナスタイム ===== */
-.bonus-header {
-  background:linear-gradient(135deg,#FFD600,#FF8C42);
-  border-radius:16px; padding:.75rem 1rem;
-  text-align:center; width:100%; margin-bottom:.75rem;
-  animation:bonusPulse 1s ease-in-out infinite alternate;
-}
-@keyframes bonusPulse{from{box-shadow:0 0 0 rgba(255,214,0,.4);}to{box-shadow:0 0 20px rgba(255,214,0,.8);}}
-.bonus-header-title {
-  font-family:'Kaisei Decol',serif;
-  font-size:20px; font-weight:700; color:#fff;
-}
-.bonus-header-sub { font-size:12px; color:rgba(255,255,255,.9); }
 
 /* ===== 難易度選択（縦並び・1.5倍） ===== */
 .level-vert {
@@ -396,6 +241,9 @@ input[type=range]{flex:1;max-width:200px;accent-color:var(--orange);}
 <div class="screen" id="screenCategory">
   <p class="section-title">どのカテゴリをれんしゅうする？</p>
   <div class="category-grid" id="categoryGrid"></div>
+  <div id="missedNoteBtn" style="display:none;width:100%;margin-top:.5rem;">
+    <button style="width:100%;padding:14px;font-size:15px;font-weight:700;border-radius:16px;border:none;background:linear-gradient(135deg,#9575CD,#7B1FA2);color:#fff;cursor:pointer;font-family:inherit;" onclick="startMissedNotePractice()">📝 まちがいノートかられんしゅう</button>
+  </div>
   <button class="teacher-small-btn" style="margin-top:1rem;width:100%;padding:14px;font-size:16px;" onclick="goMyPageDirect()">📖 マイページをみる</button>
   <button class="back-btn" onclick="showScreen('screenPlayerSelect')">← もどる</button>
 </div>
@@ -442,34 +290,12 @@ input[type=range]{flex:1;max-width:200px;accent-color:var(--orange);}
     <span class="streak-badge" id="streakBadge">🔥 0れんぞく</span>
   </div>
 
-  <!-- 敵キャラエリア -->
-  <div class="enemy-area" id="enemyArea">
-    <div class="enemy-name" id="enemyName">？？？</div>
-    <div class="enemy-svg-wrap" id="enemySvgWrap">
-      <!-- SVG敵キャラがJSで入る -->
-    </div>
-    <div class="hp-wrap">
-      <div class="hp-bar" id="hpBar" style="width:100%"></div>
-    </div>
-    <div class="hp-label" id="hpLabel">HP 5 / 5</div>
-  </div>
-
-  <!-- ボーナスタイムヘッダー（通常は非表示） -->
-  <div class="bonus-header" id="bonusHeader" style="display:none;">
-    <div class="bonus-header-title">⭐ ボーナスタイム！</div>
-    <div class="bonus-header-sub" id="bonusSubText">まちがえたことばにちょうせん！</div>
-  </div>
-
-  <!-- タイムアタックタイマー -->
-  <div class="timer-wrap" id="timerWrap">
-    <div class="timer-circle" id="timerCircle">
-      <span class="timer-num" id="timerNum">30</span>
-    </div>
-    <div class="timer-label">のこりじかん</div>
-  </div>
-
   <div class="card">
     <span class="word-illust" id="emoji">🏃</span>
+    <!-- 口の形ヒント（ひらがな練習のみ・ひらがなの上に常時表示） -->
+    <div id="hintArea" style="display:none;width:100%;text-align:center;margin-bottom:.25rem;">
+      <div id="hintContent"></div>
+    </div>
     <div class="word-text" id="word">はしる</div>
     <div class="btn-row" style="justify-content:center;margin-bottom:.5rem;">
       <button class="btn btn-play" onclick="playWord()">🔊 きく</button>
@@ -479,7 +305,7 @@ input[type=range]{flex:1;max-width:200px;accent-color:var(--orange);}
       <button class="btn btn-stop" id="stopBtn" onclick="stopRecAndJudge()">■ とめる</button>
     </div>
     <div class="result-box" id="resultBox">👆 まず「きく」をおそう</div>
-    <button class="btn end-btn" onclick="stopTimer();goCategory()">🏁 おわる</button>
+    <button class="btn end-btn" onclick="goCategory()">🏁 おわる</button>
   </div>
   <div class="nav">
     <button class="nav-btn" id="prevBtn" onclick="prevWord()">◀</button>
@@ -494,37 +320,6 @@ input[type=range]{flex:1;max-width:200px;accent-color:var(--orange);}
   </div>
 </div>
 
-<!-- 勝利画面 -->
-<div class="screen" id="screenVictory">
-  <div class="victory-card">
-    <span class="victory-enemy" id="victoryEnemy">👾</span>
-    <div class="victory-title">🎊 やっつけた！</div>
-    <div class="victory-sub" id="victorySub">すごい！てきをたおしたよ！</div>
-    <div class="result-stars" id="victoryStars" style="margin-bottom:1.5rem;">⭐⭐⭐</div>
-    <div class="stats-grid" style="margin-bottom:1.5rem;">
-      <div class="stat-box"><div class="stat-num" id="vsCorrect" style="color:#fff;">0</div><div class="stat-label" style="color:rgba(255,255,255,.8);">せいかい</div></div>
-      <div class="stat-box"><div class="stat-num" id="vsTotal" style="color:#fff;">0</div><div class="stat-label" style="color:rgba(255,255,255,.8);">ごもん</div></div>
-    </div>
-    <button class="retry-btn" style="background:#fff;color:var(--orange);margin-bottom:.75rem;" onclick="retryPractice()">🔄 もういちどたたかう</button>
-    <button class="home-btn" style="background:rgba(255,255,255,.2);color:#fff;" onclick="stopTimer();goCategory()">📚 カテゴリにもどる</button>
-  </div>
-</div>
-
-
-<!-- ゲームオーバー画面 -->
-<div class="screen" id="screenGameOver">
-  <div class="gameover-card">
-    <span class="gameover-emoji" id="gameoverEnemy">👾</span>
-    <div class="gameover-title">💀 ゲームオーバー</div>
-    <div class="gameover-sub" id="gameoverSub">ボーナスタイムでまちがえたよ…</div>
-    <div class="stats-grid" style="margin:1.25rem 0;">
-      <div class="stat-box"><div class="stat-num" id="goCorrect">0</div><div class="stat-label">せいかい</div></div>
-      <div class="stat-box"><div class="stat-num" id="goTotal">0</div><div class="stat-label">ごもん</div></div>
-    </div>
-    <button class="retry-btn" style="margin-bottom:.75rem;" onclick="retryPractice()">🔄 もういちどちょうせん</button>
-    <button class="home-btn" onclick="stopTimer();goCategory()">📚 カテゴリにもどる</button>
-  </div>
-</div>
 
 <!-- 結果 -->
 <div class="screen" id="screenResult">
@@ -545,14 +340,6 @@ input[type=range]{flex:1;max-width:200px;accent-color:var(--orange);}
 </div>
 
 
-<!-- レベルアップオーバーレイ -->
-<div class="levelup-overlay" id="levelupOverlay">
-  <div class="levelup-box">
-    <div class="lv-emoji" id="lvEmoji">🌟</div>
-    <div class="lv-title" id="lvTitle">レベルアップ！</div>
-    <div class="lv-sub" id="lvSub">すごい！あたらしいランクになったよ！</div>
-  </div>
-</div>
 
 <!-- マイページ プレイヤー選択 -->
 <div class="screen" id="screenMyPageSelect">
@@ -565,19 +352,11 @@ input[type=range]{flex:1;max-width:200px;accent-color:var(--orange);}
 <div class="screen" id="screenMyPage">
   <p class="section-title">📖 <span id="myPagePlayerName"></span>のマイページ</p>
 
-  <!-- レベルカード -->
-  <div class="level-card" id="levelCard">
-    <span class="level-rank-emoji" id="rankEmoji">🌱</span>
-    <div class="level-rank-name" id="rankName">はつおんルーキー</div>
-    <div class="level-rank-sub" id="rankSub">レベル 1</div>
-    <div class="level-xp-wrap"><div class="level-xp-bar" id="xpBar" style="width:0%"></div></div>
-    <div class="level-xp-label" id="xpLabel">0 / 10 XP</div>
-  </div>
-
-  <!-- スタンプ帳 -->
-  <div class="stamp-book-card">
-    <div class="stamp-book-title">🏅 スタンプコレクション</div>
-    <div class="stamp-grid" id="stampGrid"></div>
+  <!-- まちがいノートカード -->
+  <div class="chart-card" id="missedNoteCard" style="display:none;">
+    <div class="chart-title">📝 まちがいノート</div>
+    <div id="missedNoteList" style="font-size:14px;color:#555;"></div>
+    <button class="save-btn danger-btn" style="margin-top:.5rem;" onclick="clearMissedNoteForPlayer()">🗑️ ノートをリセット</button>
   </div>
 
   <!-- カテゴリ別グラフ -->
@@ -586,13 +365,13 @@ input[type=range]{flex:1;max-width:200px;accent-color:var(--orange);}
     <div class="bar-chart" id="barChart"></div>
   </div>
 
-  <!-- 正解数推移グラフ -->
-  <div class="chart-card">
-    <div class="chart-title">📈 さいきんのせいかい数（さいご10かい）</div>
-    <div class="line-chart-wrap"><canvas id="lineChart"></canvas></div>
+  <!-- とくい・にがてカード -->
+  <div class="chart-card" id="strongWeakCard">
+    <div class="chart-title">🌟 とくい・にがて</div>
+    <div id="strongWeakContent" style="font-size:14px;color:#555;"></div>
   </div>
 
-  <button class="back-btn" onclick="showScreen('screenMyPageSelect')">← もどる</button>
+  <button class="back-btn" onclick="myPageCameFrom==='category'?showScreen('screenCategory'):showScreen('screenMyPageSelect')">← もどる</button>
 </div>
 
 <!-- パスワード -->
@@ -653,6 +432,21 @@ input[type=range]{flex:1;max-width:200px;accent-color:var(--orange);}
       <input type="password" id="newPw2" placeholder="もういちどにゅうりょく" style="width:100%;padding:8px;border-radius:8px;border:1.5px solid #ddd;font-size:14px;font-family:inherit;">
       <button class="save-btn" onclick="changePw()">🔑 パスワードをかえる</button>
       <p id="pwChangeMsg" style="font-size:12px;margin-top:.4rem;text-align:center;"></p>
+    </div>
+    <div class="student-item">
+      <p style="font-size:13px;color:var(--gray);margin-bottom:.6rem;">🎯 せいかいはんていのきびしさ</p>
+      <div style="display:flex;align-items:center;justify-content:space-between;padding:.5rem 0;border-bottom:1px solid #eee;">
+        <div>
+          <div style="font-size:14px;font-weight:700;">にた音をOKにする</div>
+          <div style="font-size:11px;color:#aaa;">「か」と「が」など、にた音を正解にする</div>
+        </div>
+        <label style="position:relative;width:48px;height:26px;flex-shrink:0;">
+          <input type="checkbox" id="switchSimilarMora" style="opacity:0;width:0;height:0;" onchange="toggleJudgeSetting('similarMoraOk',this.checked)">
+          <span id="switchSimilarMoraTrack" style="position:absolute;inset:0;background:#ccc;border-radius:999px;cursor:pointer;transition:.2s;"></span>
+          <span id="switchSimilarMoraThumb" style="position:absolute;top:3px;left:3px;width:20px;height:20px;background:#fff;border-radius:50%;transition:.2s;box-shadow:0 1px 3px rgba(0,0,0,.3);"></span>
+        </label>
+      </div>
+      <button class="save-btn" style="margin-top:.5rem;" onclick="applyJudgeSettingsUI()">💾 はんていせっていをほぞん</button>
     </div>
     <div class="student-item">
       <p style="font-size:13px;color:var(--gray);margin-bottom:.6rem;">🎤 こえのにんしき かんど</p>
@@ -1332,7 +1126,21 @@ function splitMora(romaji) {
 }
 
 // 2つのモーラが「にた音」かどうか（母音一致＋子音が同グループ）
+// ===================== 正解判定の厳しさ設定 =====================
+let judgeSettings = { similarMoraOk: true };
+
+function loadJudgeSettings() {
+  try {
+    const s = localStorage.getItem('judge_settings');
+    if(s) judgeSettings = JSON.parse(s);
+  } catch(e) {}
+}
+function saveJudgeSettings() {
+  try { localStorage.setItem('judge_settings', JSON.stringify(judgeSettings)); } catch(e) {}
+}
+
 function isSimilarMora(romajiA, romajiB) {
+  if(!judgeSettings.similarMoraOk) return false; // 厳しいモードではにた音を不可
   const a = splitMora(romajiA);
   const b = splitMora(romajiB);
   if(!a || !b) return false;
@@ -1365,6 +1173,39 @@ function moraSequenceMatch(a, b) {
   return true;
 }
 
+// 単音（ひらがな1文字）用の判定。
+// う・え・お・け・ぬ・ほ・り・る・ん のような弱い音は、音声認識が
+// 別の言葉に聞き間違えたり、前後に音をくっつけて返したりしやすい。
+// そこで「認識結果のどこかに目標の音が入っていればOK」とゆるめに照合する。
+function singleKanaMatch(target, rawText, convertedText) {
+  const tR = toRomaji(target);
+  if(!tR) return false;
+  const converted = (convertedText != null) ? convertedText : toHiragana(rawText || '');
+  // 文字そのものが一致
+  if(rawText === target || converted === target) return true;
+  const cR = toRomaji(converted || '');
+  const rR = toRomaji(rawText || '');
+  if(cR === tR || rR === tR) return true;
+  // ローマ字をモーラ（子音＋母音、または「ん」）に分解
+  const moras = (r) => {
+    const arr = []; let i = 0;
+    while(i < r.length) {
+      const m = r.slice(i).match(/^[kgsztdnhbpmyrw]*[aiueo]|^n/);
+      if(!m) { i++; continue; }
+      arr.push(m[0]); i += m[0].length;
+    }
+    return arr;
+  };
+  // 認識結果のどこかに目標の音（またはにた音）が含まれていればOK
+  for(const r of [cR, rR]) {
+    for(const m of moras(r)) {
+      if(m === tR) return true;
+      if(isSimilarMora(m, tR)) return true;
+    }
+  }
+  return false;
+}
+
 
 
 const QUESTIONS_PER_GAME = 5;
@@ -1378,19 +1219,16 @@ let recognition=null, heardText='', stopRequested=false;
 let currentStudent=null, currentCat='dousa', currentLevel=1;
 let sessionCorrect=0, sessionTotal=0, streak=0, maxStreak=0;
 let isHiraganaMode=false, currentHiraganaRow=null;
-let isTimeAttack=false, timerSeconds=30, timerInterval=null;
-const TIME_ATTACK_SEC=30;
-let recTimeout=null; // 録音タイムアウト
-let interimText='';  // 音声認識途中テキスト（グローバル）
-let judged=false;    // この録音セッションで判定済みか
-let recRetry=0;      // 自動リトライ回数
-let voiceDetected=false; // マイク音量で声を検知したか
+let recTimeout=null;
+let interimText='';
+let judged=false;
+let recRetry=0;
+let voiceDetected=false;
 let audioStream=null, audioCtxVD=null, vdTimer=null;
-let voiceThreshold=15;   // 声検知のしきい値（先生が調整可能）
-let missCount=0, missedWords=[], isBonusTime=false;
-let bonusWords=[], bonusIdx=0;
-let currentEnemy=null, enemyCurrentHp=5, enemyMaxHp=5;
+let voiceThreshold=15;
+let missCount=0, missedWords=[];
 let myPagePlayer=null;
+let myPageCameFrom='select'; // 'select' or 'category'
 
 function loadData() {
   try {
@@ -1399,13 +1237,15 @@ function loadData() {
     records  = JSON.parse(localStorage.getItem('records'))     || [];
   } catch(e) { words=[...ALL_WORDS]; students=[{name:'せいと１',mode:'all'},{name:'せいと２',mode:'all'}]; records=[]; }
   try { const vt = localStorage.getItem('voice_threshold'); if(vt) voiceThreshold = Number(vt); } catch(e) {}
+  loadJudgeSettings();
 }
 // ===== 初期化（DOM読み込み後に実行）=====
 // 変数は上部で宣言済み
 
 // ===================== 画面遷移 =====================
 function showScreen(id) { document.querySelectorAll('.screen').forEach(s=>s.classList.remove('active')); document.getElementById(id).classList.add('active'); }
-function goTop() { stopTimer(); stopVoiceDetect(); if(recognition){try{recognition.abort();}catch(e){}} showScreen('screenTop'); }
+function stopTimer() {} // 削除済み（互換のため残す）
+function goTop() { stopVoiceDetect(); if(recognition){try{recognition.abort();}catch(e){}} showScreen('screenTop'); }
 
 function goPlayerSelect() {
   const playerList = students && students.length > 0
@@ -1419,12 +1259,9 @@ function goPlayerSelect() {
   playerList.forEach(function(s, i) {
     const btn = document.createElement('button');
     btn.className = 'btn student-sel-btn' + (i===0?' selected':'');
-    const pStats = (function(){ try{ return loadPlayerStats(s.name); }catch(e){ return initStats(); } })();
-    const r = getCurrentRank(pStats.xp);
     btn.innerHTML = '<div style="text-align:center;">'
-      + '<div style="font-size:32px;margin-bottom:4px;">' + r.rank.emoji + '</div>'
+      + '<div style="font-size:32px;margin-bottom:4px;">👤</div>'
       + '<div style="font-size:16px;font-weight:700;color:#333;">' + s.name + '</div>'
-      + '<div style="font-size:11px;color:#888;margin-top:2px;">Lv.' + (r.idx+1) + ' ' + r.rank.name + '</div>'
       + '</div>';
     btn.onclick = function() {
       document.querySelectorAll('#practiceStudentGrid .student-sel-btn').forEach(b=>b.classList.remove('selected'));
@@ -1485,6 +1322,16 @@ function goCategory() {
     btn.onclick = () => { currentCat = cat.id; goLevel(cat); };
     grid.appendChild(btn);
   });
+
+  // まちがいノートボタンの表示制御
+  const noteBtn = document.getElementById('missedNoteBtn');
+  if(noteBtn && currentStudent) {
+    const notes = loadMissedNote(currentStudent.name);
+    noteBtn.style.display = notes.length > 0 ? '' : 'none';
+    if(notes.length > 0) {
+      noteBtn.querySelector('button').textContent = '📝 まちがいノートから練習（' + notes.length + 'こ）';
+    }
+  }
 
   showScreen('screenCategory');
 }
@@ -1559,20 +1406,7 @@ function startPractice() {
   filtered = sessionWords;
   idx = 0;
   sessionCorrect=0; sessionTotal=0; streak=0; maxStreak=0;
-  missedWords=[]; isBonusTime=false; bonusWords=[]; bonusIdx=0;
-  // ボーナスヘッダー非表示
-  const bh = document.getElementById('bonusHeader');
-  if(bh) bh.style.display='none';
-  // タイマー停止（前のゲームの残り）
-  stopTimer();
-  // バトル初期化（カード読み込み前に実行）
-  setTimeout(()=>{
-    initBattle(currentCat, currentLevel);
-    // むずかしいひらがなはタイムアタック
-    if(isHiraganaMode && currentLevel === 3) {
-      setTimeout(()=>startTimer(), 300);
-    }
-  }, 50);
+  missedWords=[];
   const cat = CATEGORIES.find(c=>c.id===currentCat);
   const badge = document.getElementById('modeBadge');
   badge.style.background = getBadgeBg(currentCat);
@@ -1610,8 +1444,18 @@ function loadCard() {
     wordEl.style.marginBottom = '1.5rem';
   } else {
     // 通常モード：イラスト表示、通常フォントサイズ
-    emojiEl.style.display = '';
-    emojiEl.textContent = w.emoji;
+    if(w.imageData) {
+      // 画像がある場合は img タグで表示
+      emojiEl.style.display = '';
+      emojiEl.innerHTML = '';
+      const imgEl = document.createElement('img');
+      imgEl.src = w.imageData;
+      imgEl.style.cssText = 'width:88px;height:88px;object-fit:contain;border-radius:16px;';
+      emojiEl.appendChild(imgEl);
+    } else {
+      emojiEl.style.display = '';
+      emojiEl.innerHTML = w.emoji;
+    }
     wordEl.textContent = w.text;
     wordEl.style.fontSize = '';
     wordEl.style.letterSpacing = '';
@@ -1633,10 +1477,162 @@ function loadCard() {
   clearTimeout(recTimeout);
   stopVoiceDetect();
   if(recognition){try{recognition.abort();}catch(e){} recognition=null;}
+  updateHintArea();
 }
 
 function updateProgress() { /* プログレスバー削除 */ }
 function updateStreakUI() { document.getElementById('streakBadge').textContent='🔥 '+streak+'れんぞく'; }
+
+// ===================== 口の形ヒントデータ =====================
+// ひらがな→母音タイプのマッピング
+const HIRA_VOWEL = {
+  'あ':'a','い':'i','う':'u','え':'e','お':'o',
+  'か':'a','き':'i','く':'u','け':'e','こ':'o',
+  'さ':'a','し':'i','す':'u','せ':'e','そ':'o',
+  'た':'a','ち':'i','つ':'u','て':'e','と':'o',
+  'な':'a','に':'i','ぬ':'u','ね':'e','の':'o',
+  'は':'a','ひ':'i','ふ':'u','へ':'e','ほ':'o',
+  'ま':'a','み':'i','む':'u','め':'e','も':'o',
+  'や':'a','ゆ':'u','よ':'o',
+  'ら':'a','り':'i','る':'u','れ':'e','ろ':'o',
+  'わ':'a','を':'o','ん':'n',
+};
+
+// ===== 口の形SVGイラスト（鼻つき・口だけアップ／リアル版） =====
+const MOUTH_VB_W = 240, MOUTH_VB_H = 192, MOUTH_MY = 20;
+
+function _mouthDefs(id, clipInner){
+  return `
+  <radialGradient id="skin_${id}" cx="50%" cy="45%" r="80%">
+    <stop offset="0%" stop-color="#FFE8D2"/><stop offset="100%" stop-color="#F0BE94"/>
+  </radialGradient>
+  <linearGradient id="ulip_${id}" x1="0" y1="0" x2="0" y2="1">
+    <stop offset="0%" stop-color="#C53A2E"/><stop offset="100%" stop-color="#A82B22"/>
+  </linearGradient>
+  <linearGradient id="llip_${id}" x1="0" y1="0" x2="0" y2="1">
+    <stop offset="0%" stop-color="#E1574A"/><stop offset="55%" stop-color="#D6463A"/><stop offset="100%" stop-color="#B83328"/>
+  </linearGradient>
+  <radialGradient id="mouth_${id}" cx="50%" cy="45%" r="70%">
+    <stop offset="0%" stop-color="#5A0E0E"/><stop offset="100%" stop-color="#2A0606"/>
+  </radialGradient>
+  <linearGradient id="tongue_${id}" x1="0" y1="0" x2="0" y2="1">
+    <stop offset="0%" stop-color="#E48D8D"/><stop offset="100%" stop-color="#C25C5C"/>
+  </linearGradient>
+  ${clipInner ? `<clipPath id="clip_${id}">${clipInner}</clipPath>` : ''}`;
+}
+
+function _mouthNose(){
+  return `
+  <path d="M120,16 Q116,38 109,48" stroke="#D49A72" stroke-width="2.5" fill="none" stroke-linecap="round" opacity="0.55"/>
+  <path d="M105,50 Q120,60 135,50" stroke="#CE8F66" stroke-width="2.5" fill="none" stroke-linecap="round" opacity="0.5"/>
+  <ellipse cx="110" cy="51" rx="3.2" ry="2.2" fill="#BE7C53" opacity="0.55"/>
+  <ellipse cx="130" cy="51" rx="3.2" ry="2.2" fill="#BE7C53" opacity="0.55"/>`;
+}
+
+function _teethBand(cx, archY, halfW, depth, n, edgeUp){
+  const x0=cx-halfW, x1=cx+halfW, gum=archY, bite=edgeUp?archY-depth:archY+depth;
+  const band = edgeUp
+    ? `M${x0},${gum} Q${cx},${gum+8} ${x1},${gum} L${x1},${bite} Q${cx},${bite-6} ${x0},${bite} Z`
+    : `M${x0},${gum} Q${cx},${gum-8} ${x1},${gum} L${x1},${bite} Q${cx},${bite+6} ${x0},${bite} Z`;
+  let lines='';
+  for(let i=1;i<n;i++){
+    const x=x0+(2*halfW)*(i/n);
+    lines += `<line x1="${x}" y1="${gum+(edgeUp?2:-2)}" x2="${x}" y2="${bite}" stroke="#D9D0B8" stroke-width="1.1"/>`;
+  }
+  return `<path d="${band}" fill="#FCFAF0"/>${lines}<path d="${band}" fill="none" stroke="#E3DAC2" stroke-width="0.8"/>`;
+}
+
+function _drawMouth(p){
+  const id=p.char, cx=120;
+  let svgInner='', clipInner='';
+
+  if(p.pursed){
+    const orx=p.orx, ory=p.ory, tw=p.lipThick, cy=p.cornerY;
+    clipInner = `<ellipse cx="${cx}" cy="${cy}" rx="${orx}" ry="${ory}"/>`;
+    const interior = `<ellipse cx="${cx}" cy="${cy}" rx="${orx}" ry="${ory}" fill="url(#mouth_${id})"/>`;
+    const tongue = p.tongue
+      ? `<g clip-path="url(#clip_${id})"><ellipse cx="${cx}" cy="${cy+ory*0.5}" rx="${orx*0.7}" ry="${ory*0.4}" fill="url(#tongue_${id})"/></g>` : '';
+    let lips = `<path d="M${cx-orx-tw},${cy}
+      a${orx+tw},${ory+tw} 0 1,1 ${2*(orx+tw)},0 a${orx+tw},${ory+tw} 0 1,1 ${-2*(orx+tw)},0 Z
+      M${cx-orx},${cy} a${orx},${ory} 0 1,0 ${2*orx},0 a${orx},${ory} 0 1,0 ${-2*orx},0 Z"
+      fill="url(#llip_${id})" fill-rule="evenodd"/>`;
+    const ring = p.protrude ? `<ellipse cx="${cx}" cy="${cy}" rx="${orx+tw+7}" ry="${ory+tw+7}" fill="none" stroke="#D49A77" stroke-width="2" opacity="0.4"/>` : '';
+    lips += `<ellipse cx="${cx-orx*0.3}" cy="${cy-ory-tw*0.4}" rx="${tw*0.8}" ry="${tw*0.35}" fill="#FF9C8E" opacity="0.5"/>`;
+    lips += `<ellipse cx="${cx}" cy="${cy+ory+tw*0.55}" rx="${orx*0.5}" ry="${tw*0.4}" fill="#FF8576" opacity="0.45"/>`;
+    svgInner = interior+tongue+ring+lips;
+  } else {
+    const lx=p.lx, rx=p.rx, ot=p.openTop, ob=p.openBot;
+    const cyL=p.cornerY-(p.lift||0), cyR=cyL;
+    const openPath = `M${lx},${cyL} Q${cx},${ot} ${rx},${cyR} Q${cx},${ob} ${lx},${cyL} Z`;
+    let interior='', clipped='';
+    if(!p.closed){
+      clipInner = `<path d="${openPath}"/>`;
+      interior = `<path d="${openPath}" fill="url(#mouth_${id})"/>`;
+      let inner = '';
+      if(p.tongue){
+        const ty=ob-p.tongueRy-1;
+        inner += `<ellipse cx="${cx}" cy="${ty}" rx="${p.tongueRx}" ry="${p.tongueRy}" fill="url(#tongue_${id})"/>`;
+      }
+      inner += _teethBand(cx, ot+1, p.teethHalf, p.upperTeethLen, p.teethN, false);
+      if(p.lowerTeeth) inner += _teethBand(cx, ob-1, p.teethHalf-3, p.lowerTeethLen, p.teethN-1, true);
+      clipped = `<g clip-path="url(#clip_${id})">${inner}</g>`;
+    }
+    const ulH=p.ulH, peakL=cx-(rx-lx)*0.16, peakR=cx+(rx-lx)*0.16, peakY=cyL-ulH;
+    let upperLip = `<path d="M${lx},${cyL}
+      C${lx+18},${cyL-ulH*0.55} ${peakL-16},${peakY+3} ${peakL},${peakY}
+      Q${cx},${cyL-ulH*0.45} ${peakR},${peakY}
+      C${peakR+16},${peakY+3} ${rx-18},${cyR-ulH*0.55} ${rx},${cyR}
+      Q${cx},${ot+5} ${lx},${cyL} Z" fill="url(#ulip_${id})"/>`;
+    upperLip += `<path d="M${peakL-6},${peakY+4} Q${cx},${cyL-ulH*0.4} ${peakR+6},${peakY+4}" stroke="#E8675A" stroke-width="2" fill="none" stroke-linecap="round" opacity="0.55"/>`;
+    const llH=p.llH;
+    let lowerLip = `<path d="M${lx},${cyL} Q${cx},${ob+llH} ${rx},${cyR} Q${cx},${ob+3} ${lx},${cyL} Z" fill="url(#llip_${id})"/>`;
+    lowerLip += `<ellipse cx="${cx}" cy="${ob+llH*0.5}" rx="${(rx-lx)*0.26}" ry="${llH*0.22}" fill="#FF8E80" opacity="0.5"/>`;
+    const corners = `<circle cx="${lx}" cy="${cyL}" r="4.5" fill="#9C5839" opacity="0.45"/><circle cx="${rx}" cy="${cyR}" r="4.5" fill="#9C5839" opacity="0.45"/>`;
+    svgInner = interior+clipped+lowerLip+upperLip+corners;
+  }
+
+  const ty = MOUTH_MY + (p.dy||0);
+  const svg = `<svg width="150" height="${Math.round(150*MOUTH_VB_H/MOUTH_VB_W)}" viewBox="0 0 ${MOUTH_VB_W} ${MOUTH_VB_H}" xmlns="http://www.w3.org/2000/svg">
+    <defs>${_mouthDefs(id, clipInner)}</defs>
+    <rect x="0" y="0" width="${MOUTH_VB_W}" height="${MOUTH_VB_H}" rx="22" fill="url(#skin_${id})"/>
+    ${_mouthNose()}
+    <g transform="translate(0,${ty})">${svgInner}</g>
+  </svg>`;
+  return `${svg}<div style="font-size:13px;font-weight:700;color:${p.color};margin-top:2px;">${p.desc}</div>`;
+}
+
+// 母音ごとの口の形パラメータ（プレビュー v11 で確定）
+const MOUTH_PARAMS = {
+  a: {char:'a',color:'#C62828',desc:'おおきく まあるく あけよう！',
+    lx:62,rx:178,cornerY:78,openTop:42,openBot:120,ulH:28,llH:24,teethHalf:46,teethN:5,upperTeethLen:13,lowerTeeth:true,lowerTeethLen:11,tongue:true,tongueRx:34,tongueRy:10},
+  i: {char:'i',color:'#1565C0',desc:'よこに ひっぱって にっこり！',
+    lx:30,rx:210,cornerY:82,openTop:66,openBot:92,ulH:20,llH:10,teethHalf:74,teethN:9,upperTeethLen:12,lowerTeeth:true,lowerTeethLen:9,tongue:false,lift:6},
+  u: {char:'u',color:'#6A1B9A',desc:'くちびるを まえに つきだそう！',
+    cornerY:78,pursed:true,orx:19,ory:23,lipThick:18,protrude:true,tongue:false,dy:12},
+  e: {char:'e',color:'#00695C',desc:'よこに しかくく あけよう！',
+    lx:44,rx:196,cornerY:78,openTop:58,openBot:104,ulH:24,llH:17,teethHalf:60,teethN:7,upperTeethLen:13,lowerTeeth:false,tongue:true,tongueRx:28,tongueRy:8},
+  o: {char:'o',color:'#E65100',desc:'たてに まるく すぼめよう！',
+    cornerY:80,pursed:true,orx:29,ory:40,lipThick:17,protrude:false,tongue:true,dy:24},
+  n: {char:'n',color:'#78909C',desc:'くちを とじよう！',
+    lx:54,rx:186,cornerY:96,openTop:96,openBot:96,ulH:22,llH:18,closed:true,tongue:false},
+};
+
+function mouthSVG(vowel) {
+  const p = MOUTH_PARAMS[vowel] || MOUTH_PARAMS.a;
+  return _drawMouth(p);
+}
+
+function updateHintArea() {
+  const area = document.getElementById('hintArea');
+  const content = document.getElementById('hintContent');
+  if(!area) return;
+  if(!isHiraganaMode || !currentCat) { area.style.display = 'none'; return; }
+  const currentChar = (filtered[idx] && filtered[idx].text) ? filtered[idx].text[0] : '';
+  const vowel = HIRA_VOWEL[currentChar] || 'a';
+  if(!currentChar) { area.style.display = 'none'; return; }
+  area.style.display = '';
+  content.innerHTML = mouthSVG(vowel);
+}
 
 
 function playWord() {
@@ -1867,17 +1863,7 @@ function startRec(isAutoRetry) {
         // ひらがな1文字：音素（ローマ字）でも照合
         let hiraMatch = false;
         if(isHiraganaMode && target.length === 1) {
-          const tR = toRomaji(target);
-          const cR = toRomaji(converted);
-          const rR = toRomaji(raw);
-          // 先頭モーラを取り出して正確に比較
-          const cM = (cR.match(/^[kgsztdnhbpmyrw]*[aiueo]|^n/)||[cR])[0];
-          const rM = (rR.match(/^[kgsztdnhbpmyrw]*[aiueo]|^n/)||[rR])[0];
-          hiraMatch =
-            raw === target || converted === target ||
-            cR === tR || rR === tR ||
-            cM === tR || rM === tR ||
-            isSimilarMora(cM, tR) || isSimilarMora(rM, tR);
+          hiraMatch = singleKanaMatch(target, raw, converted);
         }
         if(e.results[i].isFinal) {
           if(hiraMatch) { latestFinal = target; break; }
@@ -2000,20 +1986,16 @@ function doMissJudge() {
   showMark('d'); playMissSound();
   document.getElementById('resultBox').textContent='🤔 おしい！もういちどためしてみよう！';
 
-  if(isBonusTime) {
-    // ボーナスタイムで間違い → ゲームオーバー
-    stopTimer();
-    setTimeout(()=>showGameOver(), 1500);
-  } else if(!isHiraganaMode) {
+  if(!isHiraganaMode) {
     missCount++;
+    if(filtered[idx]) {
+      const ai = missedWords.some(w=>w.text===filtered[idx].text);
+      if(!ai) missedWords.push({...filtered[idx]});
+    }
     if(missCount >= 3) {
-      if(filtered[idx]) {
-        const ai = missedWords.some(w=>w.text===filtered[idx].text);
-        if(!ai) missedWords.push({...filtered[idx]});
-      }
       document.getElementById('resultBox').textContent='😢 3かいまちがえたよ… つぎにすすもう！';
       missCount = 0;
-      if(idx+1 >= filtered.length) { stopTimer(); setTimeout(()=>checkBonusOrEnd(),1500); }
+      if(idx+1 >= filtered.length) { saveMissedNote(); setTimeout(()=>showResult(),1500); }
       else setTimeout(()=>{ idx++; loadCard(); }, 1800);
     } else {
       const left = 3 - missCount;
@@ -2042,22 +2024,10 @@ function doJudge() {
   let ok = false;
 
   if(isHiraganaMode && target.length === 1) {
-    // ===== ひらがな1文字：正確に判定（正しい音だけ⚪︎）=====
-    const tR = targetRomaji; // 例：「あ」→'a'、「か」→'ka'
-    // 認識結果の先頭モーラを取り出して比較
-    const heardFirst = heardRomaji.match(/^[kgsztdnhbpmyrw]*[aiueo]/);
-    const rawFirst   = rawRomaji.match(/^[kgsztdnhbpmyrw]*[aiueo]/);
-    const hMora = heardFirst ? heardFirst[0] : heardRomaji;
-    const rMora = rawFirst ? rawFirst[0] : rawRomaji;
-
-    ok =
-      // ひらがな文字が完全一致
-      heardText === target || judgeText === target ||
-      // 音（ローマ字）が完全一致
-      heardRomaji === tR || rawRomaji === tR ||
-      hMora === tR || rMora === tR ||
-      // にた音（濁音・半濁音のゆれのみ許容：か↔が等。母音は必ず一致）
-      isSimilarMora(hMora, tR) || isSimilarMora(rMora, tR);
+    // ===== ひらがな1文字：聞き取れた音で判定 =====
+    // 弱い音（う・え・お・け・ぬ・ほ・り・る・ん など）は認識結果に
+    // 余計な音がつくことがあるため、singleKanaMatch でゆるめに照合する。
+    ok = singleKanaMatch(target, heardText, judgeText);
   } else if(isHiraganaMode) {
     // ===== ひらがな複数文字：音素で正確に判定 =====
     const tR2 = targetRomaji;
@@ -2111,33 +2081,17 @@ function doJudge() {
     updateStreakUI();
     document.getElementById('resultBox').textContent='✨ よくできました！\n（きこえたこと：「' + judgeText + '」）';
     showMark('o'); playSuccessSound();
-    // バトル：敵にダメージ
-    damageEnemy();
-    // XP加算
-    const xpGain = currentLevel + (streak>=3?1:0);
-    addXP(xpGain);
     // 統計更新
     stats.totalCorrect++;
     if(!stats.catCorrect[currentCat]) stats.catCorrect[currentCat]=0;
     stats.catCorrect[currentCat]++;
     if(streak>stats.maxStreak) stats.maxStreak=streak;
     saveStats(stats);
-    if(streak>=10) showStamp('👑\n10れんぞく！');
-    else if(streak>=5) showStamp('🏆\n5れんぞく！');
-    else if(streak>=3) showStamp('🌟\n3れんぞく！');
-    else showFireworks();
+    showFireworks();
     if(idx+1>=filtered.length){
-      stopTimer();
-      if(isBonusTime) {
-        // ボーナスタイム全問正解 → クリア！
-        setTimeout(()=>defeatEnemy(), 800);
-      } else if(missedWords.length === 0) {
-        // 通常全問正解（ミスなし）→ そのままクリア
-        setTimeout(()=>defeatEnemy(), 800);
-      } else {
-        // ミスあり → ボーナスタイムチェック
-        setTimeout(()=>checkBonusOrEnd(), 1200);
-      }
+      // まちがいノートに保存（今回のセッション分）
+      saveMissedNote();
+      setTimeout(()=>showResult(), 800);
     } else {
       setTimeout(()=>{ idx++; loadCard(); },1500);
     }
@@ -2145,33 +2099,28 @@ function doJudge() {
     streak=0; updateStreakUI();
     showMark('d'); playMissSound();
 
+    // まちがった単語を記録（まちがいノート用）
+    if(filtered[idx]) {
+      const alreadyIn = missedWords.some(w=>w.text===filtered[idx].text);
+      if(!alreadyIn) missedWords.push({...filtered[idx]});
+    }
+
     if(!isHiraganaMode) {
-      if(isBonusTime) {
-        // ボーナスタイム中は1回でもミスでゲームオーバー
-        document.getElementById('resultBox').textContent = '💀 まちがえた… ゲームオーバー！';
-        stopTimer();
-        setTimeout(()=>showGameOver(), 1500);
-      } else {
-        // 通常モード：3回ミスで次へ
-        missCount++;
-        if(missCount >= 3) {
-          if(filtered[idx]) {
-            const alreadyIn = missedWords.some(w=>w.text===filtered[idx].text);
-            if(!alreadyIn) missedWords.push({...filtered[idx]});
-          }
-          document.getElementById('resultBox').textContent = '😢 3かいまちがえたよ… つぎにすすもう！';
-          missCount = 0;
-          if(idx+1 >= filtered.length) {
-            stopTimer();
-            setTimeout(()=>checkBonusOrEnd(), 1500);
-          } else {
-            setTimeout(()=>{ idx++; loadCard(); }, 1800);
-          }
+      // 通常モード：3回ミスで次へ
+      missCount++;
+      if(missCount >= 3) {
+        document.getElementById('resultBox').textContent = '😢 3かいまちがえたよ… つぎにすすもう！';
+        missCount = 0;
+        if(idx+1 >= filtered.length) {
+          saveMissedNote();
+          setTimeout(()=>showResult(), 1500);
         } else {
-          const left = 3 - missCount;
-          document.getElementById('resultBox').textContent =
-            '🤔 もういちどためしてみよう！（あと' + left + 'かいでつぎへ）\n（きこえたこと：「' + judgeText + '」）';
+          setTimeout(()=>{ idx++; loadCard(); }, 1800);
         }
+      } else {
+        const left = 3 - missCount;
+        document.getElementById('resultBox').textContent =
+          '🤔 もういちどためしてみよう！（あと' + left + 'かいでつぎへ）\n（きこえたこと：「' + judgeText + '」）';
       }
     } else {
       document.getElementById('resultBox').textContent='🤔 もういちどためしてみよう！\n（きこえたこと：「' + judgeText + '」）';
@@ -2185,11 +2134,9 @@ function showResult() {
   // ゲーム終了統計
   stats.totalGames++;
   if(rate===100){ stats.hasPerfect=true; stats.perfectCount=(stats.perfectCount||0)+1; }
-  const catsSet = new Set(records.map(r=>currentCat));
   stats.catsPlayed = Object.keys(stats.catTotal||{}).length;
   stats.recentScores = (stats.recentScores||[]).concat(rate).slice(-10);
   saveStats(stats);
-  checkStamps();
   document.getElementById('sCorrect').textContent=sessionCorrect;
   document.getElementById('sTotal').textContent=sessionTotal;
   document.getElementById('sStreak').textContent=maxStreak;
@@ -2264,6 +2211,28 @@ function renderTeacher() {
   const vtv = document.getElementById('voiceThresholdVal');
   if(vtr) vtr.value = voiceThreshold;
   if(vtv) vtv.textContent = 'かんど: ' + voiceThreshold;
+  // はんていせってい スイッチ初期化
+  updateSwitchUI('switchSimilarMora', judgeSettings.similarMoraOk);
+}
+
+function updateSwitchUI(id, isOn) {
+  const cb = document.getElementById(id);
+  const track = document.getElementById(id + 'Track');
+  const thumb = document.getElementById(id + 'Thumb');
+  if(!cb) return;
+  cb.checked = isOn;
+  if(track) track.style.background = isOn ? '#4CAF50' : '#ccc';
+  if(thumb) thumb.style.left = isOn ? '25px' : '3px';
+}
+
+function toggleJudgeSetting(key, val) {
+  judgeSettings[key] = val;
+  updateSwitchUI('switchSimilarMora', judgeSettings.similarMoraOk);
+}
+
+function applyJudgeSettingsUI() {
+  saveJudgeSettings();
+  alert('はんていせっていをほぞんしました！');
 }
 function renderRecords() {
   const tb=document.getElementById('recordBody');
@@ -2277,16 +2246,26 @@ function buildCatSelect() {
 }
 function renderWordList() {
   document.getElementById('wordList').innerHTML=words.map((w,i)=>
-    `<div class="word-item">
-      <input type="text" value="${w.emoji}" oninput="words[${i}].emoji=this.value" style="max-width:42px;text-align:center;">
-      <input type="text" value="${w.text}" oninput="words[${i}].text=this.value;words[${i}].yomi=this.value;" style="flex:1;">
-      <select onchange="words[${i}].cat=this.value">${CATEGORIES.map(c=>`<option value="${c.id}"${w.cat===c.id?' selected':''}>${c.name}</option>`).join('')}</select>
-      <select onchange="words[${i}].level=Number(this.value)">
-        <option value="1"${w.level==1?' selected':''}>かんたん</option>
-        <option value="2"${w.level==2?' selected':''}>ふつう</option>
-        <option value="3"${w.level==3?' selected':''}>むずかしい</option>
-      </select>
-      <button class="del-btn" onclick="deleteWord(${i})">×</button>
+    `<div class="word-item" style="flex-direction:column;align-items:stretch;gap:6px;">
+      <div style="display:flex;align-items:center;gap:6px;">
+        ${w.imageData
+          ? `<img src="${w.imageData}" style="width:36px;height:36px;object-fit:cover;border-radius:8px;flex-shrink:0;">`
+          : `<input type="text" value="${w.emoji}" oninput="words[${i}].emoji=this.value" style="max-width:42px;text-align:center;">`
+        }
+        <input type="text" value="${w.text}" oninput="words[${i}].text=this.value;words[${i}].yomi=this.value;" style="flex:1;">
+        <select onchange="words[${i}].cat=this.value">${CATEGORIES.map(c=>`<option value="${c.id}"${w.cat===c.id?' selected':''}>${c.name}</option>`).join('')}</select>
+        <select onchange="words[${i}].level=Number(this.value)">
+          <option value="1"${w.level==1?' selected':''}>かんたん</option>
+          <option value="2"${w.level==2?' selected':''}>ふつう</option>
+          <option value="3"${w.level==3?' selected':''}>むずかしい</option>
+        </select>
+        <button class="del-btn" onclick="deleteWord(${i})">×</button>
+      </div>
+      <div style="display:flex;align-items:center;gap:6px;">
+        <label style="font-size:11px;color:#888;">🖼️ えをかえる：</label>
+        <input type="file" accept="image/*" style="font-size:11px;flex:1;" onchange="uploadWordImage(event,${i})">
+        ${w.imageData ? `<button onclick="words[${i}].imageData='';renderWordList();" style="font-size:11px;padding:2px 6px;border:1px solid #ddd;border-radius:6px;cursor:pointer;background:#fff;">✕ けす</button>` : ''}
+      </div>
     </div>`).join('');
 }
 function addWord() {
@@ -2301,6 +2280,29 @@ function addWord() {
 }
 function deleteWord(i){ if(confirm('「'+words[i].text+'」をけしますか？')){ words.splice(i,1); renderWordList(); } }
 function saveWords(){ try{localStorage.setItem('words_v2',JSON.stringify(words));alert('ほぞんしました！');}catch(e){alert('ほぞんできませんでした');} }
+
+function uploadWordImage(event, idx) {
+  const file = event.target.files[0];
+  if(!file) return;
+  if(file.size > 500*1024) { alert('がぞうのサイズがおおきすぎます（500KB以下にしてください）'); return; }
+  const reader = new FileReader();
+  reader.onload = function(e) {
+    // canvas で縮小（最大200×200px）
+    const img = new Image();
+    img.onload = function() {
+      const canvas = document.createElement('canvas');
+      const max = 200;
+      const ratio = Math.min(max/img.width, max/img.height, 1);
+      canvas.width = Math.round(img.width * ratio);
+      canvas.height = Math.round(img.height * ratio);
+      canvas.getContext('2d').drawImage(img, 0, 0, canvas.width, canvas.height);
+      words[idx].imageData = canvas.toDataURL('image/jpeg', 0.7);
+      renderWordList();
+    };
+    img.src = e.target.result;
+  };
+  reader.readAsDataURL(file);
+}
 function renderStudentList() {
   document.getElementById('studentList').innerHTML=students.map((s,i)=>
     `<div class="student-item">
@@ -2366,64 +2368,23 @@ async function testMic() {
 }
 
 
-// ===================== レベル・XP・スタンプ定義 =====================
-const RANKS = [
-  {name:'はつおんルーキー', emoji:'🌱', xpNeeded:10},
-  {name:'ことばのたまご',   emoji:'🥚', xpNeeded:25},
-  {name:'はつおんキッズ',   emoji:'⭐', xpNeeded:50},
-  {name:'ことばのひと',     emoji:'🌟', xpNeeded:100},
-  {name:'はつおんヒーロー', emoji:'🦸', xpNeeded:200},
-  {name:'ことばのせんせい', emoji:'🎓', xpNeeded:400},
-  {name:'はつおんマスター', emoji:'👑', xpNeeded:99999},
-];
+// ===================== 統計・スタンプ定義（シンプル版） =====================
 
-const STAMPS = [
-  // ===== せいかい系 =====
-  {id:'first',        emoji:'🎉', name:'はじめての〇',    desc:'はじめてせいかい',           condition:(s)=>s.totalCorrect>=1},
-  {id:'streak3',      emoji:'🔥', name:'3れんぞく',       desc:'3もんれんぞくせいかい',       condition:(s)=>s.maxStreak>=3},
-  {id:'streak5',      emoji:'💥', name:'5れんぞく',       desc:'5もんれんぞくせいかい',       condition:(s)=>s.maxStreak>=5},
-  {id:'streak10',     emoji:'👑', name:'10れんぞく',      desc:'10もんれんぞくせいかい',      condition:(s)=>s.maxStreak>=10},
-  {id:'perfect',      emoji:'💯', name:'まんてん',         desc:'ミスなしでクリア',            condition:(s)=>s.hasPerfect},
-  {id:'perfect5',     emoji:'🌈', name:'まんてん5かい',   desc:'ミスなしで5かいクリア',       condition:(s)=>s.perfectCount>=5},
-  {id:'words50',      emoji:'📚', name:'50もんせいかい',  desc:'ごうけい50もんせいかい',      condition:(s)=>s.totalCorrect>=50},
-  {id:'words100',     emoji:'🎊', name:'100もんせいかい', desc:'ごうけい100もんせいかい',     condition:(s)=>s.totalCorrect>=100},
-  // ===== プレイ回数系 =====
-  {id:'games5',       emoji:'🎮', name:'5かいプレイ',     desc:'5かいゲームをした',           condition:(s)=>s.totalGames>=5},
-  {id:'games20',      emoji:'🏆', name:'20かいプレイ',    desc:'20かいゲームをした',          condition:(s)=>s.totalGames>=20},
-  // ===== 敵撃破：初めて系 =====
-  {id:'first_win',    emoji:'⚔️', name:'はじめてのしょうり', desc:'はじめて敵をたおした',     condition:(s)=>s.totalWins>=1},
-  {id:'perfect_win',  emoji:'🌟', name:'パーフェクトしょうり', desc:'ミスなしでクリア！',      condition:(s)=>s.perfectWins>=1},
-  // ===== 敵撃破：回数系 =====
-  {id:'win3',         emoji:'🥉', name:'3かいしょうり',   desc:'ごうけい3かいクリア',         condition:(s)=>s.totalWins>=3},
-  {id:'win10',        emoji:'🥈', name:'10かいしょうり',  desc:'ごうけい10かいクリア',        condition:(s)=>s.totalWins>=10},
-  {id:'win30',        emoji:'🥇', name:'30かいしょうり',  desc:'ごうけい30かいクリア',        condition:(s)=>s.totalWins>=30},
-  {id:'win50',        emoji:'👑', name:'50かいしょうり',  desc:'ごうけい50かいクリア',        condition:(s)=>s.totalWins>=50},
-  // ===== 敵撃破：レベル別 =====
-  {id:'lv1_win5',     emoji:'🌱', name:'かんたんせいは',  desc:'かんたんを5かいクリア',       condition:(s)=>(s.lvWins&&s.lvWins[1]||0)>=5},
-  {id:'lv2_win5',     emoji:'🔥', name:'ふつうせいは',    desc:'ふつうを5かいクリア',         condition:(s)=>(s.lvWins&&s.lvWins[2]||0)>=5},
-  {id:'lv3_win3',     emoji:'💀', name:'むずかしいせいは', desc:'むずかしいを3かいクリア',    condition:(s)=>(s.lvWins&&s.lvWins[3]||0)>=3},
-  {id:'lv3_win10',    emoji:'👹', name:'むずかしいマスター', desc:'むずかしいを10かいクリア', condition:(s)=>(s.lvWins&&s.lvWins[3]||0)>=10},
-  // ===== カテゴリ制覇系 =====
-  {id:'cat_dousa',    emoji:'🏃', name:'うごきせいは',    desc:'うごきを全レベルクリア',      condition:(s)=>(s.catLvWins&&['dousa_1','dousa_2','dousa_3'].every(k=>s.catLvWins[k]>=1))},
-  {id:'cat_tabemono', emoji:'🍎', name:'たべものせいは',  desc:'たべものを全レベルクリア',    condition:(s)=>(s.catLvWins&&['tabemono_1','tabemono_2','tabemono_3'].every(k=>s.catLvWins[k]>=1))},
-  {id:'cat_hira',     emoji:'🔤', name:'ひらがなせいは',  desc:'ひらがなを全行クリア',        condition:(s)=>(s.hiraRowsCleared||0)>=10},
-  {id:'cat_all',      emoji:'🗺️', name:'ぜんカテゴリせいは', desc:'ぜんカテゴリ1かいクリア',condition:(s)=>Object.keys(s.catLvWins||{}).length>=10},
-  // ===== ことばプロ系 =====
-  {id:'dousa_pro',    emoji:'🏃', name:'うごきのプロ',    desc:'うごき10もんせいかい',        condition:(s)=>(s.catCorrect&&s.catCorrect['dousa']||0)>=10},
-  {id:'food_pro',     emoji:'🍎', name:'たべもののプロ',  desc:'たべもの10もんせいかい',      condition:(s)=>(s.catCorrect&&s.catCorrect['tabemono']||0)>=10},
-  {id:'animal_pro',   emoji:'🐶', name:'どうぶつのプロ',  desc:'どうぶつ10もんせいかい',      condition:(s)=>(s.catCorrect&&s.catCorrect['doubutsu']||0)>=10},
-  {id:'color_pro',    emoji:'🌈', name:'いろのプロ',      desc:'いろ10もんせいかい',          condition:(s)=>(s.catCorrect&&s.catCorrect['iro']||0)>=10},
-  // ===== ボーナスタイム系 =====
-  {id:'bonus_win1',   emoji:'💪', name:'ボーナスくぐり',  desc:'ボーナスタイムからクリア',    condition:(s)=>s.bonusWins>=1},
-  {id:'bonus_win5',   emoji:'🦸', name:'ボーナスマスター', desc:'ボーナスタイムから5かいクリア', condition:(s)=>s.bonusWins>=5},
-];
 
 // ===================== 統計データ =====================
 // プレイヤー別stats（名前をキーにして保存）
 function loadPlayerStats(playerName) {
   try {
     const key = 'stats_v2_' + playerName;
-    return JSON.parse(localStorage.getItem(key)) || initStats();
+    const saved = JSON.parse(localStorage.getItem(key));
+    if(!saved) return initStats();
+    // 欠けている項目はデフォルトで補う（古い/壊れたデータ対策）
+    const base = initStats();
+    const merged = Object.assign(base, saved);
+    if(!merged.catCorrect || typeof merged.catCorrect !== 'object') merged.catCorrect = {};
+    if(!merged.catTotal   || typeof merged.catTotal   !== 'object') merged.catTotal   = {};
+    if(!Array.isArray(merged.recentScores)) merged.recentScores = [];
+    return merged;
   } catch(e) { return initStats(); }
 }
 function savePlayerStats(playerName, s) {
@@ -2440,14 +2401,7 @@ function initStats() {
     totalCorrect:0, totalGames:0, maxStreak:0,
     hasPerfect:false, perfectCount:0,
     catsPlayed:0, catCorrect:{}, catTotal:{},
-    earnedStamps:[], xp:0, recentScores:[],
-    // 敵撃破系
-    totalWins:0,      // 合計クリア回数
-    perfectWins:0,    // ミスなしクリア回数
-    bonusWins:0,      // ボーナスタイムからクリア回数
-    lvWins:{},        // レベル別クリア回数 {1:0, 2:0, 3:0}
-    catLvWins:{},     // カテゴリ×レベル別クリア {dousa_1:0, ...}
-    hiraRowsCleared:0 // ひらがな行クリア数
+    recentScores:[]
   };
 }
 function saveStats(s) {
@@ -2457,61 +2411,13 @@ function saveStats(s) {
 }
 
 
-function addXP(amount) {
-  if(!stats) stats = initStats();
-  const oldLevel = getRankIndex(stats.xp);
-  stats.xp += amount;
-  const newLevel = getRankIndex(stats.xp);
-  saveStats(stats);
-  if(newLevel > oldLevel) { showLevelUp(newLevel); }
-}
-
-function getRankIndex(xp) {
-  let total = 0;
-  for(let i=0;i<RANKS.length;i++) { total += RANKS[i].xpNeeded; if(xp < total) return i; }
-  return RANKS.length-1;
-}
-
-function getCurrentRank(xp) {
-  let total = 0;
-  for(let i=0;i<RANKS.length;i++) {
-    const next = total + RANKS[i].xpNeeded;
-    if(xp < next) return { rank:RANKS[i], idx:i, xpInLevel:xp-total, xpNeeded:RANKS[i].xpNeeded };
-    total = next;
-  }
-  return { rank:RANKS[RANKS.length-1], idx:RANKS.length-1, xpInLevel:0, xpNeeded:1 };
-}
-
-function checkStamps() {
-  const newStamps = [];
-  STAMPS.forEach(s => {
-    if(!stats.earnedStamps.includes(s.id) && s.condition(stats)) {
-      stats.earnedStamps.push(s.id);
-      newStamps.push(s);
-    }
-  });
-  if(newStamps.length) {
-    saveStats(stats);
-    setTimeout(()=>{ newStamps.forEach((s,i)=>{ setTimeout(()=>showStamp(s.emoji+'\n'+s.name),i*800); }); },500);
-  }
-}
-
-function showLevelUp(idx) {
-  const rank = RANKS[idx];
-  document.getElementById('lvEmoji').textContent = rank.emoji;
-  document.getElementById('lvTitle').textContent = 'レベルアップ！';
-  document.getElementById('lvSub').textContent = rank.name + ' になったよ！';
-  const ov = document.getElementById('levelupOverlay');
-  ov.classList.remove('show'); void ov.offsetWidth; ov.classList.add('show');
-  setTimeout(()=>ov.classList.remove('show'), 2600);
-  showFireworks();
-}
 
 // ===================== マイページ =====================
 function goMyPageDirect() {
   // カテゴリ画面から来た場合、currentStudentがセットされている
   const player = currentStudent ? currentStudent.name : (students && students[0] ? students[0].name : '__global__');
   myPagePlayer = player;
+  myPageCameFrom = 'category';
   try { stats = loadPlayerStats(player); } catch(e) { stats = initStats(); }
   renderMyPage();
   showScreen('screenMyPage');
@@ -2532,23 +2438,14 @@ function goMyPageSelect() {
     btn.className = 'btn student-sel-btn';
     btn.style.cssText = 'width:100%;padding:16px;border-radius:18px;background:#fff;box-shadow:0 2px 10px rgba(0,0,0,.08);border:3px solid transparent;cursor:pointer;';
 
-    let rankEmoji = '🌱'; let rankName = 'ルーキー'; let rankLv = 1;
-    try {
-      const pStats = loadPlayerStats(s.name);
-      const r = getCurrentRank(pStats.xp);
-      rankEmoji = r.rank.emoji;
-      rankName  = r.rank.name;
-      rankLv    = r.idx + 1;
-    } catch(e) {}
-
     btn.innerHTML = '<div style="text-align:center;">'
-      + '<div style="font-size:32px;margin-bottom:4px;">' + rankEmoji + '</div>'
+      + '<div style="font-size:32px;margin-bottom:4px;">📖</div>'
       + '<div style="font-size:16px;font-weight:700;color:#333;">' + s.name + '</div>'
-      + '<div style="font-size:11px;color:#888;margin-top:2px;">Lv.' + rankLv + ' ' + rankName + '</div>'
       + '</div>';
 
     btn.onclick = function() {
       myPagePlayer = s.name;
+      myPageCameFrom = 'select';
       try { stats = loadPlayerStats(s.name); } catch(e) { stats = initStats(); }
       renderMyPage();
       showScreen('screenMyPage');
@@ -2563,30 +2460,35 @@ function goMyPage() {
   goMyPageSelect();
 }
 
+function clearMissedNoteForPlayer() {
+  if(!myPagePlayer) return;
+  if(confirm('まちがいノートをリセットしますか？')) {
+    clearMissedNote(myPagePlayer);
+    renderMyPage();
+  }
+}
+
 function renderMyPage() {
   // プレイヤー名表示
   const nameEl = document.getElementById('myPagePlayerName');
   if(nameEl) nameEl.textContent = myPagePlayer || '';
-  // レベルカード
-  const r = getCurrentRank(stats.xp);
-  document.getElementById('rankEmoji').textContent = r.rank.emoji;
-  document.getElementById('rankName').textContent  = r.rank.name;
-  document.getElementById('rankSub').textContent   = 'レベル ' + (r.idx+1);
-  const pct = Math.min(100, Math.round(r.xpInLevel / r.xpNeeded * 100));
-  document.getElementById('xpBar').style.width = pct + '%';
-  document.getElementById('xpLabel').textContent = r.xpInLevel + ' / ' + r.xpNeeded + ' XP';
 
-  // スタンプ
-  const grid = document.getElementById('stampGrid');
-  grid.innerHTML = '';
-  STAMPS.forEach(s => {
-    const earned = stats.earnedStamps.includes(s.id);
-    const div = document.createElement('div');
-    div.className = 'stamp-item ' + (earned?'earned':'locked');
-    div.title = s.name + '\n' + s.desc;
-    div.innerHTML = s.emoji + '<div class="stamp-label">' + s.name + '</div>';
-    grid.appendChild(div);
-  });
+  // まちがいノート表示
+  const noteCard = document.getElementById('missedNoteCard');
+  const noteList = document.getElementById('missedNoteList');
+  const notes = myPagePlayer ? loadMissedNote(myPagePlayer) : [];
+  if(notes.length > 0) {
+    noteCard.style.display = '';
+    noteList.innerHTML = notes.map(n =>
+      '<div style="display:flex;align-items:center;gap:8px;padding:5px 0;border-bottom:1px solid #eee;">'
+      + '<span style="font-size:22px;">' + (n.emoji||'📝') + '</span>'
+      + '<span style="font-weight:700;">' + n.text + '</span>'
+      + '<span style="font-size:11px;color:#aaa;margin-left:auto;">' + (n.date||'') + '</span>'
+      + '</div>'
+    ).join('');
+  } else {
+    noteCard.style.display = 'none';
+  }
 
   // カテゴリ別グラフ
   const bc = document.getElementById('barChart');
@@ -2604,46 +2506,37 @@ function renderMyPage() {
     bc.appendChild(row);
   });
 
-  // 折れ線グラフ（最近10回のスコア）
-  drawLineChart();
+  // とくい・にがて表示
+  renderStrongWeak();
 }
 
-function drawLineChart() {
-  const canvas = document.getElementById('lineChart');
-  const ctx = canvas.getContext('2d');
-  const scores = stats.recentScores.slice(-10);
-  const W = canvas.offsetWidth || 360, H = 120;
-  canvas.width = W; canvas.height = H;
-  ctx.clearRect(0,0,W,H);
-  if(scores.length < 2) {
-    ctx.fillStyle = '#aaa'; ctx.font = '12px sans-serif'; ctx.textAlign='center';
-    ctx.fillText('もっとれんしゅうするとグラフがでるよ！', W/2, H/2);
+function renderStrongWeak() {
+  const el = document.getElementById('strongWeakContent');
+  if(!el) return;
+  const wordCats = CATEGORIES.filter(c => !c.id.startsWith('hira_'));
+  const rated = wordCats.map(c => ({
+    name: c.name, emoji: c.emoji,
+    pct: (stats.catTotal[c.id]||0) > 0
+      ? Math.round((stats.catCorrect[c.id]||0) / stats.catTotal[c.id] * 100)
+      : null
+  })).filter(c => c.pct !== null).sort((a,b) => b.pct - a.pct);
+
+  if(rated.length === 0) {
+    el.innerHTML = '<div style="color:#aaa;text-align:center;padding:8px;">まだデータがありません。れんしゅうするとでてくるよ！</div>';
     return;
   }
-  const pad = 24;
-  const xStep = (W-pad*2)/(scores.length-1);
-  // グリッド
-  ctx.strokeStyle='#eee'; ctx.lineWidth=1;
-  [0,25,50,75,100].forEach(v=>{
-    const y = pad + (100-v)/100*(H-pad*2);
-    ctx.beginPath(); ctx.moveTo(pad,y); ctx.lineTo(W-pad,y); ctx.stroke();
-    ctx.fillStyle='#bbb'; ctx.font='9px sans-serif'; ctx.textAlign='right';
-    ctx.fillText(v+'%',pad-4,y+3);
-  });
-  // 線
-  ctx.beginPath(); ctx.strokeStyle='#FF8C42'; ctx.lineWidth=3; ctx.lineJoin='round';
-  scores.forEach((s,i)=>{
-    const x=pad+i*xStep, y=pad+(100-s)/100*(H-pad*2);
-    i===0?ctx.moveTo(x,y):ctx.lineTo(x,y);
-  });
-  ctx.stroke();
-  // 点
-  scores.forEach((s,i)=>{
-    const x=pad+i*xStep, y=pad+(100-s)/100*(H-pad*2);
-    ctx.beginPath(); ctx.arc(x,y,5,0,Math.PI*2);
-    ctx.fillStyle=s===100?'#FFD600':'#FF8C42'; ctx.fill();
-    ctx.strokeStyle='#fff'; ctx.lineWidth=2; ctx.stroke();
-  });
+  const strong = rated.slice(0, Math.min(3, rated.length));
+  const weak   = rated.length >= 2 ? rated.slice(-Math.min(3, rated.length)).reverse() : [];
+  let html = '';
+  if(strong.length) {
+    html += '<div style="font-weight:700;color:#F9A825;margin-bottom:4px;">😊 とくい</div>';
+    html += strong.map(c => `<div style="display:flex;align-items:center;gap:6px;padding:3px 0;">${c.emoji}<span>${c.name}</span><span style="margin-left:auto;font-weight:700;color:#388E3C;">${c.pct}%</span></div>`).join('');
+  }
+  if(weak.length && weak[0].name !== strong[0]?.name) {
+    html += '<div style="font-weight:700;color:#E57373;margin:8px 0 4px;">😅 にがて</div>';
+    html += weak.map(c => `<div style="display:flex;align-items:center;gap:6px;padding:3px 0;">${c.emoji}<span>${c.name}</span><span style="margin-left:auto;font-weight:700;color:#E53935;">${c.pct}%</span></div>`).join('');
+  }
+  el.innerHTML = html;
 }
 
 // ===== アプリ起動時の初期化 =====
@@ -2652,9 +2545,51 @@ function drawLineChart() {
   stats = initStats(); // デフォルト値（プレイヤー選択時に上書き）
 })();
 
-// ===================== バトルシステム =====================
-const ENEMIES = [
-  // うごき
+// ===================== まちがいノート =====================
+function saveMissedNote() {
+  if(!missedWords.length || !currentStudent) return;
+  const key = 'missedNote_' + currentStudent.name;
+  let existing = [];
+  try { existing = JSON.parse(localStorage.getItem(key)) || []; } catch(e) {}
+  const today = new Date().toLocaleDateString('ja-JP');
+  missedWords.forEach(w => {
+    const alreadyIn = existing.some(e=>e.text===w.text && e.cat===w.cat);
+    if(!alreadyIn) existing.push({ text:w.text, emoji:w.emoji||'📝', cat:w.cat||currentCat, date:today });
+  });
+  try { localStorage.setItem(key, JSON.stringify(existing)); } catch(e) {}
+}
+
+function loadMissedNote(playerName) {
+  try { return JSON.parse(localStorage.getItem('missedNote_' + playerName)) || []; } catch(e) { return []; }
+}
+
+function clearMissedNote(playerName) {
+  try { localStorage.removeItem('missedNote_' + playerName); } catch(e) {}
+}
+
+function startMissedNotePractice() {
+  if(!currentStudent) return;
+  const notes = loadMissedNote(currentStudent.name);
+  if(!notes.length) { alert('まちがいノートにことばがありません！'); return; }
+  // まちがいノートの単語を filtered にセット
+  filtered = notes.map(n => ({ text:n.text, emoji:n.emoji, cat:n.cat, level:1, yomi:n.text }));
+  idx = 0;
+  sessionCorrect=0; sessionTotal=0; streak=0; maxStreak=0;
+  missedWords=[];
+  isHiraganaMode = false;
+  currentCat = 'note';
+  const badge = document.getElementById('modeBadge');
+  badge.style.background = '#9575CD';
+  badge.style.color = '#fff';
+  badge.textContent = '📝 まちがいノート';
+  updateStreakUI();
+  loadCard();
+  showScreen('screenPractice');
+}
+
+// ===================== （バトル削除済み） =====================
+// 旧コード削除
+/*
   { cat:'dousa',    lv:1, name:'ぷにぷにモンスター',  emoji:'🟢', hp:5 },
   { cat:'dousa',    lv:2, name:'ビッグスライム',       emoji:'🫧', hp:5 },
   { cat:'dousa',    lv:3, name:'ドラゴン',             emoji:'🐲', hp:5 },
@@ -2933,17 +2868,8 @@ function showVictoryScreen() {
   showScreen('screenVictory');
 }
 
-function playAttackSound() {
-  try {
-    const ctx = new(window.AudioContext||window.webkitAudioContext)();
-    const osc = ctx.createOscillator(), gain = ctx.createGain();
-    osc.connect(gain); gain.connect(ctx.destination);
-    osc.frequency.value = 220; osc.type = 'square';
-    gain.gain.setValueAtTime(.2, ctx.currentTime);
-    gain.gain.exponentialRampToValueAtTime(.001, ctx.currentTime+.15);
-    osc.start(ctx.currentTime); osc.stop(ctx.currentTime+.15);
-  } catch(e){}
-}
+*/
+// （バトル・タイマー関連コードはここまで削除）
 
 function playVictorySound() {
   try {
@@ -2974,7 +2900,6 @@ function generateReport() {
 
   playerList.forEach(s => {
     const pStats = (function(){ try{ return loadPlayerStats(s.name); }catch(e){ return initStats(); }})();
-    const r = getCurrentRank(pStats.xp);
     const totalCorrect = pStats.totalCorrect || 0;
     const totalGames   = pStats.totalGames   || 0;
     const maxStreak    = pStats.maxStreak     || 0;
@@ -2982,9 +2907,8 @@ function generateReport() {
     // プレイヤーカード
     html += '<div style="background:#fff;border:1.5px solid #eee;border-radius:16px;padding:1rem;margin-bottom:1rem;">';
     html += '<div style="display:flex;align-items:center;gap:10px;margin-bottom:.75rem;">';
-    html += '<span style="font-size:32px;">' + r.rank.emoji + '</span>';
-    html += '<div><div style="font-size:16px;font-weight:700;">' + s.name + '</div>';
-    html += '<div style="font-size:12px;color:#888;">Lv.' + (r.idx+1) + ' ' + r.rank.name + ' / XP:' + (pStats.xp||0) + '</div></div>';
+    html += '<span style="font-size:32px;">👤</span>';
+    html += '<div><div style="font-size:16px;font-weight:700;">' + s.name + '</div></div>';
     html += '</div>';
 
     // 基本統計
@@ -3009,16 +2933,11 @@ function generateReport() {
       html += '</div>';
     });
 
-    // スタンプ
-    const earned = pStats.earnedStamps || [];
-    if(earned.length > 0) {
-      html += '<div style="font-size:12px;font-weight:700;color:#555;margin:.6rem 0 .3rem;">かくとくスタンプ</div>';
-      html += '<div style="font-size:20px;letter-spacing:2px;">';
-      earned.forEach(id => {
-        const s2 = STAMPS.find(s=>s.id===id);
-        if(s2) html += s2.emoji;
-      });
-      html += '</div>';
+    // まちがいノート件数
+    const missNote = loadMissedNote(s.name);
+    if(missNote.length > 0) {
+      html += '<div style="font-size:12px;font-weight:700;color:#555;margin:.6rem 0 .3rem;">📝 まちがいノート（' + missNote.length + 'こ）</div>';
+      html += '<div style="font-size:13px;color:#888;">' + missNote.map(n=>n.text).join('、') + '</div>';
     }
     html += '</div>';
   });
@@ -3142,166 +3061,12 @@ function startHiraganaRow(row) {
   badge.style.color = '#fff';
   badge.textContent = '🔤 ' + row.name;
   updateStreakUI();
-
-  // 敵設定（ひらがな用）
-  const hiraganaEnemies = [
-    {name:'もじおばけ',emoji:'👻'},
-    {name:'アルファベットモンスター',emoji:'🔠'},
-    {name:'ことばのまじん',emoji:'🧙'},
-  ];
-  const enemy = hiraganaEnemies[Math.floor(Math.random()*hiraganaEnemies.length)];
-  currentEnemy = { name:enemy.name, emoji:enemy.emoji, hp:chars.length };
-  enemyMaxHp = chars.length;
-  enemyCurrentHp = enemyMaxHp;
-  setTimeout(()=>{
-    updateHpBar(true);
-    const charEl = document.getElementById('enemySvgWrap');
-    if(charEl) {
-      charEl.style.animation = '';
-      void charEl.offsetWidth;
-      charEl.style.animation = 'enemyFloat 3s ease-in-out infinite';
-    }
-    document.getElementById('enemyName').textContent = enemy.name;
-  }, 50);
-
   loadCard();
   showScreen('screenPractice');
 }
 
 
-// ===================== タイムアタックタイマー =====================
 
-function startTimer() {
-  timerSeconds = TIME_ATTACK_SEC;
-  isTimeAttack = true;
-  document.getElementById('timerWrap').style.display = 'block';
-  updateTimerUI();
-  clearInterval(timerInterval);
-  timerInterval = setInterval(function() {
-    timerSeconds--;
-    updateTimerUI();
-    if(timerSeconds <= 0) {
-      clearInterval(timerInterval);
-      timerInterval = null;
-      timeUp();
-    }
-  }, 1000);
-}
-
-function stopTimer() {
-  clearInterval(timerInterval);
-  timerInterval = null;
-  document.getElementById('timerWrap').style.display = 'none';
-  isTimeAttack = false;
-}
-
-function updateTimerUI() {
-  const pct = timerSeconds / TIME_ATTACK_SEC * 100;
-  const circle = document.getElementById('timerCircle');
-  const numEl  = document.getElementById('timerNum');
-  if(!circle || !numEl) return;
-  numEl.textContent = timerSeconds;
-  // 円グラフ
-  const color = timerSeconds > 15 ? '#4CAF50' : timerSeconds > 8 ? '#FF8C42' : '#EF5350';
-  circle.style.background = 'conic-gradient(' + color + ' ' + pct + '%, #eee ' + pct + '%)';
-  numEl.style.color = color;
-  // 緊急アニメーション
-  const wrap = document.getElementById('timerWrap');
-  if(timerSeconds <= 8) wrap.classList.add('urgent');
-  else wrap.classList.remove('urgent');
-}
-
-function timeUp() {
-  // 時間切れ → ゲームオーバー
-  if(recognition) { try { recognition.abort(); } catch(e){} recognition = null; }
-  stopTimer();
-  document.getElementById('resultBox').textContent = '⏰ じかんきれ！';
-  playMissSound();
-  setTimeout(()=>{
-    showGameOver();
-  }, 1200);
-}
-
-
-// ===================== ボーナスタイム・ゲームオーバー =====================
-
-function checkBonusOrEnd() {
-  if(missedWords.length > 0 && !isBonusTime) {
-    startBonusTime();
-  } else {
-    // ミスなし or ボーナス後 → 通常終了（ここには来ないはず）
-    showVictoryScreen();
-  }
-}
-
-function startBonusTime() {
-  isBonusTime = true;
-  bonusWords = shuffleArr([...missedWords]);
-  bonusIdx = 0;
-  missCount = 0;
-
-  // ボーナスヘッダー表示
-  const bh = document.getElementById('bonusHeader');
-  if(bh) {
-    bh.style.display = '';
-    document.getElementById('bonusSubText').textContent =
-      'まちがえた ' + bonusWords.length + 'もんにちょうせん！';
-  }
-
-  // 敵を復活（HPバーを赤く点滅）
-  const wrap = document.getElementById('enemySvgWrap');
-  if(wrap) {
-    wrap.style.animation = '';
-    void wrap.offsetWidth;
-    wrap.style.animation = 'enemyFloat 3s ease-in-out infinite';
-    wrap.style.filter = 'drop-shadow(0 0 8px #FFD600)';
-  }
-  enemyCurrentHp = bonusWords.length;
-  enemyMaxHp = bonusWords.length;
-  updateHpBar(true);
-
-  // ボーナス問題をfilteredにセット
-  filtered = bonusWords;
-  idx = 0;
-  loadCard();
-
-  // アナウンス
-  document.getElementById('resultBox').textContent =
-    '⭐ ボーナスタイム！まちがえたことばをもう一度！';
-}
-
-function showGameOver() {
-  // SVGの敵をゲームオーバー表示
-  const wrap = document.getElementById('enemySvgWrap');
-  if(wrap) { wrap.style.filter = ''; }
-
-  const goEnemy = document.getElementById('gameoverEnemy');
-  if(goEnemy && currentEnemy) goEnemy.textContent = currentEnemy.emoji;
-  document.getElementById('goCorrect').textContent = sessionCorrect;
-  document.getElementById('goTotal').textContent   = sessionTotal;
-
-  // 統計更新
-  stats.totalGames++;
-  stats.recentScores = (stats.recentScores||[]).concat(0).slice(-10);
-  saveStats(stats);
-
-  showScreen('screenGameOver');
-}
-
-// defeatEnemyに演出追加（敵がフェードアウト）
-function defeatEnemy() {
-  const wrap = document.getElementById('enemySvgWrap');
-  if(wrap) {
-    wrap.style.filter = '';
-    wrap.style.animation = 'enemyDefeat .8s ease-out forwards';
-  }
-  playVictorySound();
-  showFireworks(); showFireworks();
-  // ボーナスヘッダー非表示
-  const bh = document.getElementById('bonusHeader');
-  if(bh) bh.style.display = 'none';
-  setTimeout(()=>{ showVictoryScreen(); }, 1200);
-}
 
 </script>
 </body>
