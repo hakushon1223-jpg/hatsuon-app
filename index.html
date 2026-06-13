@@ -83,7 +83,7 @@ body{font-family:'Zen Maru Gothic','Hiragino Maru Gothic ProN',sans-serif;backgr
 .btn-play {background:var(--blue);color:#fff;padding:18px 24px;font-size:18px;box-shadow:0 3px 10px rgba(79,195,247,.35);}
 .btn-rec  {background:var(--red);color:#fff;padding:26px 48px;font-size:26px;box-shadow:0 6px 20px rgba(239,83,80,.4);border-radius:999px;width:100%;}
 .btn-stop {background:#555;color:#fff;padding:26px 48px;font-size:26px;display:none;border-radius:999px;width:100%;}
-.result-box{min-height:50px;background:#F9F9F9;border-radius:14px;padding:11px 14px;font-size:14px;color:#555;margin-bottom:.75rem;display:flex;align-items:center;justify-content:center;text-align:center;line-height:1.6;width:100%;border:1.5px solid #eee;}
+.result-box{min-height:60px;background:#F9F9F9;border-radius:14px;padding:12px 14px;font-size:15px;color:#333;margin-bottom:.75rem;display:flex;align-items:center;justify-content:center;text-align:center;line-height:1.7;width:100%;border:1.5px solid #eee;white-space:pre-line;}
 .end-btn{background:#FFE0B2;color:#E65100;padding:10px 24px;font-size:14px;margin-top:.5rem;}
 .nav{display:flex;align-items:center;justify-content:center;gap:20px;margin-top:.5rem;width:100%;}
 .nav-btn{width:46px;height:46px;border-radius:50%;border:2px solid #ddd;background:var(--white);font-size:20px;cursor:pointer;display:flex;align-items:center;justify-content:center;}
@@ -1211,20 +1211,49 @@ const kanjiMap = {
   '礼':'れ','麗':'れ','例':'れ',
   '路':'ろ','老':'ろ',
   '和':'わ','話':'わ','輪':'わ',
-  // のばした発音で返りやすいパターン
-  '良い':'いい','言い':'いい','飯':'いい','言':'い',
-  'いいー':'いい','ええー':'ええ','ああー':'ああ',
-  '唸':'う','卯':'う','胡':'う',
-  '絵ー':'え','重':'え',
-  '王':'おう','大':'おお','多':'おお',
-  '蚊':'か','課':'か','日':'か',
-  '黄':'き','期':'き','喜':'き',
-  '苦':'く','空':'くう','食う':'くう',
-  '異':'い','井':'い','医':'い','胃':'い',
-  '葦':'い','亥':'い',
-  '宇':'う','卯':'う','鵜':'う',
-  '荏':'え','餌':'え','柄':'え',
-  '雄':'お','緒':'お','男':'お',
+  // 1文字ひらがな（音声認識で返りやすい漢字・読み方）
+  '良い':'いい','言い':'いい','井':'い','異':'い','以':'い','胃':'い','位':'い',
+  '宇':'う','羽':'う','鵜':'う','有':'う','雨':'う',
+  '荏':'え','餌':'え','柄':'え','江':'え','絵':'え',
+  '雄':'お','緒':'お','尾':'お','御':'お',
+  '蚊':'か','花':'か','課':'か','可':'か','夏':'か',
+  '木':'き','気':'き','機':'き','鬼':'き','期':'き',
+  '苦':'く','空':'く','句':'く','区':'く','口':'く',
+  '毛':'け','家':'け','計':'け',
+  '子':'こ','小':'こ','古':'こ','個':'こ',
+  '佐':'さ','砂':'さ','差':'さ','座':'さ',
+  '士':'し','仕':'し','四':'し','詩':'し','示':'し',
+  '寿':'す','素':'す','主':'す',
+  '背':'せ','世':'せ','西':'せ',
+  '祖':'そ','組':'そ',
+  '田':'た','太':'た','多':'た',
+  '地':'ち','知':'ち','血':'ち','千':'ち',
+  '津':'つ','通':'つ','鶴':'つ',
+  '手':'て','天':'て',
+  '戸':'と','土':'と','都':'と',
+  '名':'な','菜':'な','那':'な',
+  '虹':'に','荷':'に',
+  '沼':'ぬ',
+  '根':'ね','音':'ね',
+  '野':'の','乃':'の',
+  '葉':'は','刃':'は','羽':'は',
+  '日':'ひ','火':'ひ','灯':'ひ',
+  '風':'ふ','不':'ふ','府':'ふ',
+  '変':'へ','辺':'へ',
+  '穂':'ほ','歩':'ほ','母':'ほ',
+  '真':'ま','馬':'ま','間':'ま',
+  '実':'み','身':'み','海':'み',
+  '虫':'む','武':'む',
+  '目':'め','芽':'め',
+  '桃':'も',
+  '矢':'や','夜':'や',
+  '湯':'ゆ','由':'ゆ',
+  '善':'よ','予':'よ',
+  '里':'り','利':'り',
+  '留':'る',
+  '礼':'れ','例':'れ',
+  '路':'ろ','老':'ろ',
+  '話':'わ','環':'わ',
 };
 
 
@@ -1636,19 +1665,57 @@ function toHiragana(str) {
     '５':'ご','６':'ろく','７':'なな','８':'はち','９':'く'};
   if(numMap[s]) return numMap[s];
 
+  // ローマ字（ヘボン式・訓令式）→ひらがな
+  const romajiMap = {
+    'a':'あ','i':'い','u':'う','e':'え','o':'お',
+    'ka':'か','ki':'き','ku':'く','ke':'け','ko':'こ',
+    'ga':'が','gi':'ぎ','gu':'ぐ','ge':'げ','go':'ご',
+    'sa':'さ','si':'し','su':'す','se':'せ','so':'そ','shi':'し',
+    'za':'ざ','ji':'じ','zu':'ず','ze':'ぜ','zo':'ぞ',
+    'ta':'た','ti':'ち','tu':'つ','te':'て','to':'と','chi':'ち','tsu':'つ',
+    'da':'だ','di':'ぢ','du':'づ','de':'で','do':'ど',
+    'na':'な','ni':'に','nu':'ぬ','ne':'ね','no':'の',
+    'ha':'は','hi':'ひ','fu':'ふ','hu':'ふ','he':'へ','ho':'ほ',
+    'ba':'ば','bi':'び','bu':'ぶ','be':'べ','bo':'ぼ',
+    'pa':'ぱ','pi':'ぴ','pu':'ぷ','pe':'ぺ','po':'ぽ',
+    'ma':'ま','mi':'み','mu':'む','me':'め','mo':'も',
+    'ya':'や','yu':'ゆ','yo':'よ',
+    'ra':'ら','ri':'り','ru':'る','re':'れ','ro':'ろ',
+    'wa':'わ','wi':'い','we':'え','wo':'を',
+    'nn':'ん','n':'ん',
+    'kya':'きゃ','kyu':'きゅ','kyo':'きょ',
+    'sha':'しゃ','shu':'しゅ','sho':'しょ',
+    'cha':'ちゃ','chu':'ちゅ','cho':'ちょ',
+  };
+
+  // ローマ字→ひらがな変換を試みる
+  const lower = s.toLowerCase();
+  if(romajiMap[lower]) return romajiMap[lower];
+  // 長いローマ字を分解して変換
+  let romaResult = '';
+  let ri = 0;
+  const sl = s.toLowerCase();
+  while(ri < sl.length) {
+    let matched = false;
+    for(const rlen of [3,2,1]) {
+      const chunk = sl.slice(ri, ri+rlen);
+      if(romajiMap[chunk]) { romaResult += romajiMap[chunk]; ri += rlen; matched = true; break; }
+    }
+    if(!matched) ri++;
+  }
+  if(romaResult) return romaResult;
+
   // アルファベット→ひらがな（よみかた）
   const alphaMap = {
-    'a':'えー','b':'びー','c':'しー','d':'でぃー','e':'いー',
-    'f':'えふ','g':'じー','h':'えいち','i':'あい','j':'じぇー',
-    'k':'けー','l':'える','m':'えむ','n':'えぬ','o':'おー',
-    'p':'ぴー','q':'きゅー','r':'あーる','s':'えす','t':'てぃー',
-    'u':'ゆー','v':'ぶい','w':'だぶりゅー','x':'えっくす',
-    'y':'わい','z':'ぜっと',
     'A':'えー','B':'びー','C':'しー','D':'でぃー','E':'いー',
-    'K':'けー','N':'えぬ','O':'おー','U':'ゆー','W':'だぶりゅー',
+    'F':'えふ','G':'じー','H':'えいち','I':'あい','J':'じぇー',
+    'K':'けー','L':'える','M':'えむ','N':'えぬ','O':'おー',
+    'P':'ぴー','Q':'きゅー','R':'あーる','S':'えす','T':'てぃー',
+    'U':'ゆー','V':'ぶい','W':'だぶりゅー','X':'えっくす',
+    'Y':'わい','Z':'ぜっと',
   };
   if(alphaMap[s]) return alphaMap[s];
-  if(alphaMap[s.toLowerCase()]) return alphaMap[s.toLowerCase()];
+  if(alphaMap[s.toUpperCase()]) return alphaMap[s.toUpperCase()];
 
   // カタカナ→ひらがな
   let kana = s.replace(/[\u30A1-\u30F6]/g, c=>String.fromCharCode(c.charCodeAt(0)-0x60));
@@ -2042,7 +2109,7 @@ function doJudge() {
   if(ok){
     sessionCorrect++; streak++; if(streak>maxStreak) maxStreak=streak;
     updateStreakUI();
-    document.getElementById('resultBox').textContent='✨ よくできました！';
+    document.getElementById('resultBox').textContent='✨ よくできました！\n（きこえたこと：「' + judgeText + '」）';
     showMark('o'); playSuccessSound();
     // バトル：敵にダメージ
     damageEnemy();
@@ -2103,11 +2170,11 @@ function doJudge() {
         } else {
           const left = 3 - missCount;
           document.getElementById('resultBox').textContent =
-            '🤔 もういちどためしてみよう！（あと' + left + 'かいでつぎへ）';
+            '🤔 もういちどためしてみよう！（あと' + left + 'かいでつぎへ）\n（きこえたこと：「' + judgeText + '」）';
         }
       }
     } else {
-      document.getElementById('resultBox').textContent='🤔 もういちどためしてみよう！';
+      document.getElementById('resultBox').textContent='🤔 もういちどためしてみよう！\n（きこえたこと：「' + judgeText + '」）';
     }
   }
   heardText=''; stopRequested=false;
