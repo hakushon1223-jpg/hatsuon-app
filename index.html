@@ -654,6 +654,18 @@ input[type=range]{flex:1;max-width:200px;accent-color:var(--orange);}
       <button class="save-btn" onclick="changePw()">🔑 パスワードをかえる</button>
       <p id="pwChangeMsg" style="font-size:12px;margin-top:.4rem;text-align:center;"></p>
     </div>
+    <div class="student-item">
+      <p style="font-size:13px;color:var(--gray);margin-bottom:.6rem;">🎤 こえのにんしき かんど</p>
+      <p style="font-size:11px;color:#aaa;margin-bottom:.5rem;">ひだり＝こえをひろいやすい / みぎ＝きびしい</p>
+      <div style="display:flex;align-items:center;gap:10px;">
+        <span style="font-size:12px;">ひろい</span>
+        <input type="range" min="5" max="35" value="15" id="voiceThresholdRange" style="flex:1;accent-color:var(--purple);" oninput="updateVoiceThreshold(this.value)">
+        <span style="font-size:12px;">きびしい</span>
+      </div>
+      <p id="voiceThresholdVal" style="font-size:12px;text-align:center;margin-top:.4rem;font-weight:700;color:var(--purple);">かんど: 15</p>
+      <button class="save-btn" style="background:var(--blue);color:#fff;margin-top:.5rem;" onclick="testMic()">🎤 マイクをテストする</button>
+      <p id="micTestResult" style="font-size:12px;margin-top:.4rem;text-align:center;"></p>
+    </div>
   </div>
 
   <!-- レポートタブ -->
@@ -1322,6 +1334,7 @@ let judged=false;    // この録音セッションで判定済みか
 let recRetry=0;      // 自動リトライ回数
 let voiceDetected=false; // マイク音量で声を検知したか
 let audioStream=null, audioCtxVD=null, vdTimer=null;
+let voiceThreshold=15;   // 声検知のしきい値（先生が調整可能）
 let missCount=0, missedWords=[], isBonusTime=false;
 let bonusWords=[], bonusIdx=0;
 let currentEnemy=null, enemyCurrentHp=5, enemyMaxHp=5;
@@ -1333,6 +1346,7 @@ function loadData() {
     students = JSON.parse(localStorage.getItem('students'))    || [{name:'せいと１',mode:'all'},{name:'せいと２',mode:'all'},{name:'せいと３',mode:'all'}];
     records  = JSON.parse(localStorage.getItem('records'))     || [];
   } catch(e) { words=[...ALL_WORDS]; students=[{name:'せいと１',mode:'all'},{name:'せいと２',mode:'all'}]; records=[]; }
+  try { const vt = localStorage.getItem('voice_threshold'); if(vt) voiceThreshold = Number(vt); } catch(e) {}
 }
 // ===== 初期化（DOM読み込み後に実行）=====
 // 変数は上部で宣言済み
@@ -1662,27 +1676,31 @@ function showStopBtn() { document.getElementById('recBtn').style.display='none';
 
 
 // ===== マイク音量で「声を出したか」を検知 =====
+let voicePeak = 0; // 最大音量を記録
 async function startVoiceDetect() {
   voiceDetected = false;
+  voicePeak = 0;
   try {
     audioStream = await navigator.mediaDevices.getUserMedia({ audio: true });
     if(!audioCtxVD) audioCtxVD = new (window.AudioContext || window.webkitAudioContext)();
     if(audioCtxVD.state === 'suspended') { try { await audioCtxVD.resume(); } catch(e){} }
     const source = audioCtxVD.createMediaStreamSource(audioStream);
     const analyser = audioCtxVD.createAnalyser();
-    analyser.fftSize = 512;
+    analyser.fftSize = 1024;
+    analyser.smoothingTimeConstant = 0.3;
     source.connect(analyser);
     const data = new Uint8Array(analyser.frequencyBinCount);
+    const threshold = (typeof voiceThreshold !== 'undefined') ? voiceThreshold : 15;
     clearInterval(vdTimer);
     vdTimer = setInterval(() => {
       analyser.getByteFrequencyData(data);
-      let sum = 0;
-      for(let i = 0; i < data.length; i++) sum += data[i];
-      const avg = sum / data.length;
-      if(avg > 28) { // しきい値：声を検知
-        voiceDetected = true;
-      }
-    }, 80);
+      // 人の声の帯域（おおよそ85Hz-1100Hz付近）を重点的に見る
+      let sum = 0, cnt = 0;
+      for(let i = 2; i < Math.min(data.length, 60); i++) { sum += data[i]; cnt++; }
+      const avg = cnt > 0 ? sum / cnt : 0;
+      if(avg > voicePeak) voicePeak = avg;
+      if(avg > threshold) { voiceDetected = true; }
+    }, 50);
   } catch(e) {
     // マイク取得失敗時は音量検知なしで続行
   }
@@ -1723,8 +1741,8 @@ function startRec(isAutoRetry) {
   try { window.speechSynthesis.cancel(); } catch(e) {}
   heardText = ''; interimText = ''; stopRequested = false; judged = false;
   clearTimeout(recTimeout);
-  // ひらがなモードはマイク音量検知も並行起動
-  if(isHiraganaMode) { startVoiceDetect(); }
+  // マイク音量検知を並行起動（声を出せたかの判定用）
+  startVoiceDetect();
 
   recognition = new SR();
   recognition.lang = 'ja-JP';
@@ -1820,33 +1838,42 @@ function startRec(isAutoRetry) {
 
     if(judged) { stopVoiceDetect(); return; }
 
-    // heardTextがなければinterimTextを使う
-    if(!heardText && interimText) {
-      heardText = interimText;
-    }
-
+    if(!heardText && interimText) heardText = interimText;
     const target = filtered[idx] ? filtered[idx].yomi : '';
 
-    if(heardText) {
-      stopVoiceDetect();
-      judged = true;
-      doJudge();
-    } else if(isHiraganaMode && voiceDetected) {
-      // 認識結果は空だが、マイクで声を検知 → 発声できたので正解扱い
-      stopVoiceDetect();
-      heardText = target;
-      judged = true;
-      doJudge();
-    } else if(recRetry < 1 && !stopRequested) {
-      // 声も検知できなかった → 1回だけ自動でマイク再起動
-      stopVoiceDetect();
-      recRetry++;
-      document.getElementById('resultBox').textContent = '🎙️ もういちど！おおきなこえでいってみよう！';
-      setTimeout(() => startRec(true), 600);
-    } else {
-      stopVoiceDetect();
-      document.getElementById('resultBox').textContent = 'きこえませんでした。「はなす」をおしてもういちど！';
-    }
+    // 少し待ってから判定（音量検知のタイマーが最後の声を拾うため）
+    setTimeout(() => {
+      if(judged) { stopVoiceDetect(); return; }
+
+      if(heardText) {
+        // 認識できた → 通常判定
+        stopVoiceDetect();
+        judged = true;
+        doJudge();
+      } else if(isHiraganaMode && voiceDetected) {
+        // ひらがな：認識は空でも声を出せた → 正解
+        stopVoiceDetect();
+        heardText = target;
+        judged = true;
+        doJudge();
+      } else if(recRetry < 1 && !stopRequested) {
+        // まだ声も検知できていない → もう一度だけ自動再開
+        stopVoiceDetect();
+        recRetry++;
+        document.getElementById('resultBox').textContent = '🎙️ もういちど、おおきなこえで！';
+        setTimeout(() => startRec(true), 500);
+      } else if(isHiraganaMode) {
+        // ひらがなで最後まで声が拾えなくても、優しく正解にする
+        // （マイクが弱い端末でも練習を止めないため）
+        stopVoiceDetect();
+        heardText = target;
+        judged = true;
+        doJudge();
+      } else {
+        stopVoiceDetect();
+        document.getElementById('resultBox').textContent = 'もういちど「はなす」をおしてね！';
+      }
+    }, 250);
   };
 
   try {
@@ -2115,7 +2142,14 @@ function showTTab(name,el) {
   document.querySelectorAll('.tnav-btn').forEach(b=>b.classList.remove('active'));
   document.getElementById('tab-'+name).classList.add('active'); el.classList.add('active');
 }
-function renderTeacher() { renderRecords(); renderWordList(); renderStudentList(); buildCatSelect(); }
+function renderTeacher() {
+  renderRecords(); renderWordList(); renderStudentList(); buildCatSelect();
+  // 音声感度スライダーを現在値に
+  const vtr = document.getElementById('voiceThresholdRange');
+  const vtv = document.getElementById('voiceThresholdVal');
+  if(vtr) vtr.value = voiceThreshold;
+  if(vtv) vtv.textContent = 'かんど: ' + voiceThreshold;
+}
 function renderRecords() {
   const tb=document.getElementById('recordBody');
   if(!records.length){tb.innerHTML='<tr><td colspan="4" style="color:#aaa;padding:1rem;">まだきろくがありません</td></tr>';return;}
@@ -2169,6 +2203,53 @@ function changePw(){
   localStorage.setItem('teacher_pw',p1); msg.style.color='#2E7D32'; msg.textContent='パスワードをかえました！';
   document.getElementById('newPw1').value=''; document.getElementById('newPw2').value='';
 }
+
+// ===== 音声認識の設定 =====
+function updateVoiceThreshold(val) {
+  voiceThreshold = Number(val);
+  document.getElementById('voiceThresholdVal').textContent = 'かんど: ' + val;
+  try { localStorage.setItem('voice_threshold', val); } catch(e) {}
+}
+
+async function testMic() {
+  const result = document.getElementById('micTestResult');
+  result.style.color = '#888';
+  result.textContent = '🎤 こえをだしてみてね…（3びょうかん）';
+  try {
+    const stream = await navigator.mediaDevices.getUserMedia({ audio: true });
+    const ctx = new (window.AudioContext || window.webkitAudioContext)();
+    if(ctx.state === 'suspended') await ctx.resume();
+    const source = ctx.createMediaStreamSource(stream);
+    const analyser = ctx.createAnalyser();
+    analyser.fftSize = 1024;
+    source.connect(analyser);
+    const data = new Uint8Array(analyser.frequencyBinCount);
+    let peak = 0;
+    const timer = setInterval(() => {
+      analyser.getByteFrequencyData(data);
+      let sum = 0, cnt = 0;
+      for(let i = 2; i < Math.min(data.length, 60); i++) { sum += data[i]; cnt++; }
+      const avg = cnt > 0 ? sum / cnt : 0;
+      if(avg > peak) peak = avg;
+    }, 50);
+    setTimeout(() => {
+      clearInterval(timer);
+      stream.getTracks().forEach(t => t.stop());
+      const peakR = Math.round(peak);
+      if(peak >= voiceThreshold) {
+        result.style.color = '#2E7D32';
+        result.textContent = '✅ こえをにんしきできました！（おおきさ: ' + peakR + '）';
+      } else {
+        result.style.color = '#E53935';
+        result.textContent = '⚠️ こえがちいさいかも（おおきさ: ' + peakR + '）かんどをひだりにしてね';
+      }
+    }, 3000);
+  } catch(e) {
+    result.style.color = '#E53935';
+    result.textContent = '❌ マイクをつかえませんでした';
+  }
+}
+
 
 // ===================== レベル・XP・スタンプ定義 =====================
 const RANKS = [
