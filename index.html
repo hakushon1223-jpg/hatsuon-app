@@ -1415,9 +1415,12 @@ function splitMoraArr(r) {
 
 // 長い文章むけの「ゆるやかな一致」。
 // 聞き取った音と目標の音を、モーラ単位でくらべて「どれだけ直せば同じになるか」
-// （＝ちがっているモーラの数）を返す。にた音は同じとみなす。
-// 助詞（を・に・で）を1つ聞きのがした、1音だけ聞き間違えた、程度のちがいなら
-// 小さい数になる。まったく別のことば同士は大きい数になる。
+// （＝ちがっているモーラの数）を返す。
+// ここでは「にた音」は別の音として厳しく数える。
+// そうしないと「みずをのむ」と「じゅーすをのむ」のように、ず↔す が同じ扱いに
+// なって、ちがうことばまで正解になってしまうため。
+// 助詞（を・に・で）を1つ聞きのがした（＝同じ音がまるごと1つ抜けた）ような
+// ちがいだけを小さい数にし、別のことばはしっかり大きい数にする。
 function moraEditDistance(aR, bR) {
   const a = splitMoraArr(aR), b = splitMoraArr(bR);
   const n = a.length, m = b.length;
@@ -1426,7 +1429,7 @@ function moraEditDistance(aR, bR) {
   for(let j = 0; j <= m; j++) dp[0][j] = j;
   for(let i = 1; i <= n; i++) {
     for(let j = 1; j <= m; j++) {
-      const same = (a[i-1] === b[j-1]) || isSimilarMora(a[i-1], b[j-1]);
+      const same = (a[i-1] === b[j-1]);
       dp[i][j] = Math.min(dp[i-1][j] + 1, dp[i][j-1] + 1, dp[i-1][j-1] + (same ? 0 : 1));
     }
   }
